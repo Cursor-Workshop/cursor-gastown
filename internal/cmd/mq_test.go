@@ -264,7 +264,7 @@ func TestGetStatusIcon(t *testing.T) {
 	}{
 		{"open", "○"},
 		{"in_progress", "▶"},
-		{"closed", "✓"},
+		{"closed", "OK"},
 		{"unknown", "•"},
 		{"", "•"},
 	}
