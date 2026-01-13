@@ -1,5 +1,6 @@
-# Binaries
+# Binaries (but not cmd/gt source)
 /gt
+!cmd/gt/
 *.exe
 
 # Build
@@ -27,7 +28,6 @@ coverage.out
 # Local config
 config.toml
 !config.example.toml
-gt
 
 # Runtime state
 state.json
