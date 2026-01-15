@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"crypto/rand"
 	"encoding/base32"
 	"encoding/json"
@@ -719,8 +720,15 @@ func verifyBeadExists(beadID string) error {
 	if townRoot, err := workspace.FindFromCwd(); err == nil {
 		cmd.Dir = townRoot
 	}
-	if err := cmd.Run(); err != nil {
+	out, err := cmd.Output()
+	if err != nil {
 		return fmt.Errorf("bead '%s' not found (bd show failed)", beadID)
+	}
+	// bd show returns exit 0 even when bead not found, so check output
+	// Valid output is a JSON array with at least one element
+	out = bytes.TrimSpace(out)
+	if len(out) == 0 || out[0] != '[' {
+		return fmt.Errorf("bead '%s' not found", beadID)
 	}
 	return nil
 }
