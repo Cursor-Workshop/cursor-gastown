@@ -25,6 +25,7 @@ Cursor Gas Town coordinates multiple Cursor agents working on different tasks. W
 - **Hooks** - Git worktree-based persistent storage
 - **Convoys** - Work tracking units bundling multiple tasks
 - **Beads** - Git-backed issue tracking system
+- **Formulas** - Reusable workflow templates (design → implement → test → submit)
 
 ## Installation
 
@@ -39,8 +40,9 @@ Cursor Gas Town coordinates multiple Cursor agents working on different tasks. W
 ### Setup
 
 ```bash
-# Install
+# Install Gas Town and Beads
 go install github.com/Cursor-Workshop/cursor-gastown/cmd/gt@latest
+go install github.com/steveyegge/beads/cmd/bd@latest
 export PATH="$PATH:$HOME/go/bin"
 
 # Create workspace
@@ -52,67 +54,186 @@ gt rig add myproject https://github.com/you/repo.git
 
 # Create crew workspace
 gt crew add yourname --rig myproject
-cd myproject/crew/yourname
 
-# Start Mayor
-gt mayor attach
+# Verify setup
+gt doctor
 ```
 
-## Quick Start
+---
+
+## End-to-End Workflow: From Plan to Done
+
+This is the core workflow. You have work to do—here's how Gas Town handles it.
+
+### Step 1: Define Your Work as Beads
+
+A **bead** is a trackable unit of work (like a GitHub issue, but git-backed).
 
 ```bash
-# 1. Start the Mayor
-gt mayor attach
+# Navigate to your rig
+cd ~/gt/myproject
 
-# 2. Create a convoy
-gt convoy create "Feature X" issue-123 issue-456 --notify --human
+# Create beads for your tasks
+bd create "Add user authentication"           # Creates gt-abc
+bd create "Fix login page styling"            # Creates gt-def
+bd create "Write integration tests"           # Creates gt-ghi
 
-# 3. Assign work
-gt sling issue-123 myproject
+# See your beads
+bd list
+```
 
-# 4. Track progress
+**From a plan file?** If you have a `plan.md` with tasks, create a bead for each:
+
+```bash
+# For each task in your plan:
+bd create "Task 1 from plan"
+bd create "Task 2 from plan"
+# etc.
+```
+
+### Step 2: Group Work into a Convoy
+
+A **convoy** tracks related work and notifies you when it's done.
+
+```bash
+# Create a convoy tracking your beads
+gt convoy create "Auth Feature" gt-abc gt-def gt-ghi --notify
+
+# Output: Created convoy hq-cv-xyz tracking 3 issues
+```
+
+### Step 3: Assign Work to Agents
+
+Use `gt sling` to assign beads to agents. This is **the** command for dispatching work.
+
+```bash
+# Assign to a rig (auto-spawns a polecat worker)
+gt sling gt-abc myproject
+
+# Assign multiple beads (each gets its own worker)
+gt sling gt-abc gt-def gt-ghi myproject
+
+# Assign to a specific worker
+gt sling gt-abc myproject/polecats/Toast
+```
+
+### Step 4: Monitor Progress
+
+```bash
+# See all active convoys
 gt convoy list
 
-# 5. Monitor agents
+# Check convoy status
+gt convoy status hq-cv-xyz
+
+# See active agents
 gt agents
+
+# Attach to Mayor for coordination
+gt mayor attach
 ```
+
+### Step 5: Work Completes Automatically
+
+When agents finish:
+1. Bead status changes to `closed`
+2. Convoy auto-closes when all tracked beads complete
+3. You get notified (if `--notify` was set)
+
+```bash
+# See completed convoys
+gt convoy list --all
+```
+
+---
+
+## Alternative: Using Formulas (Structured Workflows)
+
+Instead of raw beads, use **formulas** for multi-step workflows with dependencies.
+
+```bash
+# List available formulas
+bd formula list
+
+# Use the "shiny" formula (design → implement → review → test → submit)
+gt sling shiny --var feature="User authentication" myproject
+
+# The formula creates beads with proper dependencies
+# Each step waits for its prerequisites
+```
+
+**Built-in formulas:**
+- `shiny` - Full feature workflow (design, implement, review, test, submit)
+- `code-review` - Review existing code
+- `security-audit` - Security-focused review
+- `design` - Design-only phase
+
+---
+
+## Quick Reference
+
+| You want to... | Command |
+|----------------|---------|
+| Create a task | `bd create "Task title"` |
+| See all tasks | `bd list` |
+| Group tasks for tracking | `gt convoy create "Name" bead-1 bead-2` |
+| Assign work to agent | `gt sling bead-id rigname` |
+| See what's in flight | `gt convoy list` |
+| See active agents | `gt agents` |
+| Start the coordinator | `gt mayor attach` |
+| Health check | `gt doctor` |
 
 ## Key Commands
 
-### Workspace
+### Workspace Setup
 
 ```bash
 gt install <path>              # Initialize workspace
 gt rig add <name> <repo>       # Add project
 gt rig list                    # List projects
 gt crew add <name> --rig <rig> # Create crew workspace
+gt doctor                      # Health check
+```
+
+### Work Management (Beads)
+
+```bash
+bd create "Task title"         # Create a bead (task)
+bd list                        # List all beads
+bd show <bead-id>              # Show bead details
+bd close <bead-id>             # Mark complete
+```
+
+### Work Assignment
+
+```bash
+gt sling <bead> <rig>          # Assign work (spawns worker)
+gt sling <bead> <rig>/<worker> # Assign to specific worker
+gt sling <formula> <rig>       # Run formula workflow
+```
+
+### Tracking & Monitoring
+
+```bash
+gt convoy create <name> [beads...]  # Group beads for tracking
+gt convoy list                      # See active convoys
+gt convoy status <id>               # Convoy details
+gt agents                           # List active agents
 ```
 
 ### Agents
 
 ```bash
-gt agents                      # List active agents
-gt sling <issue> <rig>         # Assign work to agent
-gt mayor attach                # Start Mayor session
+gt mayor attach                # Start Mayor (coordinator)
 gt prime                       # Alternative to mayor attach
+gt witness attach <rig>        # Attach to rig monitor
 ```
 
-### Convoys
+### Formulas
 
 ```bash
-gt convoy create <name> [issues...]  # Create convoy
-gt convoy list                       # List all convoys
-gt convoy show [id]                  # Show details
-gt convoy add-issue <issue>          # Add issue
-```
-
-### Beads
-
-```bash
-bd formula list          # List formulas
-bd cook <formula>        # Execute formula
-bd mol pour <formula>    # Create trackable instance
-bd mol list              # List active instances
+bd formula list                # List available formulas
+gt sling <formula> --var key=val <rig>  # Run formula with variables
 ```
 
 ## Dashboard
@@ -156,6 +277,19 @@ gt convoy refresh <convoy-id>
 gt mayor detach
 gt mayor attach
 ```
+
+### General issues
+
+```bash
+gt doctor --fix    # Auto-repair common problems
+gt doctor --verbose  # Detailed diagnostics
+```
+
+## Learn More
+
+- [Understanding Gas Town](docs/understanding-gas-town.md) - Architecture deep dive
+- [Installation Guide](docs/INSTALLING.md) - Detailed setup instructions
+- [Reference](docs/reference.md) - Full command reference
 
 ## Origins
 
