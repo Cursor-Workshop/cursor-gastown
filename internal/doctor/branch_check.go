@@ -1,6 +1,7 @@
 package doctor
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -9,8 +10,8 @@ import (
 )
 
 // BranchCheck detects persistent roles (crew, witness, refinery) that are
-// not on the main branch. Long-lived roles should work directly on main
-// to avoid orphaned work and branch decay.
+// not on the expected branch. The expected branch is read from the rig's
+// config.json default_branch field, falling back to "main".
 type BranchCheck struct {
 	FixableCheck
 	offMainDirs []string // Cached during Run for use in Fix
@@ -22,16 +23,16 @@ func NewBranchCheck() *BranchCheck {
 		FixableCheck: FixableCheck{
 			BaseCheck: BaseCheck{
 				CheckName:        "persistent-role-branches",
-				CheckDescription: "Detect persistent roles not on main branch",
+				CheckDescription: "Detect persistent roles not on expected branch",
 			},
 		},
 	}
 }
 
-// Run checks if persistent role directories are on main branch.
+// Run checks if persistent role directories are on the expected branch.
 func (c *BranchCheck) Run(ctx *CheckContext) *CheckResult {
-	var offMain []string
-	var onMain int
+	var offExpected []string
+	var onExpected int
 
 	// Find all persistent role directories
 	dirs := c.findPersistentRoleDirs(ctx.TownRoot)
@@ -43,10 +44,11 @@ func (c *BranchCheck) Run(ctx *CheckContext) *CheckResult {
 			continue
 		}
 
-		if branch == "main" || branch == "master" {
-			onMain++
+		expectedBranch := c.getExpectedBranch(ctx.TownRoot, dir)
+		if branch == expectedBranch {
+			onExpected++
 		} else {
-			offMain = append(offMain, fmt.Sprintf("%s (on %s)", c.relativePath(ctx.TownRoot, dir), branch))
+			offExpected = append(offExpected, fmt.Sprintf("%s (on %s, expected %s)", c.relativePath(ctx.TownRoot, dir), branch, expectedBranch))
 		}
 	}
 
@@ -57,13 +59,14 @@ func (c *BranchCheck) Run(ctx *CheckContext) *CheckResult {
 		if err != nil {
 			continue
 		}
-		if branch != "main" && branch != "master" {
+		expectedBranch := c.getExpectedBranch(ctx.TownRoot, dir)
+		if branch != expectedBranch {
 			c.offMainDirs = append(c.offMainDirs, dir)
 		}
 	}
 
-	if len(offMain) == 0 {
-		if onMain == 0 {
+	if len(offExpected) == 0 {
+		if onExpected == 0 {
 			return &CheckResult{
 				Name:    c.Name(),
 				Status:  StatusOK,
@@ -73,20 +76,20 @@ func (c *BranchCheck) Run(ctx *CheckContext) *CheckResult {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusOK,
-			Message: fmt.Sprintf("All %d persistent roles on main branch", onMain),
+			Message: fmt.Sprintf("All %d persistent roles on expected branch", onExpected),
 		}
 	}
 
 	return &CheckResult{
 		Name:    c.Name(),
 		Status:  StatusWarning,
-		Message: fmt.Sprintf("%d persistent role(s) not on main branch", len(offMain)),
-		Details: offMain,
-		FixHint: "Run 'gt doctor --fix' to switch to main, or manually: git checkout main && git pull",
+		Message: fmt.Sprintf("%d persistent role(s) not on expected branch", len(offExpected)),
+		Details: offExpected,
+		FixHint: "Run 'gt doctor --fix' to switch to expected branch",
 	}
 }
 
-// Fix switches all off-main directories to main branch.
+// Fix switches all off-branch directories to their expected branch.
 func (c *BranchCheck) Fix(ctx *CheckContext) error {
 	if len(c.offMainDirs) == 0 {
 		return nil
@@ -94,8 +97,10 @@ func (c *BranchCheck) Fix(ctx *CheckContext) error {
 
 	var lastErr error
 	for _, dir := range c.offMainDirs {
-		// git checkout main
-		cmd := exec.Command("git", "checkout", "main")
+		expectedBranch := c.getExpectedBranch(ctx.TownRoot, dir)
+
+		// git checkout <expected-branch>
+		cmd := exec.Command("git", "checkout", expectedBranch)
 		cmd.Dir = dir
 		if err := cmd.Run(); err != nil {
 			lastErr = fmt.Errorf("%s: %w", dir, err)
@@ -112,6 +117,40 @@ func (c *BranchCheck) Fix(ctx *CheckContext) error {
 	}
 
 	return lastErr
+}
+
+// getExpectedBranch returns the expected branch for a directory.
+// It reads the rig's config.json to get default_branch, falling back to "main".
+func (c *BranchCheck) getExpectedBranch(townRoot, dir string) string {
+	relPath, err := filepath.Rel(townRoot, dir)
+	if err != nil {
+		return "main"
+	}
+
+	parts := strings.Split(relPath, string(filepath.Separator))
+	if len(parts) < 1 {
+		return "main"
+	}
+	rigName := parts[0]
+
+	configPath := filepath.Join(townRoot, rigName, "config.json")
+	data, err := os.ReadFile(configPath)
+	if err != nil {
+		return "main"
+	}
+
+	var rigConfig struct {
+		DefaultBranch string `json:"default_branch"`
+	}
+	if err := json.Unmarshal(data, &rigConfig); err != nil {
+		return "main"
+	}
+
+	if rigConfig.DefaultBranch != "" {
+		return rigConfig.DefaultBranch
+	}
+
+	return "main"
 }
 
 // findPersistentRoleDirs finds all directories that should be on main:

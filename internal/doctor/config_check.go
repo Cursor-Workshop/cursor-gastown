@@ -284,6 +284,8 @@ func NewSessionHookCheck() *SessionHookCheck {
 }
 
 // Run checks if all settings.json files use session-start.sh wrapper.
+// NOTE: This check is Claude Code specific. For Cursor CLI, .claude/settings.json
+// files are skipped since Cursor uses .cursor/ directories with different hooks.
 func (c *SessionHookCheck) Run(ctx *CheckContext) *CheckResult {
 	var issues []string
 	var checked int
@@ -292,6 +294,12 @@ func (c *SessionHookCheck) Run(ctx *CheckContext) *CheckResult {
 	settingsFiles := c.findSettingsFiles(ctx.TownRoot)
 
 	for _, settingsPath := range settingsFiles {
+		// Skip .claude/settings.json files - these are Claude Code specific
+		// and don't apply to Cursor CLI which uses .cursor/ directories
+		if strings.Contains(settingsPath, ".claude"+string(filepath.Separator)) {
+			continue
+		}
+
 		relPath, _ := filepath.Rel(ctx.TownRoot, settingsPath)
 
 		problems := c.checkSettingsFile(settingsPath)
@@ -301,6 +309,14 @@ func (c *SessionHookCheck) Run(ctx *CheckContext) *CheckResult {
 			}
 		}
 		checked++
+	}
+
+	if checked == 0 {
+		return &CheckResult{
+			Name:    c.Name(),
+			Status:  StatusOK,
+			Message: "No applicable settings.json files (Cursor mode)",
+		}
 	}
 
 	if len(issues) == 0 {
