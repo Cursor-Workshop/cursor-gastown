@@ -91,14 +91,20 @@ When one provider hits rate limits or has an outage, work continues on other pro
 - Google (Gemini): Grounded context, step-by-step explanations
 - Anthropic (Claude): Conversational style (uses default templates)
 
-### Phase 4: Observability & Analytics (Planned)
+### Phase 4: Observability & Analytics ✅
 
-**Goal**: Measure and compare model performance across roles.
+**Status**: Complete
 
-Deliverables:
-- Metrics collection per task/role/model
-- Web dashboard enhancements
-- `gt council stats`, `gt council compare` commands
+- `internal/council/metrics.go` - Metrics collection and storage
+- `gt council stats` - Show model performance statistics
+- `gt council compare <model1> <model2>` - Compare two models
+
+**Metrics tracked**:
+- Task counts by role/model/provider
+- Success rates and failure counts
+- Duration and cost per task
+- Rate limit hits per provider
+- Cost savings vs single-model baseline
 
 ### Phase 5: Advanced Patterns (Planned)
 

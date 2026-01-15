@@ -7,6 +7,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/gastown/internal/council"
@@ -161,11 +162,41 @@ Examples:
 	RunE: runCouncilTemplates,
 }
 
+var councilStatsCmd = &cobra.Command{
+	Use:   "stats",
+	Short: "Show model performance statistics",
+	Long: `Show performance statistics for models across roles.
+
+Displays metrics including task counts, success rates, costs,
+and model comparisons.
+
+Examples:
+  gt council stats
+  gt council stats --json`,
+	RunE: runCouncilStats,
+}
+
+var councilCompareCmd = &cobra.Command{
+	Use:   "compare <model1> <model2>",
+	Short: "Compare two models",
+	Long: `Compare performance metrics between two models.
+
+Shows differences in success rate, average duration, and cost
+between the specified models.
+
+Examples:
+  gt council compare sonnet-4.5 gpt-5.2
+  gt council compare opus-4.5-thinking sonnet-4.5`,
+	Args: cobra.ExactArgs(2),
+	RunE: runCouncilCompare,
+}
+
 // Flags
 var (
 	councilShowJSON     bool
 	councilRouteComplex string
 	councilInitForce    bool
+	councilStatsJSON    bool
 )
 
 func runCouncilShow(cmd *cobra.Command, args []string) error {
@@ -503,12 +534,148 @@ func runCouncilTemplates(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
+func runCouncilStats(cmd *cobra.Command, args []string) error {
+	townRoot, err := workspace.FindFromCwd()
+	if err != nil {
+		return fmt.Errorf("finding town root: %w", err)
+	}
+
+	store, err := council.NewMetricsStore(townRoot)
+	if err != nil {
+		return fmt.Errorf("loading metrics: %w", err)
+	}
+
+	metrics := store.GetMetrics()
+	summary := store.GetSummary()
+
+	if councilStatsJSON {
+		enc := json.NewEncoder(os.Stdout)
+		enc.SetIndent("", "  ")
+		return enc.Encode(map[string]interface{}{
+			"summary": summary,
+			"metrics": metrics,
+		})
+	}
+
+	// Summary
+	fmt.Printf("%s\n\n", style.Bold.Render("Gas Town Council Statistics"))
+
+	fmt.Printf("%s\n", style.Bold.Render("Summary:"))
+	fmt.Printf("  Total Tasks:     %d\n", summary.TotalTasks)
+	fmt.Printf("  Completed:       %d\n", summary.CompletedTasks)
+	fmt.Printf("  Success Rate:    %.1f%%\n", summary.AvgSuccessRate*100)
+	fmt.Printf("  Total Cost:      $%.2f\n", summary.TotalCost)
+	if summary.CostSavings > 0 {
+		fmt.Printf("  Cost Savings:    %.1f%% %s\n", summary.CostSavings, style.Dim.Render("(vs Opus for all)"))
+	}
+	if summary.TopModel != "" {
+		fmt.Printf("  Top Model:       %s\n", summary.TopModel)
+	}
+
+	// By Role
+	if len(metrics.ByRole) > 0 {
+		fmt.Printf("\n%s\n", style.Bold.Render("By Role:"))
+		for role, rm := range metrics.ByRole {
+			fmt.Printf("  %s: %d tasks, %.1f%% success, $%.2f\n",
+				style.Bold.Render(role),
+				rm.TotalTasks,
+				rm.SuccessRate*100,
+				rm.TotalCost)
+		}
+	}
+
+	// By Model
+	if len(metrics.ByModel) > 0 {
+		fmt.Printf("\n%s\n", style.Bold.Render("By Model:"))
+		for model, mm := range metrics.ByModel {
+			fmt.Printf("  %s: %d tasks, %.1f%% success, avg %v\n",
+				style.Bold.Render(model),
+				mm.TotalTasks,
+				mm.SuccessRate*100,
+				mm.AvgDuration.Round(time.Second))
+		}
+	}
+
+	// By Provider
+	if len(metrics.ByProvider) > 0 {
+		fmt.Printf("\n%s\n", style.Bold.Render("By Provider:"))
+		for provider, pm := range metrics.ByProvider {
+			status := style.Success.Render("healthy")
+			if pm.RateLimitHits > 5 {
+				status = style.Warning.Render("rate limited")
+			}
+			fmt.Printf("  %s: %d tasks, $%.2f, %s\n",
+				style.Bold.Render(provider),
+				pm.TotalTasks,
+				pm.TotalCost,
+				status)
+		}
+	}
+
+	if summary.TotalTasks == 0 {
+		fmt.Printf("\n%s\n", style.Dim.Render("No metrics recorded yet. Run tasks to collect data."))
+	}
+
+	return nil
+}
+
+func runCouncilCompare(cmd *cobra.Command, args []string) error {
+	model1, model2 := args[0], args[1]
+
+	townRoot, err := workspace.FindFromCwd()
+	if err != nil {
+		return fmt.Errorf("finding town root: %w", err)
+	}
+
+	store, err := council.NewMetricsStore(townRoot)
+	if err != nil {
+		return fmt.Errorf("loading metrics: %w", err)
+	}
+
+	comparison := store.CompareModels(model1, model2)
+	if comparison == nil {
+		return fmt.Errorf("insufficient data for comparison (need metrics for both %s and %s)", model1, model2)
+	}
+
+	mm1 := store.GetModelMetrics(model1)
+	mm2 := store.GetModelMetrics(model2)
+
+	fmt.Printf("%s\n\n", style.Bold.Render("Model Comparison: "+model1+" vs "+model2))
+
+	// Side by side comparison
+	fmt.Printf("%-20s %15s %15s %15s\n", "", style.Bold.Render(model1), style.Bold.Render(model2), style.Bold.Render("Diff"))
+	fmt.Printf("%-20s %15d %15d %+15d\n", "Total Tasks", mm1.TotalTasks, mm2.TotalTasks, comparison.TaskDiff)
+	fmt.Printf("%-20s %14.1f%% %14.1f%% %+14.1f%%\n", "Success Rate", mm1.SuccessRate*100, mm2.SuccessRate*100, comparison.SuccessDiff*100)
+	fmt.Printf("%-20s %15s %15s %15s\n", "Avg Duration",
+		mm1.AvgDuration.Round(time.Second).String(),
+		mm2.AvgDuration.Round(time.Second).String(),
+		comparison.DurationDiff.Round(time.Second).String())
+	fmt.Printf("%-20s $%14.2f $%14.2f $%+14.2f\n", "Total Cost", mm1.TotalCost, mm2.TotalCost, comparison.CostDiff)
+
+	// Recommendation
+	fmt.Printf("\n%s ", style.Bold.Render("Recommendation:"))
+	if mm1.SuccessRate > mm2.SuccessRate && mm1.TotalCost <= mm2.TotalCost {
+		fmt.Printf("%s has better success rate at equal or lower cost\n", style.Success.Render(model1))
+	} else if mm2.SuccessRate > mm1.SuccessRate && mm2.TotalCost <= mm1.TotalCost {
+		fmt.Printf("%s has better success rate at equal or lower cost\n", style.Success.Render(model2))
+	} else if mm1.TotalCost < mm2.TotalCost && mm1.SuccessRate >= mm2.SuccessRate*0.95 {
+		fmt.Printf("%s is more cost-effective with similar success rate\n", style.Success.Render(model1))
+	} else if mm2.TotalCost < mm1.TotalCost && mm2.SuccessRate >= mm1.SuccessRate*0.95 {
+		fmt.Printf("%s is more cost-effective with similar success rate\n", style.Success.Render(model2))
+	} else {
+		fmt.Printf("Trade-off depends on priorities (cost vs success rate)\n")
+	}
+
+	return nil
+}
+
 func init() {
 	// Add flags
 	councilShowCmd.Flags().BoolVar(&councilShowJSON, "json", false, "Output as JSON")
 	councilProvidersCmd.Flags().BoolVar(&councilShowJSON, "json", false, "Output as JSON")
 	councilRouteCmd.Flags().StringVar(&councilRouteComplex, "complexity", "", "Task complexity (low, medium, high)")
 	councilInitCmd.Flags().BoolVar(&councilInitForce, "force", false, "Overwrite existing config")
+	councilStatsCmd.Flags().BoolVar(&councilStatsJSON, "json", false, "Output as JSON")
 
 	// Add subcommands
 	councilCmd.AddCommand(councilShowCmd)
@@ -519,6 +686,8 @@ func init() {
 	councilCmd.AddCommand(councilRouteCmd)
 	councilCmd.AddCommand(councilInitCmd)
 	councilCmd.AddCommand(councilTemplatesCmd)
+	councilCmd.AddCommand(councilStatsCmd)
+	councilCmd.AddCommand(councilCompareCmd)
 
 	// Register with root
 	rootCmd.AddCommand(councilCmd)
