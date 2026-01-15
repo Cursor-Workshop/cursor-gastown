@@ -76,18 +76,20 @@ When one provider hits rate limits or has an outage, work continues on other pro
 - `internal/council/fallback.go` - Provider fallback and circuit breaker
 - `internal/cmd/council.go` - CLI commands (`gt council *`)
 
-### Phase 3: Role-Specific Prompting (Planned)
+### Phase 3: Role-Specific Prompting ✅
 
-**Goal**: Optimize instructions for each model family.
+**Status**: Complete
 
-Different models respond differently:
-- Claude prefers conversational style
-- GPT prefers structured formats  
-- Gemini prefers explicit grounding
+- `internal/templates/roles/refinery-openai.md.tmpl` - Structured format for GPT code review
+- `internal/templates/roles/polecat-openai.md.tmpl` - Decision matrix format for GPT workers
+- `internal/templates/roles/witness-google.md.tmpl` - Explicit grounding for Gemini monitoring
+- `internal/templates/templates.go` - Provider-aware template selection
+- `gt council templates` - Show available provider templates
 
-Deliverables:
-- Model-specific template variants in `internal/templates/roles/`
-- `polecat-openai.md.tmpl`, `refinery-openai.md.tmpl`
+**Key insight**: Different models respond better to different prompt styles:
+- OpenAI (GPT): Structured formats, decision matrices, explicit constraints
+- Google (Gemini): Grounded context, step-by-step explanations
+- Anthropic (Claude): Conversational style (uses default templates)
 
 ### Phase 4: Observability & Analytics (Planned)
 
