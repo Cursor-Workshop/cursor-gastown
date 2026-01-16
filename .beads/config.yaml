@@ -13,7 +13,7 @@
 # instead of SQLite database
 # NOTE: Enabled due to beads bug where valid_issue_types config isn't respected
 # during SQLite import. JSONL mode works correctly. See cursor-integration-issues.md
-no-db: true
+no-db: false
 
 # Disable daemon for RPC communication (forces direct database access)
 # no-daemon: false
