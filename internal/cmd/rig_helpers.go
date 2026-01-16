@@ -3,11 +3,11 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/steveyegge/gastown/internal/config"
-	"github.com/steveyegge/gastown/internal/constants"
-	"github.com/steveyegge/gastown/internal/git"
-	"github.com/steveyegge/gastown/internal/rig"
-	"github.com/steveyegge/gastown/internal/workspace"
+	"github.com/cursorworkshop/cursor-gastown/internal/config"
+	"github.com/cursorworkshop/cursor-gastown/internal/constants"
+	"github.com/cursorworkshop/cursor-gastown/internal/git"
+	"github.com/cursorworkshop/cursor-gastown/internal/rig"
+	"github.com/cursorworkshop/cursor-gastown/internal/workspace"
 )
 
 // getRig finds the town root and retrieves the specified rig.

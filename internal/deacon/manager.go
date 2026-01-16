@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/claude"
-	"github.com/steveyegge/gastown/internal/config"
-	"github.com/steveyegge/gastown/internal/constants"
-	"github.com/steveyegge/gastown/internal/session"
-	"github.com/steveyegge/gastown/internal/tmux"
+	"github.com/cursorworkshop/cursor-gastown/internal/claude"
+	"github.com/cursorworkshop/cursor-gastown/internal/config"
+	"github.com/cursorworkshop/cursor-gastown/internal/constants"
+	"github.com/cursorworkshop/cursor-gastown/internal/session"
+	"github.com/cursorworkshop/cursor-gastown/internal/tmux"
 )
 
 // Common errors

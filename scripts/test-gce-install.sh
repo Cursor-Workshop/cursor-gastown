@@ -3,7 +3,7 @@
 #
 # Usage:
 #   # Create a fresh Debian/Ubuntu VM on GCE, then:
-#   curl -fsSL https://raw.githubusercontent.com/steveyegge/gastown/main/scripts/test-gce-install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/cursorworkshop/cursor-gastown/main/scripts/test-gce-install.sh | bash
 #
 #   # Or clone and run locally:
 #   ./scripts/test-gce-install.sh
@@ -103,7 +103,7 @@ fi
 # ============================================
 log "Installing Gas Town (gt)..."
 
-go install github.com/steveyegge/gastown/cmd/gt@latest
+go install github.com/cursorworkshop/cursor-gastown/cmd/gt@latest
 
 if command -v gt &> /dev/null; then
     check "gt installed: $(gt --version 2>/dev/null || echo 'version unknown')"

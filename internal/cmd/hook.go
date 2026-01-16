@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/steveyegge/gastown/internal/beads"
-	"github.com/steveyegge/gastown/internal/events"
-	"github.com/steveyegge/gastown/internal/style"
+	"github.com/cursorworkshop/cursor-gastown/internal/beads"
+	"github.com/cursorworkshop/cursor-gastown/internal/events"
+	"github.com/cursorworkshop/cursor-gastown/internal/style"
 )
 
 var hookCmd = &cobra.Command{

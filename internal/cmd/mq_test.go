@@ -3,7 +3,7 @@ package cmd
 import (
 	"testing"
 
-	"github.com/steveyegge/gastown/internal/beads"
+	"github.com/cursorworkshop/cursor-gastown/internal/beads"
 )
 
 func TestAddIntegrationBranchField(t *testing.T) {

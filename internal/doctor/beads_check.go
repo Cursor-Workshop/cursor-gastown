@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/steveyegge/gastown/internal/beads"
+	"github.com/cursorworkshop/cursor-gastown/internal/beads"
 )
 
 // BeadsDatabaseCheck verifies that the beads database is properly initialized.

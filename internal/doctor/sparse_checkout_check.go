@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/steveyegge/gastown/internal/git"
+	"github.com/cursorworkshop/cursor-gastown/internal/git"
 )
 
 // SparseCheckoutCheck verifies that git clones/worktrees have sparse checkout configured

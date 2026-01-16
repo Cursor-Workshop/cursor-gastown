@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/steveyegge/gastown/internal/config"
-	"github.com/steveyegge/gastown/internal/constants"
-	"github.com/steveyegge/gastown/internal/crew"
-	"github.com/steveyegge/gastown/internal/style"
-	"github.com/steveyegge/gastown/internal/tmux"
-	"github.com/steveyegge/gastown/internal/workspace"
+	"github.com/cursorworkshop/cursor-gastown/internal/config"
+	"github.com/cursorworkshop/cursor-gastown/internal/constants"
+	"github.com/cursorworkshop/cursor-gastown/internal/crew"
+	"github.com/cursorworkshop/cursor-gastown/internal/style"
+	"github.com/cursorworkshop/cursor-gastown/internal/tmux"
+	"github.com/cursorworkshop/cursor-gastown/internal/workspace"
 )
 
 func runCrewAt(cmd *cobra.Command, args []string) error {

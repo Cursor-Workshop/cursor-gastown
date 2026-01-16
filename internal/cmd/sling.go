@@ -13,15 +13,15 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/steveyegge/gastown/internal/beads"
-	"github.com/steveyegge/gastown/internal/config"
-	"github.com/steveyegge/gastown/internal/constants"
-	"github.com/steveyegge/gastown/internal/dog"
-	"github.com/steveyegge/gastown/internal/events"
-	"github.com/steveyegge/gastown/internal/session"
-	"github.com/steveyegge/gastown/internal/style"
-	"github.com/steveyegge/gastown/internal/tmux"
-	"github.com/steveyegge/gastown/internal/workspace"
+	"github.com/cursorworkshop/cursor-gastown/internal/beads"
+	"github.com/cursorworkshop/cursor-gastown/internal/config"
+	"github.com/cursorworkshop/cursor-gastown/internal/constants"
+	"github.com/cursorworkshop/cursor-gastown/internal/dog"
+	"github.com/cursorworkshop/cursor-gastown/internal/events"
+	"github.com/cursorworkshop/cursor-gastown/internal/session"
+	"github.com/cursorworkshop/cursor-gastown/internal/style"
+	"github.com/cursorworkshop/cursor-gastown/internal/tmux"
+	"github.com/cursorworkshop/cursor-gastown/internal/workspace"
 )
 
 type wispCreateJSON struct {
@@ -441,7 +441,7 @@ func runSling(cmd *cobra.Command, args []string) error {
 	}
 
 	// Hook the bead using bd update.
-	// See: https://github.com/steveyegge/gastown/issues/148
+	// See: https://github.com/cursorworkshop/cursor-gastown/issues/148
 	hookCmd := exec.Command("bd", "--no-daemon", "update", beadID, "--status=hooked", "--assignee="+targetAgent)
 	hookCmd.Dir = beads.ResolveHookDir(townRoot, beadID, hookWorkDir)
 	hookCmd.Stderr = os.Stderr
@@ -977,7 +977,7 @@ func runSlingFormula(args []string) error {
 	fmt.Printf("%s Wisp created: %s\n", style.Bold.Render("OK"), wispRootID)
 
 	// Step 3: Hook the wisp bead using bd update.
-	// See: https://github.com/steveyegge/gastown/issues/148
+	// See: https://github.com/cursorworkshop/cursor-gastown/issues/148
 	hookCmd := exec.Command("bd", "--no-daemon", "update", wispRootID, "--status=hooked", "--assignee="+targetAgent)
 	hookCmd.Dir = beads.ResolveHookDir(townRoot, wispRootID, "")
 	hookCmd.Stderr = os.Stderr
@@ -1468,7 +1468,7 @@ func runBatchSling(beadIDs []string, rigName string, townBeadsDir string) error 
 			}
 		}
 
-		// Hook the bead. See: https://github.com/steveyegge/gastown/issues/148
+		// Hook the bead. See: https://github.com/cursorworkshop/cursor-gastown/issues/148
 		townRoot := filepath.Dir(townBeadsDir)
 		hookCmd := exec.Command("bd", "--no-daemon", "update", beadID, "--status=hooked", "--assignee="+targetAgent)
 		hookCmd.Dir = beads.ResolveHookDir(townRoot, beadID, hookWorkDir)

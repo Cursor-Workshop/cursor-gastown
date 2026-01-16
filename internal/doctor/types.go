@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/style"
+	"github.com/cursorworkshop/cursor-gastown/internal/style"
 )
 
 // CheckStatus represents the result status of a health check.

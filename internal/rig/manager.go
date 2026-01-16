@@ -11,12 +11,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/beads"
-	"github.com/steveyegge/gastown/internal/claude"
-	"github.com/steveyegge/gastown/internal/config"
-	"github.com/steveyegge/gastown/internal/git"
-	"github.com/steveyegge/gastown/internal/templates"
-	"github.com/steveyegge/gastown/internal/workspace"
+	"github.com/cursorworkshop/cursor-gastown/internal/beads"
+	"github.com/cursorworkshop/cursor-gastown/internal/claude"
+	"github.com/cursorworkshop/cursor-gastown/internal/config"
+	"github.com/cursorworkshop/cursor-gastown/internal/git"
+	"github.com/cursorworkshop/cursor-gastown/internal/templates"
+	"github.com/cursorworkshop/cursor-gastown/internal/workspace"
 )
 
 // Common errors

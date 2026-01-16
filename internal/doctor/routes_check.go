@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/steveyegge/gastown/internal/beads"
-	"github.com/steveyegge/gastown/internal/config"
+	"github.com/cursorworkshop/cursor-gastown/internal/beads"
+	"github.com/cursorworkshop/cursor-gastown/internal/config"
 )
 
 // RoutesCheck verifies that beads routing is properly configured.

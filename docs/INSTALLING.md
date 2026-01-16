@@ -76,7 +76,7 @@ tmux -V           # (Optional) Should show 3.0 or higher
 
 ```bash
 # Install Gas Town CLI
-go install github.com/steveyegge/gastown/cmd/gt@latest
+go install github.com/cursorworkshop/cursor-gastown/cmd/gt@latest
 
 # Install Beads (issue tracker)
 go install github.com/steveyegge/beads/cmd/bd@latest
@@ -280,7 +280,7 @@ bd doctor                  # Run beads health check
 To update Gas Town and Beads:
 
 ```bash
-go install github.com/steveyegge/gastown/cmd/gt@latest
+go install github.com/cursorworkshop/cursor-gastown/cmd/gt@latest
 go install github.com/steveyegge/beads/cmd/bd@latest
 gt doctor --fix            # Fix any post-update issues
 ```

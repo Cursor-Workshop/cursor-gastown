@@ -12,7 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/steveyegge/gastown/internal/beads"
+	"github.com/cursorworkshop/cursor-gastown/internal/beads"
 )
 
 // setupRoutingTestTown creates a minimal Gas Town with multiple rigs for testing routing.
@@ -445,7 +445,7 @@ func TestBeadsRemoveRoute(t *testing.T) {
 
 // TestSlingCrossRigRoutingResolution verifies that sling can resolve rig paths
 // for cross-rig bead hooking using ExtractPrefix and GetRigPathForPrefix.
-// This is the fix for https://github.com/steveyegge/gastown/issues/148
+// This is the fix for https://github.com/cursorworkshop/cursor-gastown/issues/148
 func TestSlingCrossRigRoutingResolution(t *testing.T) {
 	townRoot := setupRoutingTestTown(t)
 

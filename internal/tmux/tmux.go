@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/constants"
+	"github.com/cursorworkshop/cursor-gastown/internal/constants"
 )
 
 // Common errors
@@ -849,7 +849,7 @@ func (t *Tmux) SetTownCycleBindings(session string) error {
 // IMPORTANT: These bindings are conditional - they only run gt cycle for
 // Gas Town sessions (those starting with "gt-" or "hq-"). For non-GT sessions,
 // the default tmux behavior (next-window/previous-window) is preserved.
-// See: https://github.com/steveyegge/gastown/issues/13
+// See: https://github.com/cursorworkshop/cursor-gastown/issues/13
 //
 // IMPORTANT: We pass #{session_name} to the command because run-shell doesn't
 // reliably preserve the session context. tmux expands #{session_name} at binding
@@ -879,7 +879,7 @@ func (t *Tmux) SetCycleBindings(session string) error {
 //
 // IMPORTANT: This binding is conditional - it only runs for Gas Town sessions
 // (those starting with "gt-" or "hq-"). For non-GT sessions, a help message is shown.
-// See: https://github.com/steveyegge/gastown/issues/13
+// See: https://github.com/cursorworkshop/cursor-gastown/issues/13
 func (t *Tmux) SetFeedBinding(session string) error {
 	// C-b a → gt feed --window for GT sessions, help message otherwise
 	_, err := t.run("bind-key", "-T", "prefix", "a",

@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/rig"
+	"github.com/cursorworkshop/cursor-gastown/internal/rig"
 )
 
 func setupTestManager(t *testing.T) (*Manager, string) {

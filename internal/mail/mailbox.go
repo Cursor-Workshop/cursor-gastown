@@ -11,7 +11,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/beads"
+	"github.com/cursorworkshop/cursor-gastown/internal/beads"
 )
 
 // timeNow is a function that returns the current time. It can be overridden in tests.

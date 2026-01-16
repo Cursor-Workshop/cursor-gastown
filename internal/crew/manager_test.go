@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/steveyegge/gastown/internal/git"
-	"github.com/steveyegge/gastown/internal/rig"
+	"github.com/cursorworkshop/cursor-gastown/internal/git"
+	"github.com/cursorworkshop/cursor-gastown/internal/rig"
 )
 
 func TestManagerAddAndGet(t *testing.T) {

@@ -4,11 +4,11 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/steveyegge/gastown/internal/refinery"
-	"github.com/steveyegge/gastown/internal/style"
-	"github.com/steveyegge/gastown/internal/tmux"
-	"github.com/steveyegge/gastown/internal/wisp"
-	"github.com/steveyegge/gastown/internal/witness"
+	"github.com/cursorworkshop/cursor-gastown/internal/refinery"
+	"github.com/cursorworkshop/cursor-gastown/internal/style"
+	"github.com/cursorworkshop/cursor-gastown/internal/tmux"
+	"github.com/cursorworkshop/cursor-gastown/internal/wisp"
+	"github.com/cursorworkshop/cursor-gastown/internal/witness"
 )
 
 // RigStatusKey is the wisp config key for rig operational status.

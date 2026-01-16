@@ -2,9 +2,9 @@
 package agent
 
 import (
-	"github.com/steveyegge/gastown/internal/claude"
-	"github.com/steveyegge/gastown/internal/config"
-	"github.com/steveyegge/gastown/internal/cursor"
+	"github.com/cursorworkshop/cursor-gastown/internal/claude"
+	"github.com/cursorworkshop/cursor-gastown/internal/config"
+	"github.com/cursorworkshop/cursor-gastown/internal/cursor"
 )
 
 // EnsureSettingsForRole ensures agent settings exist for the given agent preset and role.

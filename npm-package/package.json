@@ -23,13 +23,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/steveyegge/gastown.git",
+    "url": "https://github.com/cursorworkshop/cursor-gastown.git",
     "directory": "npm-package"
   },
   "bugs": {
-    "url": "https://github.com/steveyegge/gastown/issues"
+    "url": "https://github.com/cursorworkshop/cursor-gastown/issues"
   },
-  "homepage": "https://github.com/steveyegge/gastown#readme",
+  "homepage": "https://github.com/cursorworkshop/cursor-gastown#readme",
   "engines": {
     "node": ">=14.0.0"
   },

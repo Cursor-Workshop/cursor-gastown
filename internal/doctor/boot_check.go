@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/boot"
+	"github.com/cursorworkshop/cursor-gastown/internal/boot"
 )
 
 // BootHealthCheck verifies Boot watchdog health.

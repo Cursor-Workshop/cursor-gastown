@@ -8,9 +8,9 @@ VERSION := $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev
 COMMIT := $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 BUILD_TIME := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-LDFLAGS := -X github.com/steveyegge/gastown/internal/cmd.Version=$(VERSION) \
-           -X github.com/steveyegge/gastown/internal/cmd.Commit=$(COMMIT) \
-           -X github.com/steveyegge/gastown/internal/cmd.BuildTime=$(BUILD_TIME)
+LDFLAGS := -X github.com/cursorworkshop/cursor-gastown/internal/cmd.Version=$(VERSION) \
+           -X github.com/cursorworkshop/cursor-gastown/internal/cmd.Commit=$(COMMIT) \
+           -X github.com/cursorworkshop/cursor-gastown/internal/cmd.BuildTime=$(BUILD_TIME)
 
 # macOS: Disable CGO and avoid Security.framework hangs
 # The x509usefallbackroots=1 tells Go to use embedded cert roots instead of

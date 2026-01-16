@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/boot"
-	"github.com/steveyegge/gastown/internal/tmux"
+	"github.com/cursorworkshop/cursor-gastown/internal/boot"
+	"github.com/cursorworkshop/cursor-gastown/internal/tmux"
 )
 
 // TownSession represents a town-level tmux session.

@@ -3,7 +3,7 @@ package web
 import (
 	"testing"
 
-	"github.com/steveyegge/gastown/internal/activity"
+	"github.com/cursorworkshop/cursor-gastown/internal/activity"
 )
 
 func TestCalculateWorkStatus(t *testing.T) {

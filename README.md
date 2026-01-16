@@ -41,7 +41,7 @@ Cursor Gas Town coordinates multiple Cursor agents working on different tasks. W
 
 ```bash
 # Install Gas Town and Beads
-go install github.com/Cursor-Workshop/cursor-gastown/cmd/gt@latest
+go install github.com/cursorworkshop/cursor-gastown/cmd/gt@latest
 go install github.com/steveyegge/beads/cmd/bd@latest
 export PATH="$PATH:$HOME/go/bin"
 

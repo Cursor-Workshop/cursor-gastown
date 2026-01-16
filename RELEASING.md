@@ -24,7 +24,7 @@ A Gas Town release involves multiple distribution channels:
 
 ### Required Tools
 
-- `git` with push access to steveyegge/gastown
+- `git` with push access to cursorworkshop/cursor-gastown
 - `goreleaser` for building binaries
 - `npm` with authentication (for npm releases)
 - `gh` CLI (GitHub CLI, recommended)
@@ -38,7 +38,7 @@ A Gas Town release involves multiple distribution channels:
 
 ```bash
 # Check git
-git remote -v  # Should show steveyegge/gastown
+git remote -v  # Should show cursorworkshop/cursor-gastown
 
 # Check goreleaser
 goreleaser --version
@@ -136,7 +136,7 @@ This will:
 
 ### Verify GitHub Release
 
-1. Visit https://github.com/steveyegge/gastown/releases
+1. Visit https://github.com/cursorworkshop/cursor-gastown/releases
 2. Verify the new version is marked as "Latest"
 3. Check all platform binaries are present
 
@@ -185,7 +185,7 @@ After all channels are updated:
 
 ```bash
 # Download and test binary
-curl -LO https://github.com/steveyegge/gastown/releases/download/v0.2.0/gastown_0.2.0_darwin_arm64.tar.gz
+curl -LO https://github.com/cursorworkshop/cursor-gastown/releases/download/v0.2.0/gastown_0.2.0_darwin_arm64.tar.gz
 tar -xzf gastown_0.2.0_darwin_arm64.tar.gz
 ./gt version
 ```
@@ -234,5 +234,5 @@ Gas Town follows [Semantic Versioning](https://semver.org/):
 
 ## Questions?
 
-- Open an issue: https://github.com/steveyegge/gastown/issues
-- Check existing releases: https://github.com/steveyegge/gastown/releases
+- Open an issue: https://github.com/cursorworkshop/cursor-gastown/issues
+- Check existing releases: https://github.com/cursorworkshop/cursor-gastown/releases

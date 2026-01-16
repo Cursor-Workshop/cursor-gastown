@@ -98,7 +98,7 @@ Each rig has an identity bead for operational state:
 id: gt-rig-gastown
 type: rig
 name: gastown
-repo: git@github.com:steveyegge/gastown.git
+repo: git@github.com:cursorworkshop/cursor-gastown.git
 prefix: gt
 
 labels:

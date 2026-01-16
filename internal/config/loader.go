@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/constants"
+	"github.com/cursorworkshop/cursor-gastown/internal/constants"
 )
 
 var (

@@ -5,7 +5,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/steveyegge/gastown/internal/cmd"
+	"github.com/cursorworkshop/cursor-gastown/internal/cmd"
 )
 
 func init() {

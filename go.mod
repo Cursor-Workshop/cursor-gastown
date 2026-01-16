@@ -1,4 +1,4 @@
-module github.com/steveyegge/gastown
+module github.com/cursorworkshop/cursor-gastown
 
 go 1.24.2
 

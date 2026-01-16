@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/steveyegge/gastown/internal/mrqueue"
+	"github.com/cursorworkshop/cursor-gastown/internal/mrqueue"
 )
 
 func TestParseMQEventLine(t *testing.T) {

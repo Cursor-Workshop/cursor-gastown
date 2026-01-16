@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/steveyegge/gastown/internal/style"
+	"github.com/cursorworkshop/cursor-gastown/internal/style"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )

@@ -4,7 +4,7 @@ package witness
 import (
 	"time"
 
-	"github.com/steveyegge/gastown/internal/agent"
+	"github.com/cursorworkshop/cursor-gastown/internal/agent"
 )
 
 // State is an alias for agent.State for backwards compatibility.

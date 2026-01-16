@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/steveyegge/gastown/internal/config"
+	"github.com/cursorworkshop/cursor-gastown/internal/config"
 )
 
 // RigIsGitRepoCheck verifies the rig has a valid mayor/rig git clone.

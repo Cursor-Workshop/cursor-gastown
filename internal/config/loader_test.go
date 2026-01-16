@@ -44,7 +44,7 @@ func TestRigsConfigRoundTrip(t *testing.T) {
 		Version: 1,
 		Rigs: map[string]RigEntry{
 			"gastown": {
-				GitURL:    "git@github.com:steveyegge/gastown.git",
+				GitURL:    "git@github.com:cursorworkshop/cursor-gastown.git",
 				LocalRepo: "/tmp/local-repo",
 				AddedAt:   time.Now().Truncate(time.Second),
 				BeadsConfig: &BeadsConfig{
