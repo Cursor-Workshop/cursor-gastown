@@ -63,7 +63,7 @@ func TestEnsureHooks_ScriptsCreated(t *testing.T) {
 	scripts := []string{
 		"gastown-prompt.sh",
 		"gastown-stop.sh",
-		"gastown-audit.sh",
+		"gastown-shell.sh",
 	}
 
 	for _, script := range scripts {

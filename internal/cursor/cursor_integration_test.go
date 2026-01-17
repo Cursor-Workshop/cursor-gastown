@@ -52,7 +52,7 @@ func TestCursorConfigurationSetup(t *testing.T) {
 		}
 
 		// Verify hook scripts
-		scripts := []string{"gastown-prompt.sh", "gastown-stop.sh", "gastown-audit.sh"}
+		scripts := []string{"gastown-prompt.sh", "gastown-stop.sh", "gastown-shell.sh"}
 		for _, script := range scripts {
 			scriptPath := filepath.Join(workDir, ".cursor", "hooks", script)
 			info, err := os.Stat(scriptPath)

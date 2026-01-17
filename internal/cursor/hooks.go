@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-//go:embed config/hooks.json config/gastown-prompt.sh config/gastown-stop.sh config/gastown-audit.sh
+//go:embed config/hooks.json config/gastown-prompt.sh config/gastown-stop.sh config/gastown-shell.sh
 var hooksFS embed.FS
 
 // HooksConfig represents the structure of Cursor's hooks.json
@@ -48,7 +48,7 @@ func EnsureHooks(workDir string) error {
 	hookScripts := []string{
 		"gastown-prompt.sh",
 		"gastown-stop.sh",
-		"gastown-audit.sh",
+		"gastown-shell.sh",
 	}
 
 	for _, script := range hookScripts {
