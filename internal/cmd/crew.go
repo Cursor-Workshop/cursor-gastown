@@ -328,7 +328,7 @@ func init() {
 	crewAtCmd.Flags().StringVar(&crewRig, "rig", "", "Rig to use")
 	crewAtCmd.Flags().BoolVar(&crewNoTmux, "no-tmux", false, "Just print directory path")
 	crewAtCmd.Flags().BoolVarP(&crewDetached, "detached", "d", false, "Start session without attaching")
-	crewAtCmd.Flags().StringVar(&crewAccount, "account", "", "Claude Code account handle to use (overrides default)")
+	crewAtCmd.Flags().StringVar(&crewAccount, "account", "", "Cursor account handle to use (overrides default)")
 	crewAtCmd.Flags().StringVar(&crewAgentOverride, "agent", "", "Agent alias to run crew worker with (overrides rig/town default)")
 
 	crewRemoveCmd.Flags().StringVar(&crewRig, "rig", "", "Rig to use")
@@ -351,7 +351,7 @@ func init() {
 	crewRestartCmd.Flags().BoolVar(&crewDryRun, "dry-run", false, "Show what would be restarted without restarting")
 
 	crewStartCmd.Flags().BoolVar(&crewAll, "all", false, "Start all crew members in the rig")
-	crewStartCmd.Flags().StringVar(&crewAccount, "account", "", "Claude Code account handle to use")
+	crewStartCmd.Flags().StringVar(&crewAccount, "account", "", "Cursor account handle to use")
 	crewStartCmd.Flags().StringVar(&crewAgentOverride, "agent", "", "Agent alias to run crew worker with (overrides rig/town default)")
 
 	crewStopCmd.Flags().StringVar(&crewRig, "rig", "", "Rig to use (filter when using --all)")

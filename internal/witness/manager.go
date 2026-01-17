@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/cursorworkshop/cursor-gastown/internal/agent"
-	"github.com/cursorworkshop/cursor-gastown/internal/claude"
 	"github.com/cursorworkshop/cursor-gastown/internal/config"
+	"github.com/cursorworkshop/cursor-gastown/internal/cursor"
 	"github.com/cursorworkshop/cursor-gastown/internal/constants"
 	"github.com/cursorworkshop/cursor-gastown/internal/rig"
 	"github.com/cursorworkshop/cursor-gastown/internal/session"
@@ -144,11 +144,11 @@ func (m *Manager) Start(foreground bool) error {
 	// Working directory
 	witnessDir := m.witnessDir()
 
-	// Ensure Claude settings exist in witness/ (not witness/rig/) so we don't
-	// write into the source repo. Claude walks up the tree to find settings.
+	// Ensure Cursor settings exist in witness/ (not witness/rig/) so we don't
+	// write into the source repo. Cursor walks up the tree to find settings.
 	witnessParentDir := filepath.Join(m.rig.Path, "witness")
-	if err := claude.EnsureSettingsForRole(witnessParentDir, "witness"); err != nil {
-		return fmt.Errorf("ensuring Claude settings: %w", err)
+	if err := cursor.EnsureSettingsForRole(witnessParentDir, "witness"); err != nil {
+		return fmt.Errorf("ensuring Cursor settings: %w", err)
 	}
 
 	// Create new tmux session

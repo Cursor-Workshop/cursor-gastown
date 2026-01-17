@@ -199,7 +199,7 @@ Sessions cycle for these reasons:
 | Trigger | Action | Result |
 |---------|--------|--------|
 | `gt handoff` | Voluntary | Clean cycle to fresh context |
-| Context compaction | Automatic | Forced by Claude Code |
+| Context compaction | Automatic | Forced by Cursor |
 | Crash/timeout | Failure | Witness respawns |
 | `gt done` | Completion | Session exits, Witness takes over |
 

@@ -84,7 +84,7 @@ func Write(polecatDir string, cp *Checkpoint) error {
 
 	// Set session ID from environment if available
 	if cp.SessionID == "" {
-		cp.SessionID = os.Getenv("CLAUDE_SESSION_ID")
+		cp.SessionID = os.Getenv("CURSOR_SESSION_ID")
 		if cp.SessionID == "" {
 			cp.SessionID = fmt.Sprintf("pid-%d", os.Getpid())
 		}

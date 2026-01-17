@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/cursorworkshop/cursor-gastown/internal/claude"
+	"github.com/cursorworkshop/cursor-gastown/internal/cursor"
 	"github.com/cursorworkshop/cursor-gastown/internal/session"
 	"github.com/cursorworkshop/cursor-gastown/internal/templates"
 	"github.com/cursorworkshop/cursor-gastown/internal/tmux"
@@ -25,9 +25,9 @@ const (
 	gitStatusUnknown         gitFileStatus = "unknown"          // Not in a git repo or error
 )
 
-// ClaudeSettingsCheck verifies that Claude settings.json files match the expected templates.
+// CursorSettingsCheck verifies that Cursor settings files match the expected templates.
 // Detects stale settings files that are missing required hooks or configuration.
-type ClaudeSettingsCheck struct {
+type CursorSettingsCheck struct {
 	FixableCheck
 	staleSettings []staleSettingsInfo
 }
@@ -42,20 +42,20 @@ type staleSettingsInfo struct {
 	gitStatus     gitFileStatus // Git status for wrong-location files (for safe deletion)
 }
 
-// NewClaudeSettingsCheck creates a new Claude settings validation check.
-func NewClaudeSettingsCheck() *ClaudeSettingsCheck {
-	return &ClaudeSettingsCheck{
+// NewCursorSettingsCheck creates a new Cursor settings validation check.
+func NewCursorSettingsCheck() *CursorSettingsCheck {
+	return &CursorSettingsCheck{
 		FixableCheck: FixableCheck{
 			BaseCheck: BaseCheck{
-				CheckName:        "claude-settings",
-				CheckDescription: "Verify Claude settings.json files match expected templates",
+				CheckName:        "cursor-settings",
+				CheckDescription: "Verify Cursor settings files match expected templates",
 			},
 		},
 	}
 }
 
-// Run checks all Claude settings.json files for staleness.
-func (c *ClaudeSettingsCheck) Run(ctx *CheckContext) *CheckResult {
+// Run checks all Cursor settings files for staleness.
+func (c *CursorSettingsCheck) Run(ctx *CheckContext) *CheckResult {
 	c.staleSettings = nil
 
 	var details []string
@@ -101,7 +101,7 @@ func (c *ClaudeSettingsCheck) Run(ctx *CheckContext) *CheckResult {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusOK,
-			Message: "All Claude settings.json files are up to date",
+			Message: "All Cursor settings files are up to date",
 		}
 	}
 
@@ -113,20 +113,20 @@ func (c *ClaudeSettingsCheck) Run(ctx *CheckContext) *CheckResult {
 	return &CheckResult{
 		Name:    c.Name(),
 		Status:  StatusError,
-		Message: fmt.Sprintf("Found %d stale Claude config file(s) in wrong location", len(c.staleSettings)),
+		Message: fmt.Sprintf("Found %d stale Cursor config file(s) in wrong location", len(c.staleSettings)),
 		Details: details,
 		FixHint: fixHint,
 	}
 }
 
-// findSettingsFiles locates all .claude/settings.json files and identifies their agent type.
-func (c *ClaudeSettingsCheck) findSettingsFiles(townRoot string) []staleSettingsInfo {
+// findSettingsFiles locates all .cursor/ settings files and identifies their agent type.
+func (c *CursorSettingsCheck) findSettingsFiles(townRoot string) []staleSettingsInfo {
 	var files []staleSettingsInfo
 
-	// Check for STALE settings at town root (~/gt/.claude/settings.json)
+	// Check for STALE settings at town root (~/gt/.cursor/)
 	// This is WRONG - settings here pollute ALL child workspaces via directory traversal.
-	// Mayor settings should be at ~/gt/mayor/.claude/ instead.
-	staleTownRootSettings := filepath.Join(townRoot, ".claude", "settings.json")
+	// Mayor settings should be at ~/gt/mayor/.cursor/ instead.
+	staleTownRootSettings := filepath.Join(townRoot, ".cursor", "hooks.json")
 	if fileExists(staleTownRootSettings) {
 		files = append(files, staleSettingsInfo{
 			path:          staleTownRootSettings,
@@ -134,7 +134,7 @@ func (c *ClaudeSettingsCheck) findSettingsFiles(townRoot string) []staleSettings
 			sessionName:   "hq-mayor",
 			wrongLocation: true,
 			gitStatus:     c.getGitFileStatus(staleTownRootSettings),
-			missing:       []string{"should be at mayor/.claude/settings.json, not town root"},
+			missing:       []string{"should be at mayor/.cursor/, not town root"},
 		})
 	}
 
@@ -154,8 +154,8 @@ func (c *ClaudeSettingsCheck) findSettingsFiles(townRoot string) []staleSettings
 		})
 	}
 
-	// Town-level: mayor (~/gt/mayor/.claude/settings.json) - CORRECT location
-	mayorSettings := filepath.Join(townRoot, "mayor", ".claude", "settings.json")
+	// Town-level: mayor (~/gt/mayor/.cursor/hooks.json) - CORRECT location
+	mayorSettings := filepath.Join(townRoot, "mayor", ".cursor", "hooks.json")
 	if fileExists(mayorSettings) {
 		files = append(files, staleSettingsInfo{
 			path:        mayorSettings,
@@ -164,8 +164,8 @@ func (c *ClaudeSettingsCheck) findSettingsFiles(townRoot string) []staleSettings
 		})
 	}
 
-	// Town-level: deacon (~/gt/deacon/.claude/settings.json)
-	deaconSettings := filepath.Join(townRoot, "deacon", ".claude", "settings.json")
+	// Town-level: deacon (~/gt/deacon/.cursor/hooks.json)
+	deaconSettings := filepath.Join(townRoot, "deacon", ".cursor", "hooks.json")
 	if fileExists(deaconSettings) {
 		files = append(files, staleSettingsInfo{
 			path:        deaconSettings,
@@ -194,9 +194,9 @@ func (c *ClaudeSettingsCheck) findSettingsFiles(townRoot string) []staleSettings
 			continue
 		}
 
-		// Check for witness settings - witness/.claude/ is correct (outside git repo)
-		// Settings in witness/rig/.claude/ are wrong (inside source repo)
-		witnessSettings := filepath.Join(rigPath, "witness", ".claude", "settings.json")
+		// Check for witness settings - witness/.cursor/ is correct (outside git repo)
+		// Settings in witness/rig/.cursor/ are wrong (inside source repo)
+		witnessSettings := filepath.Join(rigPath, "witness", ".cursor", "hooks.json")
 		if fileExists(witnessSettings) {
 			files = append(files, staleSettingsInfo{
 				path:        witnessSettings,
@@ -205,7 +205,7 @@ func (c *ClaudeSettingsCheck) findSettingsFiles(townRoot string) []staleSettings
 				sessionName: fmt.Sprintf("gt-%s-witness", rigName),
 			})
 		}
-		witnessWrongSettings := filepath.Join(rigPath, "witness", "rig", ".claude", "settings.json")
+		witnessWrongSettings := filepath.Join(rigPath, "witness", "rig", ".cursor", "hooks.json")
 		if fileExists(witnessWrongSettings) {
 			files = append(files, staleSettingsInfo{
 				path:          witnessWrongSettings,
@@ -216,9 +216,9 @@ func (c *ClaudeSettingsCheck) findSettingsFiles(townRoot string) []staleSettings
 			})
 		}
 
-		// Check for refinery settings - refinery/.claude/ is correct (outside git repo)
-		// Settings in refinery/rig/.claude/ are wrong (inside source repo)
-		refinerySettings := filepath.Join(rigPath, "refinery", ".claude", "settings.json")
+		// Check for refinery settings - refinery/.cursor/ is correct (outside git repo)
+		// Settings in refinery/rig/.cursor/ are wrong (inside source repo)
+		refinerySettings := filepath.Join(rigPath, "refinery", ".cursor", "hooks.json")
 		if fileExists(refinerySettings) {
 			files = append(files, staleSettingsInfo{
 				path:        refinerySettings,
@@ -227,7 +227,7 @@ func (c *ClaudeSettingsCheck) findSettingsFiles(townRoot string) []staleSettings
 				sessionName: fmt.Sprintf("gt-%s-refinery", rigName),
 			})
 		}
-		refineryWrongSettings := filepath.Join(rigPath, "refinery", "rig", ".claude", "settings.json")
+		refineryWrongSettings := filepath.Join(rigPath, "refinery", "rig", ".cursor", "hooks.json")
 		if fileExists(refineryWrongSettings) {
 			files = append(files, staleSettingsInfo{
 				path:          refineryWrongSettings,
@@ -238,10 +238,10 @@ func (c *ClaudeSettingsCheck) findSettingsFiles(townRoot string) []staleSettings
 			})
 		}
 
-		// Check for crew settings - crew/.claude/ is correct (shared by all crew, outside git repos)
-		// Settings in crew/<name>/.claude/ are wrong (inside git repos)
+		// Check for crew settings - crew/.cursor/ is correct (shared by all crew, outside git repos)
+		// Settings in crew/<name>/.cursor/ are wrong (inside git repos)
 		crewDir := filepath.Join(rigPath, "crew")
-		crewSettings := filepath.Join(crewDir, ".claude", "settings.json")
+		crewSettings := filepath.Join(crewDir, ".cursor", "hooks.json")
 		if fileExists(crewSettings) {
 			files = append(files, staleSettingsInfo{
 				path:        crewSettings,
@@ -253,10 +253,10 @@ func (c *ClaudeSettingsCheck) findSettingsFiles(townRoot string) []staleSettings
 		if dirExists(crewDir) {
 			crewEntries, _ := os.ReadDir(crewDir)
 			for _, crewEntry := range crewEntries {
-				if !crewEntry.IsDir() || crewEntry.Name() == ".claude" {
+				if !crewEntry.IsDir() || crewEntry.Name() == ".cursor" {
 					continue
 				}
-				crewWrongSettings := filepath.Join(crewDir, crewEntry.Name(), ".claude", "settings.json")
+				crewWrongSettings := filepath.Join(crewDir, crewEntry.Name(), ".cursor", "hooks.json")
 				if fileExists(crewWrongSettings) {
 					files = append(files, staleSettingsInfo{
 						path:          crewWrongSettings,
@@ -269,10 +269,10 @@ func (c *ClaudeSettingsCheck) findSettingsFiles(townRoot string) []staleSettings
 			}
 		}
 
-		// Check for polecat settings - polecats/.claude/ is correct (shared by all polecats, outside git repos)
-		// Settings in polecats/<name>/.claude/ are wrong (inside git repos)
+		// Check for polecat settings - polecats/.cursor/ is correct (shared by all polecats, outside git repos)
+		// Settings in polecats/<name>/.cursor/ are wrong (inside git repos)
 		polecatsDir := filepath.Join(rigPath, "polecats")
-		polecatsSettings := filepath.Join(polecatsDir, ".claude", "settings.json")
+		polecatsSettings := filepath.Join(polecatsDir, ".cursor", "hooks.json")
 		if fileExists(polecatsSettings) {
 			files = append(files, staleSettingsInfo{
 				path:        polecatsSettings,
@@ -284,10 +284,10 @@ func (c *ClaudeSettingsCheck) findSettingsFiles(townRoot string) []staleSettings
 		if dirExists(polecatsDir) {
 			polecatEntries, _ := os.ReadDir(polecatsDir)
 			for _, pcEntry := range polecatEntries {
-				if !pcEntry.IsDir() || pcEntry.Name() == ".claude" {
+				if !pcEntry.IsDir() || pcEntry.Name() == ".cursor" {
 					continue
 				}
-				pcWrongSettings := filepath.Join(polecatsDir, pcEntry.Name(), ".claude", "settings.json")
+				pcWrongSettings := filepath.Join(polecatsDir, pcEntry.Name(), ".cursor", "hooks.json")
 				if fileExists(pcWrongSettings) {
 					files = append(files, staleSettingsInfo{
 						path:          pcWrongSettings,
@@ -307,7 +307,7 @@ func (c *ClaudeSettingsCheck) findSettingsFiles(townRoot string) []staleSettings
 // checkSettings compares a settings file against the expected template.
 // Returns a list of what's missing.
 // agentType is reserved for future role-specific validation.
-func (c *ClaudeSettingsCheck) checkSettings(path, _ string) []string {
+func (c *CursorSettingsCheck) checkSettings(path, _ string) []string {
 	var missing []string
 
 	// Read the actual settings
@@ -321,16 +321,14 @@ func (c *ClaudeSettingsCheck) checkSettings(path, _ string) []string {
 		return []string{"invalid JSON"}
 	}
 
-	// Check for required elements based on template
+	// Check for required elements based on Cursor hooks.json template
 	// All templates should have:
-	// 1. enabledPlugins
-	// 2. PATH export in hooks
-	// 3. Stop hook with gt costs record (for autonomous)
-	// 4. gt nudge deacon session-started in SessionStart
+	// 1. version field
+	// 2. hooks object with beforeSubmitPrompt and stop hooks
 
-	// Check enabledPlugins
-	if _, ok := actual["enabledPlugins"]; !ok {
-		missing = append(missing, "enabledPlugins")
+	// Check version
+	if _, ok := actual["version"]; !ok {
+		missing = append(missing, "version")
 	}
 
 	// Check hooks
@@ -339,19 +337,14 @@ func (c *ClaudeSettingsCheck) checkSettings(path, _ string) []string {
 		return append(missing, "hooks")
 	}
 
-	// Check SessionStart hook has PATH export
-	if !c.hookHasPattern(hooks, "SessionStart", "PATH=") {
-		missing = append(missing, "PATH export")
+	// Check beforeSubmitPrompt hook exists (for mail check)
+	if !c.hookHasCommand(hooks, "beforeSubmitPrompt") {
+		missing = append(missing, "beforeSubmitPrompt hook")
 	}
 
-	// Check SessionStart hook has deacon nudge
-	if !c.hookHasPattern(hooks, "SessionStart", "gt nudge deacon session-started") {
-		missing = append(missing, "deacon nudge")
-	}
-
-	// Check Stop hook exists with gt costs record (for all roles)
-	if !c.hookHasPattern(hooks, "Stop", "gt costs record") {
-		missing = append(missing, "Stop hook")
+	// Check stop hook exists (for costs recording)
+	if !c.hookHasCommand(hooks, "stop") {
+		missing = append(missing, "stop hook")
 	}
 
 	return missing
@@ -359,7 +352,7 @@ func (c *ClaudeSettingsCheck) checkSettings(path, _ string) []string {
 
 // getGitFileStatus determines the git status of a file.
 // Returns untracked, tracked-clean, tracked-modified, or unknown.
-func (c *ClaudeSettingsCheck) getGitFileStatus(filePath string) gitFileStatus {
+func (c *CursorSettingsCheck) getGitFileStatus(filePath string) gitFileStatus {
 	dir := filepath.Dir(filePath)
 	fileName := filepath.Base(filePath)
 
@@ -397,31 +390,21 @@ func (c *ClaudeSettingsCheck) getGitFileStatus(filePath string) gitFileStatus {
 	return gitStatusTrackedClean
 }
 
-// hookHasPattern checks if a hook contains a specific pattern.
-func (c *ClaudeSettingsCheck) hookHasPattern(hooks map[string]any, hookName, pattern string) bool {
+// hookHasCommand checks if a hook type exists and has at least one command.
+func (c *CursorSettingsCheck) hookHasCommand(hooks map[string]any, hookName string) bool {
 	hookList, ok := hooks[hookName].([]any)
-	if !ok {
+	if !ok || len(hookList) == 0 {
 		return false
 	}
 
+	// Check that at least one hook has a command
 	for _, hook := range hookList {
 		hookMap, ok := hook.(map[string]any)
 		if !ok {
 			continue
 		}
-		innerHooks, ok := hookMap["hooks"].([]any)
-		if !ok {
-			continue
-		}
-		for _, inner := range innerHooks {
-			innerMap, ok := inner.(map[string]any)
-			if !ok {
-				continue
-			}
-			cmd, ok := innerMap["command"].(string)
-			if ok && strings.Contains(cmd, pattern) {
-				return true
-			}
+		if _, hasCommand := hookMap["command"]; hasCommand {
+			return true
 		}
 	}
 	return false
@@ -429,7 +412,7 @@ func (c *ClaudeSettingsCheck) hookHasPattern(hooks map[string]any, hookName, pat
 
 // Fix deletes stale settings files and restarts affected agents.
 // Files with local modifications are skipped to avoid losing user changes.
-func (c *ClaudeSettingsCheck) Fix(ctx *CheckContext) error {
+func (c *CursorSettingsCheck) Fix(ctx *CheckContext) error {
 	var errors []string
 	var skipped []string
 	t := tmux.NewTmux()
@@ -447,18 +430,18 @@ func (c *ClaudeSettingsCheck) Fix(ctx *CheckContext) error {
 			continue
 		}
 
-		// Also delete parent .claude directory if empty
-		claudeDir := filepath.Dir(sf.path)
-		_ = os.Remove(claudeDir) // Best-effort, will fail if not empty
+		// Also delete parent .cursor directory if empty
+		cursorDir := filepath.Dir(sf.path)
+		_ = os.Remove(cursorDir) // Best-effort, will fail if not empty
 
 		// For files in wrong locations, delete and create at correct location
 		if sf.wrongLocation {
 			mayorDir := filepath.Join(ctx.TownRoot, "mayor")
 
-			// For mayor settings.json at town root, create at mayor/.claude/
-			if sf.agentType == "mayor" && strings.HasSuffix(claudeDir, ".claude") && !strings.Contains(sf.path, "/mayor/") {
+			// For mayor settings at town root, create at mayor/.cursor/
+			if sf.agentType == "mayor" && strings.HasSuffix(cursorDir, ".cursor") && !strings.Contains(sf.path, "/mayor/") {
 				if err := os.MkdirAll(mayorDir, 0755); err == nil {
-					_ = claude.EnsureSettingsForRole(mayorDir, "mayor")
+					_ = cursor.EnsureSettingsForRole(mayorDir, "mayor")
 				}
 			}
 
@@ -489,8 +472,8 @@ func (c *ClaudeSettingsCheck) Fix(ctx *CheckContext) error {
 		}
 
 		// Recreate settings using EnsureSettingsForRole
-		workDir := filepath.Dir(claudeDir) // agent work directory
-		if err := claude.EnsureSettingsForRole(workDir, sf.agentType); err != nil {
+		workDir := filepath.Dir(cursorDir) // agent work directory
+		if err := cursor.EnsureSettingsForRole(workDir, sf.agentType); err != nil {
 			errors = append(errors, fmt.Sprintf("failed to recreate settings for %s: %v", sf.path, err))
 			continue
 		}

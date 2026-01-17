@@ -211,7 +211,7 @@ Examples:
 var mailCheckCmd = &cobra.Command{
 	Use:   "check",
 	Short: "Check for new mail (for hooks)",
-	Long: `Check for new mail - useful for Claude Code hooks.
+	Long: `Check for new mail - useful for Cursor hooks.
 
 Exit codes (normal mode):
   0 - New mail available
@@ -422,7 +422,7 @@ func init() {
 	mailReadCmd.Flags().BoolVar(&mailReadJSON, "json", false, "Output as JSON")
 
 	// Check flags
-	mailCheckCmd.Flags().BoolVar(&mailCheckInject, "inject", false, "Output format for Claude Code hooks")
+	mailCheckCmd.Flags().BoolVar(&mailCheckInject, "inject", false, "Output format for Cursor hooks")
 	mailCheckCmd.Flags().BoolVar(&mailCheckJSON, "json", false, "Output as JSON")
 	mailCheckCmd.Flags().StringVar(&mailCheckIdentity, "identity", "", "Explicit identity for inbox (e.g., greenplace/Toast)")
 	mailCheckCmd.Flags().StringVar(&mailCheckIdentity, "address", "", "Alias for --identity")

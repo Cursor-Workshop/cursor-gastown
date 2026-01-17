@@ -12,8 +12,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/cursorworkshop/cursor-gastown/internal/beads"
-	"github.com/cursorworkshop/cursor-gastown/internal/claude"
 	"github.com/cursorworkshop/cursor-gastown/internal/config"
+	"github.com/cursorworkshop/cursor-gastown/internal/cursor"
 	"github.com/cursorworkshop/cursor-gastown/internal/constants"
 	"github.com/cursorworkshop/cursor-gastown/internal/deacon"
 	"github.com/cursorworkshop/cursor-gastown/internal/polecat"
@@ -307,8 +307,8 @@ func startDeaconSession(t *tmux.Tmux, sessionName, agentOverride string) error {
 		return fmt.Errorf("creating deacon directory: %w", err)
 	}
 
-	// Ensure Claude settings exist (autonomous role needs mail in SessionStart)
-	if err := claude.EnsureSettingsForRole(deaconDir, "deacon"); err != nil {
+	// Ensure Cursor settings exist (autonomous role needs mail in SessionStart)
+	if err := cursor.EnsureSettingsForRole(deaconDir, "deacon"); err != nil {
 		style.PrintWarning("Could not create deacon settings: %v", err)
 	}
 

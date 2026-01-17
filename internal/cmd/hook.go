@@ -172,7 +172,7 @@ func runHook(_ *cobra.Command, args []string) error {
 					// Close completed molecule bead (use bd close --force for pinned)
 					closeArgs := []string{"close", existing.ID, "--force",
 						"--reason=Auto-replaced by gt hook (molecule complete)"}
-					if sessionID := os.Getenv("CLAUDE_SESSION_ID"); sessionID != "" {
+					if sessionID := os.Getenv("CURSOR_SESSION_ID"); sessionID != "" {
 						closeArgs = append(closeArgs, "--session="+sessionID)
 					}
 					closeCmd := exec.Command("bd", closeArgs...)

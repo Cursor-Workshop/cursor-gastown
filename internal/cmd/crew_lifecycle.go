@@ -163,7 +163,7 @@ func runCrewRemove(cmd *cobra.Command, args []string) error {
 		} else {
 			// Default: CLOSE the agent bead (preserves CV history)
 			closeArgs := []string{"close", agentBeadID, "--reason=Crew workspace removed"}
-			if sessionID := os.Getenv("CLAUDE_SESSION_ID"); sessionID != "" {
+			if sessionID := os.Getenv("CURSOR_SESSION_ID"); sessionID != "" {
 				closeArgs = append(closeArgs, "--session="+sessionID)
 			}
 			closeCmd := exec.Command("bd", closeArgs...)

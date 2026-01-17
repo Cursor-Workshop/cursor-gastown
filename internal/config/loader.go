@@ -532,7 +532,7 @@ func (c *AccountsConfig) GetDefaultAccount() *Account {
 	return c.GetAccount(c.Default)
 }
 
-// ResolveAccountConfigDir resolves the CLAUDE_CONFIG_DIR for account selection.
+// ResolveAccountConfigDir resolves the CURSOR_CONFIG_DIR for account selection.
 // Priority order:
 //  1. GT_ACCOUNT environment variable
 //  2. accountFlag (from --account command flag)

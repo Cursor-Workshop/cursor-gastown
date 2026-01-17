@@ -9,11 +9,11 @@ import (
 	"testing"
 )
 
-func TestNewClaudeSettingsCheck(t *testing.T) {
-	check := NewClaudeSettingsCheck()
+func TestNewCursorSettingsCheck(t *testing.T) {
+	check := NewCursorSettingsCheck()
 
-	if check.Name() != "claude-settings" {
-		t.Errorf("expected name 'claude-settings', got %q", check.Name())
+	if check.Name() != "cursor-settings" {
+		t.Errorf("expected name 'cursor-settings', got %q", check.Name())
 	}
 
 	if !check.CanFix() {
@@ -21,10 +21,10 @@ func TestNewClaudeSettingsCheck(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_NoSettingsFiles(t *testing.T) {
+func TestCursorSettingsCheck_NoSettingsFiles(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
@@ -34,37 +34,21 @@ func TestClaudeSettingsCheck_NoSettingsFiles(t *testing.T) {
 	}
 }
 
-// createValidSettings creates a valid settings.json with all required elements.
+// createValidSettings creates a valid hooks.json with all required elements.
 func createValidSettings(t *testing.T, path string) {
 	t.Helper()
 
 	settings := map[string]any{
-		"enabledPlugins": []string{"plugin1"},
+		"version": 1,
 		"hooks": map[string]any{
-			"SessionStart": []any{
+			"beforeSubmitPrompt": []any{
 				map[string]any{
-					"matcher": "**",
-					"hooks": []any{
-						map[string]any{
-							"type":    "command",
-							"command": "export PATH=/usr/local/bin:$PATH",
-						},
-						map[string]any{
-							"type":    "command",
-							"command": "gt nudge deacon session-started",
-						},
-					},
+					"command": ".cursor/hooks/gastown-prompt.sh",
 				},
 			},
-			"Stop": []any{
+			"stop": []any{
 				map[string]any{
-					"matcher": "**",
-					"hooks": []any{
-						map[string]any{
-							"type":    "command",
-							"command": "gt costs record --session $CLAUDE_SESSION_ID",
-						},
-					},
+					"command": ".cursor/hooks/gastown-stop.sh",
 				},
 			},
 		},
@@ -84,37 +68,21 @@ func createValidSettings(t *testing.T, path string) {
 	}
 }
 
-// createStaleSettings creates a settings.json missing required elements.
+// createStaleSettings creates a hooks.json missing required elements.
 func createStaleSettings(t *testing.T, path string, missingElements ...string) {
 	t.Helper()
 
 	settings := map[string]any{
-		"enabledPlugins": []string{"plugin1"},
+		"version": 1,
 		"hooks": map[string]any{
-			"SessionStart": []any{
+			"beforeSubmitPrompt": []any{
 				map[string]any{
-					"matcher": "**",
-					"hooks": []any{
-						map[string]any{
-							"type":    "command",
-							"command": "export PATH=/usr/local/bin:$PATH",
-						},
-						map[string]any{
-							"type":    "command",
-							"command": "gt nudge deacon session-started",
-						},
-					},
+					"command": ".cursor/hooks/gastown-prompt.sh",
 				},
 			},
-			"Stop": []any{
+			"stop": []any{
 				map[string]any{
-					"matcher": "**",
-					"hooks": []any{
-						map[string]any{
-							"type":    "command",
-							"command": "gt costs record --session $CLAUDE_SESSION_ID",
-						},
-					},
+					"command": ".cursor/hooks/gastown-stop.sh",
 				},
 			},
 		},
@@ -122,43 +90,16 @@ func createStaleSettings(t *testing.T, path string, missingElements ...string) {
 
 	for _, missing := range missingElements {
 		switch missing {
-		case "enabledPlugins":
-			delete(settings, "enabledPlugins")
+		case "version":
+			delete(settings, "version")
 		case "hooks":
 			delete(settings, "hooks")
-		case "PATH":
-			// Remove PATH from SessionStart hooks
+		case "beforeSubmitPrompt":
 			hooks := settings["hooks"].(map[string]any)
-			sessionStart := hooks["SessionStart"].([]any)
-			hookObj := sessionStart[0].(map[string]any)
-			innerHooks := hookObj["hooks"].([]any)
-			// Filter out PATH command
-			var filtered []any
-			for _, h := range innerHooks {
-				hMap := h.(map[string]any)
-				if cmd, ok := hMap["command"].(string); ok && !strings.Contains(cmd, "PATH=") {
-					filtered = append(filtered, h)
-				}
-			}
-			hookObj["hooks"] = filtered
-		case "deacon-nudge":
-			// Remove deacon nudge from SessionStart hooks
+			delete(hooks, "beforeSubmitPrompt")
+		case "stop":
 			hooks := settings["hooks"].(map[string]any)
-			sessionStart := hooks["SessionStart"].([]any)
-			hookObj := sessionStart[0].(map[string]any)
-			innerHooks := hookObj["hooks"].([]any)
-			// Filter out deacon nudge
-			var filtered []any
-			for _, h := range innerHooks {
-				hMap := h.(map[string]any)
-				if cmd, ok := hMap["command"].(string); ok && !strings.Contains(cmd, "gt nudge deacon") {
-					filtered = append(filtered, h)
-				}
-			}
-			hookObj["hooks"] = filtered
-		case "Stop":
-			hooks := settings["hooks"].(map[string]any)
-			delete(hooks, "Stop")
+			delete(hooks, "stop")
 		}
 	}
 
@@ -176,15 +117,15 @@ func createStaleSettings(t *testing.T, path string, missingElements ...string) {
 	}
 }
 
-func TestClaudeSettingsCheck_ValidMayorSettings(t *testing.T) {
+func TestCursorSettingsCheck_ValidMayorSettings(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	// Create valid mayor settings at correct location (mayor/.claude/settings.json)
-	// NOT at town root (.claude/settings.json) which is wrong location
-	mayorSettings := filepath.Join(tmpDir, "mayor", ".claude", "settings.json")
+	// Create valid mayor settings at correct location (mayor/.cursor/hooks.json)
+	// NOT at town root (.cursor/hooks.json) which is wrong location
+	mayorSettings := filepath.Join(tmpDir, "mayor", ".cursor", "hooks.json")
 	createValidSettings(t, mayorSettings)
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
@@ -194,14 +135,14 @@ func TestClaudeSettingsCheck_ValidMayorSettings(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_ValidDeaconSettings(t *testing.T) {
+func TestCursorSettingsCheck_ValidDeaconSettings(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	// Create valid deacon settings
-	deaconSettings := filepath.Join(tmpDir, "deacon", ".claude", "settings.json")
+	deaconSettings := filepath.Join(tmpDir, "deacon", ".cursor", "hooks.json")
 	createValidSettings(t, deaconSettings)
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
@@ -211,15 +152,15 @@ func TestClaudeSettingsCheck_ValidDeaconSettings(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_ValidWitnessSettings(t *testing.T) {
+func TestCursorSettingsCheck_ValidWitnessSettings(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
-	// Create valid witness settings in correct location (witness/.claude/, outside git repo)
-	witnessSettings := filepath.Join(tmpDir, rigName, "witness", ".claude", "settings.json")
+	// Create valid witness settings in correct location (witness/.cursor/, outside git repo)
+	witnessSettings := filepath.Join(tmpDir, rigName, "witness", ".cursor", "hooks.json")
 	createValidSettings(t, witnessSettings)
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
@@ -229,15 +170,15 @@ func TestClaudeSettingsCheck_ValidWitnessSettings(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_ValidRefinerySettings(t *testing.T) {
+func TestCursorSettingsCheck_ValidRefinerySettings(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
-	// Create valid refinery settings in correct location (refinery/.claude/, outside git repo)
-	refinerySettings := filepath.Join(tmpDir, rigName, "refinery", ".claude", "settings.json")
+	// Create valid refinery settings in correct location (refinery/.cursor/, outside git repo)
+	refinerySettings := filepath.Join(tmpDir, rigName, "refinery", ".cursor", "hooks.json")
 	createValidSettings(t, refinerySettings)
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
@@ -247,15 +188,15 @@ func TestClaudeSettingsCheck_ValidRefinerySettings(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_ValidCrewSettings(t *testing.T) {
+func TestCursorSettingsCheck_ValidCrewSettings(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
-	// Create valid crew settings in correct location (crew/.claude/, shared by all crew)
-	crewSettings := filepath.Join(tmpDir, rigName, "crew", ".claude", "settings.json")
+	// Create valid crew settings in correct location (crew/.cursor/, shared by all crew)
+	crewSettings := filepath.Join(tmpDir, rigName, "crew", ".cursor", "hooks.json")
 	createValidSettings(t, crewSettings)
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
@@ -265,15 +206,15 @@ func TestClaudeSettingsCheck_ValidCrewSettings(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_ValidPolecatSettings(t *testing.T) {
+func TestCursorSettingsCheck_ValidPolecatSettings(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
-	// Create valid polecat settings in correct location (polecats/.claude/, shared by all polecats)
-	pcSettings := filepath.Join(tmpDir, rigName, "polecats", ".claude", "settings.json")
+	// Create valid polecat settings in correct location (polecats/.cursor/, shared by all polecats)
+	pcSettings := filepath.Join(tmpDir, rigName, "polecats", ".cursor", "hooks.json")
 	createValidSettings(t, pcSettings)
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
@@ -283,34 +224,34 @@ func TestClaudeSettingsCheck_ValidPolecatSettings(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_MissingEnabledPlugins(t *testing.T) {
+func TestCursorSettingsCheck_MissingVersion(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	// Create stale mayor settings missing enabledPlugins (at correct location)
-	mayorSettings := filepath.Join(tmpDir, "mayor", ".claude", "settings.json")
-	createStaleSettings(t, mayorSettings, "enabledPlugins")
+	// Create stale mayor settings missing version (at correct location)
+	mayorSettings := filepath.Join(tmpDir, "mayor", ".cursor", "hooks.json")
+	createStaleSettings(t, mayorSettings, "version")
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
 
 	if result.Status != StatusError {
-		t.Errorf("expected StatusError for missing enabledPlugins, got %v", result.Status)
+		t.Errorf("expected StatusError for missing version, got %v", result.Status)
 	}
 	if !strings.Contains(result.Message, "1 stale") {
 		t.Errorf("expected message about stale settings, got %q", result.Message)
 	}
 }
 
-func TestClaudeSettingsCheck_MissingHooks(t *testing.T) {
+func TestCursorSettingsCheck_MissingHooks(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	// Create stale settings missing hooks entirely (at correct location)
-	mayorSettings := filepath.Join(tmpDir, "mayor", ".claude", "settings.json")
+	mayorSettings := filepath.Join(tmpDir, "mayor", ".cursor", "hooks.json")
 	createStaleSettings(t, mayorSettings, "hooks")
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
@@ -320,97 +261,70 @@ func TestClaudeSettingsCheck_MissingHooks(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_MissingPATH(t *testing.T) {
+func TestCursorSettingsCheck_MissingBeforeSubmitPrompt(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	// Create stale settings missing PATH export (at correct location)
-	mayorSettings := filepath.Join(tmpDir, "mayor", ".claude", "settings.json")
-	createStaleSettings(t, mayorSettings, "PATH")
+	// Create stale settings missing beforeSubmitPrompt hook (at correct location)
+	mayorSettings := filepath.Join(tmpDir, "mayor", ".cursor", "hooks.json")
+	createStaleSettings(t, mayorSettings, "beforeSubmitPrompt")
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
 
 	if result.Status != StatusError {
-		t.Errorf("expected StatusError for missing PATH, got %v", result.Status)
+		t.Errorf("expected StatusError for missing beforeSubmitPrompt, got %v", result.Status)
 	}
 	found := false
 	for _, d := range result.Details {
-		if strings.Contains(d, "PATH export") {
+		if strings.Contains(d, "beforeSubmitPrompt") {
 			found = true
 			break
 		}
 	}
 	if !found {
-		t.Errorf("expected details to mention PATH export, got %v", result.Details)
+		t.Errorf("expected details to mention beforeSubmitPrompt hook, got %v", result.Details)
 	}
 }
 
-func TestClaudeSettingsCheck_MissingDeaconNudge(t *testing.T) {
+func TestCursorSettingsCheck_MissingStopHook(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	// Create stale settings missing deacon nudge (at correct location)
-	mayorSettings := filepath.Join(tmpDir, "mayor", ".claude", "settings.json")
-	createStaleSettings(t, mayorSettings, "deacon-nudge")
+	// Create stale settings missing stop hook (at correct location)
+	mayorSettings := filepath.Join(tmpDir, "mayor", ".cursor", "hooks.json")
+	createStaleSettings(t, mayorSettings, "stop")
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
 
 	if result.Status != StatusError {
-		t.Errorf("expected StatusError for missing deacon nudge, got %v", result.Status)
+		t.Errorf("expected StatusError for missing stop hook, got %v", result.Status)
 	}
 	found := false
 	for _, d := range result.Details {
-		if strings.Contains(d, "deacon nudge") {
+		if strings.Contains(d, "stop hook") {
 			found = true
 			break
 		}
 	}
 	if !found {
-		t.Errorf("expected details to mention deacon nudge, got %v", result.Details)
+		t.Errorf("expected details to mention stop hook, got %v", result.Details)
 	}
 }
 
-func TestClaudeSettingsCheck_MissingStopHook(t *testing.T) {
-	tmpDir := t.TempDir()
-
-	// Create stale settings missing Stop hook (at correct location)
-	mayorSettings := filepath.Join(tmpDir, "mayor", ".claude", "settings.json")
-	createStaleSettings(t, mayorSettings, "Stop")
-
-	check := NewClaudeSettingsCheck()
-	ctx := &CheckContext{TownRoot: tmpDir}
-
-	result := check.Run(ctx)
-
-	if result.Status != StatusError {
-		t.Errorf("expected StatusError for missing Stop hook, got %v", result.Status)
-	}
-	found := false
-	for _, d := range result.Details {
-		if strings.Contains(d, "Stop hook") {
-			found = true
-			break
-		}
-	}
-	if !found {
-		t.Errorf("expected details to mention Stop hook, got %v", result.Details)
-	}
-}
-
-func TestClaudeSettingsCheck_WrongLocationWitness(t *testing.T) {
+func TestCursorSettingsCheck_WrongLocationWitness(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
-	// Create settings in wrong location (witness/rig/.claude/ instead of witness/.claude/)
+	// Create settings in wrong location (witness/rig/.cursor/ instead of witness/.cursor/)
 	// Settings inside git repos should be flagged as wrong location
-	wrongSettings := filepath.Join(tmpDir, rigName, "witness", "rig", ".claude", "settings.json")
+	wrongSettings := filepath.Join(tmpDir, rigName, "witness", "rig", ".cursor", "hooks.json")
 	createValidSettings(t, wrongSettings)
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
@@ -430,16 +344,16 @@ func TestClaudeSettingsCheck_WrongLocationWitness(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_WrongLocationRefinery(t *testing.T) {
+func TestCursorSettingsCheck_WrongLocationRefinery(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
-	// Create settings in wrong location (refinery/rig/.claude/ instead of refinery/.claude/)
+	// Create settings in wrong location (refinery/rig/.cursor/ instead of refinery/.cursor/)
 	// Settings inside git repos should be flagged as wrong location
-	wrongSettings := filepath.Join(tmpDir, rigName, "refinery", "rig", ".claude", "settings.json")
+	wrongSettings := filepath.Join(tmpDir, rigName, "refinery", "rig", ".cursor", "hooks.json")
 	createValidSettings(t, wrongSettings)
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
@@ -459,22 +373,22 @@ func TestClaudeSettingsCheck_WrongLocationRefinery(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_MultipleStaleFiles(t *testing.T) {
+func TestCursorSettingsCheck_MultipleStaleFiles(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
 	// Create multiple stale settings files (all at correct locations)
-	mayorSettings := filepath.Join(tmpDir, "mayor", ".claude", "settings.json")
-	createStaleSettings(t, mayorSettings, "PATH")
+	mayorSettings := filepath.Join(tmpDir, "mayor", ".cursor", "hooks.json")
+	createStaleSettings(t, mayorSettings, "beforeSubmitPrompt")
 
-	deaconSettings := filepath.Join(tmpDir, "deacon", ".claude", "settings.json")
-	createStaleSettings(t, deaconSettings, "Stop")
+	deaconSettings := filepath.Join(tmpDir, "deacon", ".cursor", "hooks.json")
+	createStaleSettings(t, deaconSettings, "stop")
 
-	// Settings inside git repo (witness/rig/.claude/) are wrong location
-	witnessWrong := filepath.Join(tmpDir, rigName, "witness", "rig", ".claude", "settings.json")
+	// Settings inside git repo (witness/rig/.cursor/) are wrong location
+	witnessWrong := filepath.Join(tmpDir, rigName, "witness", "rig", ".cursor", "hooks.json")
 	createValidSettings(t, witnessWrong) // Valid content but wrong location
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
@@ -487,11 +401,11 @@ func TestClaudeSettingsCheck_MultipleStaleFiles(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_InvalidJSON(t *testing.T) {
+func TestCursorSettingsCheck_InvalidJSON(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	// Create invalid JSON file (at correct location)
-	mayorSettings := filepath.Join(tmpDir, "mayor", ".claude", "settings.json")
+	mayorSettings := filepath.Join(tmpDir, "mayor", ".cursor", "hooks.json")
 	if err := os.MkdirAll(filepath.Dir(mayorSettings), 0755); err != nil {
 		t.Fatal(err)
 	}
@@ -499,7 +413,7 @@ func TestClaudeSettingsCheck_InvalidJSON(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
@@ -519,15 +433,15 @@ func TestClaudeSettingsCheck_InvalidJSON(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_FixDeletesStaleFile(t *testing.T) {
+func TestCursorSettingsCheck_FixDeletesStaleFile(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	// Create stale settings in wrong location (inside git repo - easy to test - just delete, no recreate)
 	rigName := "testrig"
-	wrongSettings := filepath.Join(tmpDir, rigName, "witness", "rig", ".claude", "settings.json")
+	wrongSettings := filepath.Join(tmpDir, rigName, "witness", "rig", ".cursor", "hooks.json")
 	createValidSettings(t, wrongSettings)
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	// Run to detect
@@ -553,21 +467,21 @@ func TestClaudeSettingsCheck_FixDeletesStaleFile(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_SkipsNonRigDirectories(t *testing.T) {
+func TestCursorSettingsCheck_SkipsNonRigDirectories(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	// Create directories that should be skipped
 	for _, skipDir := range []string{"mayor", "deacon", "daemon", ".git", "docs", ".hidden"} {
-		dir := filepath.Join(tmpDir, skipDir, "witness", "rig", ".claude")
+		dir := filepath.Join(tmpDir, skipDir, "witness", "rig", ".cursor")
 		if err := os.MkdirAll(dir, 0755); err != nil {
 			t.Fatal(err)
 		}
 		// These should NOT be detected as rig witness settings
-		settingsPath := filepath.Join(dir, "settings.json")
-		createStaleSettings(t, settingsPath, "PATH")
+		settingsPath := filepath.Join(dir, "hooks.json")
+		createStaleSettings(t, settingsPath, "beforeSubmitPrompt")
 	}
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	_ = check.Run(ctx)
@@ -575,7 +489,7 @@ func TestClaudeSettingsCheck_SkipsNonRigDirectories(t *testing.T) {
 	// Should only find mayor and deacon settings in their specific locations
 	// The witness settings in these dirs should be ignored
 	// Since we didn't create valid mayor/deacon settings, those will be stale
-	// But the ones in "mayor/witness/rig/.claude" should be ignored
+	// But the ones in "mayor/witness/rig/.cursor" should be ignored
 
 	// Count how many stale files were found - should be 0 since none of the
 	// skipped directories have their settings detected
@@ -584,23 +498,23 @@ func TestClaudeSettingsCheck_SkipsNonRigDirectories(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_MixedValidAndStale(t *testing.T) {
+func TestCursorSettingsCheck_MixedValidAndStale(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
 	// Create valid mayor settings (at correct location)
-	mayorSettings := filepath.Join(tmpDir, "mayor", ".claude", "settings.json")
+	mayorSettings := filepath.Join(tmpDir, "mayor", ".cursor", "hooks.json")
 	createValidSettings(t, mayorSettings)
 
-	// Create stale witness settings in correct location (missing PATH)
-	witnessSettings := filepath.Join(tmpDir, rigName, "witness", ".claude", "settings.json")
-	createStaleSettings(t, witnessSettings, "PATH")
+	// Create stale witness settings in correct location (missing beforeSubmitPrompt)
+	witnessSettings := filepath.Join(tmpDir, rigName, "witness", ".cursor", "hooks.json")
+	createStaleSettings(t, witnessSettings, "beforeSubmitPrompt")
 
 	// Create valid refinery settings in correct location
-	refinerySettings := filepath.Join(tmpDir, rigName, "refinery", ".claude", "settings.json")
+	refinerySettings := filepath.Join(tmpDir, rigName, "refinery", ".cursor", "hooks.json")
 	createValidSettings(t, refinerySettings)
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
@@ -617,16 +531,16 @@ func TestClaudeSettingsCheck_MixedValidAndStale(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_WrongLocationCrew(t *testing.T) {
+func TestCursorSettingsCheck_WrongLocationCrew(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
-	// Create settings in wrong location (crew/<name>/.claude/ instead of crew/.claude/)
+	// Create settings in wrong location (crew/<name>/.cursor/ instead of crew/.cursor/)
 	// Settings inside git repos should be flagged as wrong location
-	wrongSettings := filepath.Join(tmpDir, rigName, "crew", "agent1", ".claude", "settings.json")
+	wrongSettings := filepath.Join(tmpDir, rigName, "crew", "agent1", ".cursor", "hooks.json")
 	createValidSettings(t, wrongSettings)
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
@@ -646,16 +560,16 @@ func TestClaudeSettingsCheck_WrongLocationCrew(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_WrongLocationPolecat(t *testing.T) {
+func TestCursorSettingsCheck_WrongLocationPolecat(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
-	// Create settings in wrong location (polecats/<name>/.claude/ instead of polecats/.claude/)
+	// Create settings in wrong location (polecats/<name>/.cursor/ instead of polecats/.cursor/)
 	// Settings inside git repos should be flagged as wrong location
-	wrongSettings := filepath.Join(tmpDir, rigName, "polecats", "pc1", ".claude", "settings.json")
+	wrongSettings := filepath.Join(tmpDir, rigName, "polecats", "pc1", ".cursor", "hooks.json")
 	createValidSettings(t, wrongSettings)
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
@@ -714,7 +628,7 @@ func gitAddAndCommit(t *testing.T, repoDir, filePath string) {
 	}
 }
 
-func TestClaudeSettingsCheck_GitStatusUntracked(t *testing.T) {
+func TestCursorSettingsCheck_GitStatusUntracked(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
@@ -726,10 +640,10 @@ func TestClaudeSettingsCheck_GitStatusUntracked(t *testing.T) {
 	initTestGitRepo(t, rigDir)
 
 	// Create an untracked settings file (not git added)
-	wrongSettings := filepath.Join(rigDir, ".claude", "settings.json")
+	wrongSettings := filepath.Join(rigDir, ".cursor", "hooks.json")
 	createValidSettings(t, wrongSettings)
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
@@ -750,7 +664,7 @@ func TestClaudeSettingsCheck_GitStatusUntracked(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_GitStatusTrackedClean(t *testing.T) {
+func TestCursorSettingsCheck_GitStatusTrackedClean(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
@@ -762,11 +676,11 @@ func TestClaudeSettingsCheck_GitStatusTrackedClean(t *testing.T) {
 	initTestGitRepo(t, rigDir)
 
 	// Create settings and commit it (tracked, clean)
-	wrongSettings := filepath.Join(rigDir, ".claude", "settings.json")
+	wrongSettings := filepath.Join(rigDir, ".cursor", "hooks.json")
 	createValidSettings(t, wrongSettings)
 	gitAddAndCommit(t, rigDir, wrongSettings)
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
@@ -787,7 +701,7 @@ func TestClaudeSettingsCheck_GitStatusTrackedClean(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_GitStatusTrackedModified(t *testing.T) {
+func TestCursorSettingsCheck_GitStatusTrackedModified(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
@@ -799,7 +713,7 @@ func TestClaudeSettingsCheck_GitStatusTrackedModified(t *testing.T) {
 	initTestGitRepo(t, rigDir)
 
 	// Create settings and commit it
-	wrongSettings := filepath.Join(rigDir, ".claude", "settings.json")
+	wrongSettings := filepath.Join(rigDir, ".cursor", "hooks.json")
 	createValidSettings(t, wrongSettings)
 	gitAddAndCommit(t, rigDir, wrongSettings)
 
@@ -808,7 +722,7 @@ func TestClaudeSettingsCheck_GitStatusTrackedModified(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
@@ -833,7 +747,7 @@ func TestClaudeSettingsCheck_GitStatusTrackedModified(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_FixSkipsModifiedFiles(t *testing.T) {
+func TestCursorSettingsCheck_FixSkipsModifiedFiles(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
@@ -845,7 +759,7 @@ func TestClaudeSettingsCheck_FixSkipsModifiedFiles(t *testing.T) {
 	initTestGitRepo(t, rigDir)
 
 	// Create settings and commit it
-	wrongSettings := filepath.Join(rigDir, ".claude", "settings.json")
+	wrongSettings := filepath.Join(rigDir, ".cursor", "hooks.json")
 	createValidSettings(t, wrongSettings)
 	gitAddAndCommit(t, rigDir, wrongSettings)
 
@@ -854,7 +768,7 @@ func TestClaudeSettingsCheck_FixSkipsModifiedFiles(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	// Run to detect
@@ -874,7 +788,7 @@ func TestClaudeSettingsCheck_FixSkipsModifiedFiles(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_FixDeletesUntrackedFiles(t *testing.T) {
+func TestCursorSettingsCheck_FixDeletesUntrackedFiles(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
@@ -886,10 +800,10 @@ func TestClaudeSettingsCheck_FixDeletesUntrackedFiles(t *testing.T) {
 	initTestGitRepo(t, rigDir)
 
 	// Create an untracked settings file (not git added)
-	wrongSettings := filepath.Join(rigDir, ".claude", "settings.json")
+	wrongSettings := filepath.Join(rigDir, ".cursor", "hooks.json")
 	createValidSettings(t, wrongSettings)
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	// Run to detect
@@ -909,7 +823,7 @@ func TestClaudeSettingsCheck_FixDeletesUntrackedFiles(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_FixDeletesTrackedCleanFiles(t *testing.T) {
+func TestCursorSettingsCheck_FixDeletesTrackedCleanFiles(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 
@@ -921,11 +835,11 @@ func TestClaudeSettingsCheck_FixDeletesTrackedCleanFiles(t *testing.T) {
 	initTestGitRepo(t, rigDir)
 
 	// Create settings and commit it (tracked, clean)
-	wrongSettings := filepath.Join(rigDir, ".claude", "settings.json")
+	wrongSettings := filepath.Join(rigDir, ".cursor", "hooks.json")
 	createValidSettings(t, wrongSettings)
 	gitAddAndCommit(t, rigDir, wrongSettings)
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	// Run to detect
@@ -945,7 +859,7 @@ func TestClaudeSettingsCheck_FixDeletesTrackedCleanFiles(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_DetectsStaleCLAUDEmdAtTownRoot(t *testing.T) {
+func TestCursorSettingsCheck_DetectsStaleCLAUDEmdAtTownRoot(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	// Create CLAUDE.md at town root (wrong location)
@@ -954,7 +868,7 @@ func TestClaudeSettingsCheck_DetectsStaleCLAUDEmdAtTownRoot(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	result := check.Run(ctx)
@@ -976,7 +890,7 @@ func TestClaudeSettingsCheck_DetectsStaleCLAUDEmdAtTownRoot(t *testing.T) {
 	}
 }
 
-func TestClaudeSettingsCheck_FixMovesCLAUDEmdToMayor(t *testing.T) {
+func TestCursorSettingsCheck_FixMovesCLAUDEmdToMayor(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	// Create mayor directory (needed for fix to create CLAUDE.md there)
@@ -991,7 +905,7 @@ func TestClaudeSettingsCheck_FixMovesCLAUDEmdToMayor(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	check := NewClaudeSettingsCheck()
+	check := NewCursorSettingsCheck()
 	ctx := &CheckContext{TownRoot: tmpDir}
 
 	// Run to detect

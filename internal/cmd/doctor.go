@@ -143,7 +143,7 @@ func runDoctor(cmd *cobra.Command, args []string) error {
 	d.Register(doctor.NewSessionHookCheck())
 	d.Register(doctor.NewRuntimeGitignoreCheck())
 	d.Register(doctor.NewLegacyGastownCheck())
-	d.Register(doctor.NewClaudeSettingsCheck())
+	d.Register(doctor.NewCursorSettingsCheck())
 
 	// Crew workspace checks
 	d.Register(doctor.NewCrewStateCheck())

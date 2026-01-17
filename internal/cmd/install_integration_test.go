@@ -65,14 +65,14 @@ func TestInstallCreatesCorrectStructure(t *testing.T) {
 	claudePath := filepath.Join(hqPath, "mayor", "CLAUDE.md")
 	assertFileExists(t, claudePath, "mayor/CLAUDE.md")
 
-	// Verify Claude settings exist in mayor/.claude/ (not town root/.claude/)
+	// Verify Cursor settings exist in mayor/.cursor/ (not town root/.cursor/)
 	// Mayor settings go here to avoid polluting child workspaces via directory traversal
-	mayorSettingsPath := filepath.Join(hqPath, "mayor", ".claude", "settings.json")
-	assertFileExists(t, mayorSettingsPath, "mayor/.claude/settings.json")
+	mayorSettingsPath := filepath.Join(hqPath, "mayor", ".cursor", "hooks.json")
+	assertFileExists(t, mayorSettingsPath, "mayor/.cursor/hooks.json")
 
-	// Verify deacon settings exist in deacon/.claude/
-	deaconSettingsPath := filepath.Join(hqPath, "deacon", ".claude", "settings.json")
-	assertFileExists(t, deaconSettingsPath, "deacon/.claude/settings.json")
+	// Verify deacon settings exist in deacon/.cursor/
+	deaconSettingsPath := filepath.Join(hqPath, "deacon", ".cursor", "hooks.json")
+	assertFileExists(t, deaconSettingsPath, "deacon/.cursor/hooks.json")
 }
 
 // TestInstallBeadsHasCorrectPrefix validates that beads is initialized

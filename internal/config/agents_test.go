@@ -327,7 +327,7 @@ func TestGetSessionIDEnvVar(t *testing.T) {
 		agentName string
 		want      string
 	}{
-		{"claude", "CLAUDE_SESSION_ID"},
+		{"claude", ""}, // Claude CLI uses its own session tracking
 		{"gemini", "GEMINI_SESSION_ID"},
 		{"codex", ""},    // Codex uses JSONL output instead
 		{"cursor", ""},   // Cursor uses --resume with chatId directly

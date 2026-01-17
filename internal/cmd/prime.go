@@ -59,10 +59,10 @@ HOOK MODE (--hook):
   When called as an LLM runtime hook, use --hook to enable session ID handling.
   This reads session metadata from stdin and persists it for the session.
 
-  Claude Code integration (in .claude/settings.json):
-    "SessionStart": [{"hooks": [{"type": "command", "command": "gt prime --hook"}]}]
+  Cursor integration (in .cursor/hooks.json):
+    "beforeSubmitPrompt": [{"command": ".cursor/hooks/gastown-prompt.sh"}]
 
-  Claude Code sends JSON on stdin:
+  Cursor sends JSON on stdin:
     {"session_id": "uuid", "transcript_path": "/path", "source": "startup|resume"}
 
   Other agents can set GT_SESSION_ID environment variable instead.`,
@@ -103,7 +103,7 @@ func runPrime(cmd *cobra.Command, args []string) error {
 		}
 		// Set environment for this process (affects event emission below)
 		_ = os.Setenv("GT_SESSION_ID", sessionID)
-		_ = os.Setenv("CLAUDE_SESSION_ID", sessionID) // Legacy compatibility
+		_ = os.Setenv("CURSOR_SESSION_ID", sessionID)
 		// Output session beacon
 		fmt.Printf("[session:%s]\n", sessionID)
 		if source != "" {
@@ -1410,7 +1410,7 @@ func outputCheckpointContext(ctx RoleContext) {
 
 // emitSessionEvent emits a session_start event for seance discovery.
 // The event is written to ~/gt/.events.jsonl and can be queried via gt seance.
-// Session ID resolution order: GT_SESSION_ID, CLAUDE_SESSION_ID, persisted file, fallback.
+// Session ID resolution order: GT_SESSION_ID, CURSOR_SESSION_ID, persisted file, fallback.
 func emitSessionEvent(ctx RoleContext) {
 	if ctx.Role == RoleUnknown {
 		return
@@ -1458,15 +1458,15 @@ func outputSessionMetadata(ctx RoleContext) {
 }
 
 // resolveSessionIDForPrime finds the session ID from available sources.
-// Priority: GT_SESSION_ID env, CLAUDE_SESSION_ID env, persisted file, fallback.
+// Priority: GT_SESSION_ID env, CURSOR_SESSION_ID env, persisted file, fallback.
 func resolveSessionIDForPrime(actor string) string {
 	// 1. GT_SESSION_ID (new canonical)
 	if id := os.Getenv("GT_SESSION_ID"); id != "" {
 		return id
 	}
 
-	// 2. CLAUDE_SESSION_ID (legacy/Claude Code)
-	if id := os.Getenv("CLAUDE_SESSION_ID"); id != "" {
+	// 2. CURSOR_SESSION_ID
+	if id := os.Getenv("CURSOR_SESSION_ID"); id != "" {
 		return id
 	}
 
@@ -1480,7 +1480,7 @@ func resolveSessionIDForPrime(actor string) string {
 }
 
 // hookInput represents the JSON input from LLM runtime hooks.
-// Claude Code sends this on stdin for SessionStart hooks.
+// Cursor sends this on stdin for session hooks.
 type hookInput struct {
 	SessionID      string `json:"session_id"`
 	TranscriptPath string `json:"transcript_path"`
@@ -1488,9 +1488,9 @@ type hookInput struct {
 }
 
 // readHookSessionID reads session ID from available sources in hook mode.
-// Priority: stdin JSON, GT_SESSION_ID env, CLAUDE_SESSION_ID env, auto-generate.
+// Priority: stdin JSON, GT_SESSION_ID env, CURSOR_SESSION_ID env, auto-generate.
 func readHookSessionID() (sessionID, source string) {
-	// 1. Try reading stdin JSON (Claude Code format)
+	// 1. Try reading stdin JSON (Cursor format)
 	if input := readStdinJSON(); input != nil {
 		if input.SessionID != "" {
 			return input.SessionID, input.Source
@@ -1501,7 +1501,7 @@ func readHookSessionID() (sessionID, source string) {
 	if id := os.Getenv("GT_SESSION_ID"); id != "" {
 		return id, ""
 	}
-	if id := os.Getenv("CLAUDE_SESSION_ID"); id != "" {
+	if id := os.Getenv("CURSOR_SESSION_ID"); id != "" {
 		return id, ""
 	}
 

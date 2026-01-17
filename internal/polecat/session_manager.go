@@ -59,9 +59,9 @@ type SessionStartOptions struct {
 	// Account specifies the account handle to use (overrides default).
 	Account string
 
-	// ClaudeConfigDir is resolved CLAUDE_CONFIG_DIR for the account.
+	// CursorConfigDir is resolved CURSOR_CONFIG_DIR for the account.
 	// If set, this is injected as an environment variable.
-	ClaudeConfigDir string
+	CursorConfigDir string
 
 	// Agent is the agent preset name (e.g., "claude", "cursor", "gemini").
 	// If empty, defaults to the town/rig default agent.
@@ -175,9 +175,9 @@ func (m *SessionManager) Start(polecat string, opts SessionStartOptions) error {
 	debugSession("SetEnvironment GT_RIG", m.tmux.SetEnvironment(sessionID, "GT_RIG", m.rig.Name))
 	debugSession("SetEnvironment GT_POLECAT", m.tmux.SetEnvironment(sessionID, "GT_POLECAT", polecat))
 
-	// Set CLAUDE_CONFIG_DIR for account selection (non-fatal)
-	if opts.ClaudeConfigDir != "" {
-		debugSession("SetEnvironment CLAUDE_CONFIG_DIR", m.tmux.SetEnvironment(sessionID, "CLAUDE_CONFIG_DIR", opts.ClaudeConfigDir))
+	// Set CURSOR_CONFIG_DIR for account selection (non-fatal)
+	if opts.CursorConfigDir != "" {
+		debugSession("SetEnvironment CURSOR_CONFIG_DIR", m.tmux.SetEnvironment(sessionID, "CURSOR_CONFIG_DIR", opts.CursorConfigDir))
 	}
 
 	// Set beads environment for worktree polecats (non-fatal)

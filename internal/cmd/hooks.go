@@ -20,10 +20,10 @@ var (
 var hooksCmd = &cobra.Command{
 	Use:     "hooks",
 	GroupID: GroupConfig,
-	Short:   "List all Claude Code hooks in the workspace",
-	Long: `List all Claude Code hooks configured in the workspace.
+	Short:   "List all Cursor hooks in the workspace",
+	Long: `List all Cursor hooks configured in the workspace.
 
-Scans for .claude/settings.json files and displays hooks by type.
+Scans for .cursor/hooks.json files and displays hooks by type.
 
 Hook types:
   SessionStart     - Runs when Claude session starts
@@ -46,8 +46,8 @@ func init() {
 	hooksCmd.Flags().BoolVarP(&hooksVerbose, "verbose", "v", false, "Show hook commands")
 }
 
-// ClaudeSettings represents the Claude Code settings.json structure.
-type ClaudeSettings struct {
+// CursorSettings represents the Cursor hooks.json structure.
+type CursorSettings struct {
 	EnabledPlugins map[string]bool                  `json:"enabledPlugins,omitempty"`
 	Hooks          map[string][]ClaudeHookMatcher   `json:"hooks,omitempty"`
 }
@@ -87,7 +87,7 @@ func runHooks(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("not in a Gas Town workspace: %w", err)
 	}
 
-	// Find all .claude/settings.json files
+	// Find all .cursor/hooks.json files
 	hooks, err := discoverHooks(townRoot)
 	if err != nil {
 		return fmt.Errorf("discovering hooks: %w", err)
@@ -100,19 +100,19 @@ func runHooks(cmd *cobra.Command, args []string) error {
 	return outputHooksHuman(townRoot, hooks)
 }
 
-// discoverHooks finds all Claude Code hooks in the workspace.
+// discoverHooks finds all Cursor hooks in the workspace.
 func discoverHooks(townRoot string) ([]HookInfo, error) {
 	var hooks []HookInfo
 
-	// Scan known locations for .claude/settings.json
-	// NOTE: Mayor settings are at ~/gt/mayor/.claude/, NOT ~/gt/.claude/
+	// Scan known locations for .cursor/hooks.json
+	// NOTE: Settings are at ~/gt/mayor/.cursor/, NOT ~/gt/.cursor/
 	// Settings at town root would pollute all child workspaces.
 	locations := []struct {
 		path  string
 		agent string
 	}{
-		{filepath.Join(townRoot, "mayor", ".claude", "settings.json"), "mayor/"},
-		{filepath.Join(townRoot, "deacon", ".claude", "settings.json"), "deacon/"},
+		{filepath.Join(townRoot, "mayor", ".cursor", "hooks.json"), "mayor/"},
+		{filepath.Join(townRoot, "deacon", ".cursor", "hooks.json"), "deacon/"},
 	}
 
 	// Scan rigs
@@ -133,7 +133,7 @@ func discoverHooks(townRoot string) ([]HookInfo, error) {
 		locations = append(locations, struct {
 			path  string
 			agent string
-		}{filepath.Join(rigPath, ".claude", "settings.json"), fmt.Sprintf("%s/rig", rigName)})
+		}{filepath.Join(rigPath, ".cursor", "hooks.json"), fmt.Sprintf("%s/rig", rigName)})
 
 		// Polecats
 		polecatsDir := filepath.Join(rigPath, "polecats")
@@ -143,7 +143,7 @@ func discoverHooks(townRoot string) ([]HookInfo, error) {
 					locations = append(locations, struct {
 						path  string
 						agent string
-					}{filepath.Join(polecatsDir, p.Name(), ".claude", "settings.json"), fmt.Sprintf("%s/%s", rigName, p.Name())})
+					}{filepath.Join(polecatsDir, p.Name(), ".cursor", "hooks.json"), fmt.Sprintf("%s/%s", rigName, p.Name())})
 				}
 			}
 		}
@@ -156,20 +156,20 @@ func discoverHooks(townRoot string) ([]HookInfo, error) {
 					locations = append(locations, struct {
 						path  string
 						agent string
-					}{filepath.Join(crewDir, c.Name(), ".claude", "settings.json"), fmt.Sprintf("%s/crew/%s", rigName, c.Name())})
+					}{filepath.Join(crewDir, c.Name(), ".cursor", "hooks.json"), fmt.Sprintf("%s/crew/%s", rigName, c.Name())})
 				}
 			}
 		}
 
 		// Witness
-		witnessPath := filepath.Join(rigPath, "witness", ".claude", "settings.json")
+		witnessPath := filepath.Join(rigPath, "witness", ".cursor", "hooks.json")
 		locations = append(locations, struct {
 			path  string
 			agent string
 		}{witnessPath, fmt.Sprintf("%s/witness", rigName)})
 
 		// Refinery
-		refineryPath := filepath.Join(rigPath, "refinery", ".claude", "settings.json")
+		refineryPath := filepath.Join(rigPath, "refinery", ".cursor", "hooks.json")
 		locations = append(locations, struct {
 			path  string
 			agent string
@@ -193,14 +193,14 @@ func discoverHooks(townRoot string) ([]HookInfo, error) {
 	return hooks, nil
 }
 
-// parseHooksFile parses a .claude/settings.json file and extracts hooks.
+// parseHooksFile parses a .cursor/hooks.json file and extracts hooks.
 func parseHooksFile(path, agent string) ([]HookInfo, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	var settings ClaudeSettings
+	var settings CursorSettings
 	if err := json.Unmarshal(data, &settings); err != nil {
 		return nil, err
 	}
@@ -250,11 +250,11 @@ func outputHooksJSON(townRoot string, hooks []HookInfo) error {
 
 func outputHooksHuman(townRoot string, hooks []HookInfo) error {
 	if len(hooks) == 0 {
-		fmt.Println(style.Dim.Render("No Claude Code hooks found in workspace"))
+		fmt.Println(style.Dim.Render("No Cursor hooks found in workspace"))
 		return nil
 	}
 
-	fmt.Printf("\n%s Claude Code Hooks\n", style.Bold.Render("🪝"))
+	fmt.Printf("\n%s Cursor Hooks\n", style.Bold.Render("🪝"))
 	fmt.Printf("Town root: %s\n\n", style.Dim.Render(townRoot))
 
 	// Group by hook type

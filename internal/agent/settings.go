@@ -2,7 +2,6 @@
 package agent
 
 import (
-	"github.com/cursorworkshop/cursor-gastown/internal/claude"
 	"github.com/cursorworkshop/cursor-gastown/internal/config"
 	"github.com/cursorworkshop/cursor-gastown/internal/cursor"
 )
@@ -10,48 +9,36 @@ import (
 // EnsureSettingsForRole ensures agent settings exist for the given agent preset and role.
 // This is a unified function that delegates to the appropriate agent-specific implementation.
 //
-// For Claude: Creates .claude/settings.json with hooks
-// For Cursor: Creates .cursor/rules/gastown.mdc with rules
+// For Cursor: Creates .cursor/rules/gastown.mdc with rules and .cursor/hooks.json
 // For other agents: Currently no-op (may be extended in future)
 func EnsureSettingsForRole(workDir, role string, agentName string) error {
-	// If no agent specified, default to claude for backwards compatibility
+	// If no agent specified, default to cursor
 	if agentName == "" {
-		agentName = "claude"
+		agentName = "cursor"
 	}
 
 	preset := config.GetAgentPresetByName(agentName)
 	if preset == nil {
-		// Unknown agent, try claude as fallback
-		return claude.EnsureSettingsForRole(workDir, role)
+		// Unknown agent, use cursor as fallback
+		return cursor.EnsureSettingsForRole(workDir, role)
 	}
 
 	switch preset.Name {
-	case config.AgentClaude:
-		return claude.EnsureSettingsForRole(workDir, role)
 	case config.AgentCursor:
 		return cursor.EnsureSettingsForRole(workDir, role)
-	case config.AgentGemini, config.AgentCodex, config.AgentAuggie, config.AgentAmp:
+	case config.AgentGemini, config.AgentCodex, config.AgentAuggie, config.AgentAmp, config.AgentClaude:
 		// These agents don't have a similar settings/rules mechanism yet
 		// They may read AGENTS.md or have their own config
 		return nil
 	default:
-		// Unknown preset, default to claude for backwards compatibility
-		return claude.EnsureSettingsForRole(workDir, role)
+		// Unknown preset, use cursor as fallback
+		return cursor.EnsureSettingsForRole(workDir, role)
 	}
 }
 
 // EnsureSettingsForAllAgents ensures settings exist for all supported agents.
 // This is useful during installation to prepare the workspace for any agent.
 func EnsureSettingsForAllAgents(workDir, role string) error {
-	// Ensure Claude settings (always, for backwards compatibility)
-	if err := claude.EnsureSettingsForRole(workDir, role); err != nil {
-		return err
-	}
-
-	// Ensure Cursor rules
-	if err := cursor.EnsureSettingsForRole(workDir, role); err != nil {
-		return err
-	}
-
-	return nil
+	// Ensure Cursor rules and hooks
+	return cursor.EnsureSettingsForRole(workDir, role)
 }

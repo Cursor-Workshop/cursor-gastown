@@ -17,7 +17,7 @@ Complete setup guide for Gas Town multi-agent orchestrator.
 | Tool | Version | Check | Install |
 |------|---------|-------|---------|
 | **tmux** | 3.0+ | `tmux -V` | See below |
-| **Claude Code** | latest | `claude --version` | See [claude.ai/claude-code](https://claude.ai/claude-code) |
+| **Cursor CLI** | latest | `cursor-agent --version` | See [cursor.com](https://cursor.com) |
 
 ## Installing Prerequisites
 
@@ -159,7 +159,7 @@ Gas Town supports two operational modes:
 
 ### Minimal Mode (No Daemon)
 
-Run individual Claude Code instances manually. Gas Town only tracks state.
+Run individual Cursor instances manually. Gas Town only tracks state.
 
 ```bash
 # Create and assign work

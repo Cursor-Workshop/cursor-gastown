@@ -62,7 +62,7 @@ func PropulsionNudge() string {
 // - mayor: Check mail for coordination work
 //
 // The workDir parameter is used to locate .runtime/session_id for including
-// session ID in the message (for Claude Code /resume picker discovery).
+// session ID in the message (for Cursor /resume picker discovery).
 func PropulsionNudgeForRole(role, workDir string) string {
 	var msg string
 	switch role {

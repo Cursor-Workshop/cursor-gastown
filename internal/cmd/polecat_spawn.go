@@ -35,7 +35,7 @@ func (s *SpawnedPolecatInfo) AgentID() string {
 type SlingSpawnOptions struct {
 	Force    bool   // Force spawn even if polecat has uncommitted work
 	Naked    bool   // No-tmux mode: skip session creation
-	Account  string // Claude Code account handle to use
+	Account  string // Cursor account handle to use
 	Create   bool   // Create polecat if it doesn't exist (currently always true for sling)
 	HookBead string // Bead ID to set as hook_bead at spawn time (atomic assignment)
 	Agent    string // Agent override for this spawn (e.g., "gemini", "codex", "claude-haiku")
@@ -141,7 +141,7 @@ func SpawnPolecatForSling(rigName string, opts SlingSpawnOptions) (*SpawnedPolec
 
 	// Resolve account for Claude config
 	accountsPath := constants.MayorAccountsPath(townRoot)
-	claudeConfigDir, accountHandle, err := config.ResolveAccountConfigDir(accountsPath, opts.Account)
+	cursorConfigDir, accountHandle, err := config.ResolveAccountConfigDir(accountsPath, opts.Account)
 	if err != nil {
 		return nil, fmt.Errorf("resolving account: %w", err)
 	}
@@ -158,7 +158,7 @@ func SpawnPolecatForSling(rigName string, opts SlingSpawnOptions) (*SpawnedPolec
 	if !running {
 		fmt.Printf("Starting session for %s/%s...\n", rigName, polecatName)
 		startOpts := polecat.SessionStartOptions{
-			ClaudeConfigDir: claudeConfigDir,
+			CursorConfigDir: cursorConfigDir,
 		}
 		if opts.Agent != "" {
 			cmd, err := config.BuildPolecatStartupCommandWithAgentOverride(rigName, polecatName, r.Path, "", opts.Agent)

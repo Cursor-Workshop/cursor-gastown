@@ -28,7 +28,7 @@ var nudgeCmd = &cobra.Command{
 	Use:     "nudge <target> [message]",
 	GroupID: GroupComm,
 	Short:   "Send a message to a polecat or deacon session reliably",
-	Long: `Sends a message to a polecat's or deacon's Claude Code session.
+	Long: `Sends a message to a polecat's or deacon's Cursor session.
 
 Uses a reliable delivery pattern:
 1. Sends text in literal mode (-l flag)

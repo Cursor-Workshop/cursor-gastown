@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/cursorworkshop/cursor-gastown/internal/claude"
 	"github.com/cursorworkshop/cursor-gastown/internal/config"
+	"github.com/cursorworkshop/cursor-gastown/internal/cursor"
 	"github.com/cursorworkshop/cursor-gastown/internal/constants"
 	"github.com/cursorworkshop/cursor-gastown/internal/session"
 	"github.com/cursorworkshop/cursor-gastown/internal/tmux"
@@ -73,9 +73,9 @@ func (m *Manager) Start(agentOverride string) error {
 		return fmt.Errorf("creating mayor directory: %w", err)
 	}
 
-	// Ensure Claude settings exist
-	if err := claude.EnsureSettingsForRole(mayorDir, "mayor"); err != nil {
-		return fmt.Errorf("ensuring Claude settings: %w", err)
+	// Ensure Cursor settings exist
+	if err := cursor.EnsureSettingsForRole(mayorDir, "mayor"); err != nil {
+		return fmt.Errorf("ensuring Cursor settings: %w", err)
 	}
 
 	// Create new tmux session

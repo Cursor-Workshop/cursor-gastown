@@ -27,8 +27,8 @@ type StartupNudgeConfig struct {
 	MolID string
 }
 
-// StartupNudge sends a formatted startup message to a Claude Code session.
-// The message becomes the session title in Claude Code's /resume picker,
+// StartupNudge sends a formatted startup message to a Cursor session.
+// The message becomes the session title in Cursor's /resume picker,
 // enabling workers to find predecessor sessions.
 //
 // Format: [GAS TOWN] <recipient> <- <sender> • <timestamp> • <topic[:mol-id]>

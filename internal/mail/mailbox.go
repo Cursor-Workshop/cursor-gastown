@@ -334,7 +334,7 @@ func (m *Mailbox) markReadBeads(id string) error {
 func (m *Mailbox) closeInDir(id, beadsDir string) error {
 	args := []string{"close", id}
 	// Pass session ID for work attribution if available
-	if sessionID := os.Getenv("CLAUDE_SESSION_ID"); sessionID != "" {
+	if sessionID := os.Getenv("CURSOR_SESSION_ID"); sessionID != "" {
 		args = append(args, "--session="+sessionID)
 	}
 

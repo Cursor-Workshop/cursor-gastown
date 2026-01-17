@@ -1477,7 +1477,7 @@ func runPolecatNuke(cmd *cobra.Command, args []string) error {
 		// Step 5: Close agent bead (if exists)
 		agentBeadID := beads.PolecatBeadID(p.rigName, p.polecatName)
 		closeArgs := []string{"close", agentBeadID, "--reason=nuked"}
-		if sessionID := os.Getenv("CLAUDE_SESSION_ID"); sessionID != "" {
+		if sessionID := os.Getenv("CURSOR_SESSION_ID"); sessionID != "" {
 			closeArgs = append(closeArgs, "--session="+sessionID)
 		}
 		closeCmd := exec.Command("bd", closeArgs...)

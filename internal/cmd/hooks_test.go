@@ -15,7 +15,7 @@ func TestParseHooksFile(t *testing.T) {
 		t.Fatalf("failed to create .claude dir: %v", err)
 	}
 
-	settings := ClaudeSettings{
+	settings := CursorSettings{
 		Hooks: map[string][]ClaudeHookMatcher{
 			"SessionStart": {
 				{
@@ -115,7 +115,7 @@ func TestParseHooksFileEmptyHooks(t *testing.T) {
 	tmpDir := t.TempDir()
 	settingsPath := filepath.Join(tmpDir, "settings.json")
 
-	settings := ClaudeSettings{
+	settings := CursorSettings{
 		Hooks: map[string][]ClaudeHookMatcher{},
 	}
 

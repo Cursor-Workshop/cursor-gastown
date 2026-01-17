@@ -406,19 +406,19 @@ func DefaultNamepoolConfig() *NamepoolConfig {
 	}
 }
 
-// AccountsConfig represents Claude Code account configuration (mayor/accounts.json).
-// This enables Gas Town to manage multiple Claude Code accounts with easy switching.
+// AccountsConfig represents Cursor account configuration (mayor/accounts.json).
+// This enables Gas Town to manage multiple Cursor accounts with easy switching.
 type AccountsConfig struct {
 	Version  int                `json:"version"`  // schema version
 	Accounts map[string]Account `json:"accounts"` // handle -> account details
 	Default  string             `json:"default"`  // default account handle
 }
 
-// Account represents a single Claude Code account.
+// Account represents a single Cursor account.
 type Account struct {
 	Email       string `json:"email"`                 // account email
 	Description string `json:"description,omitempty"` // human description
-	ConfigDir   string `json:"config_dir"`            // path to CLAUDE_CONFIG_DIR
+	ConfigDir   string `json:"config_dir"`            // path to CURSOR_CONFIG_DIR
 }
 
 // CurrentAccountsVersion is the current schema version for AccountsConfig.

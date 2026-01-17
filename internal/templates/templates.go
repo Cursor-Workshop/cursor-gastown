@@ -184,7 +184,7 @@ func GetAllRoleTemplates() (map[string][]byte, error) {
 	return result, nil
 }
 
-// ProvisionCommands creates the .claude/commands/ directory with standard slash commands.
+// ProvisionCommands creates the .cursor/commands/ directory with standard slash commands.
 // This ensures crew/polecat workspaces have the handoff command and other utilities
 // even if the source repo doesn't have them tracked.
 // If a command already exists, it is skipped (no overwrite).
@@ -194,8 +194,8 @@ func ProvisionCommands(workspacePath string) error {
 		return fmt.Errorf("reading commands directory: %w", err)
 	}
 
-	// Create .claude/commands/ directory
-	commandsDir := filepath.Join(workspacePath, ".claude", "commands")
+	// Create .cursor/commands/ directory
+	commandsDir := filepath.Join(workspacePath, ".cursor", "commands")
 	if err := os.MkdirAll(commandsDir, 0755); err != nil {
 		return fmt.Errorf("creating commands directory: %w", err)
 	}
@@ -241,9 +241,9 @@ func CommandNames() ([]string, error) {
 	return names, nil
 }
 
-// HasCommands checks if a workspace has the .claude/commands/ directory provisioned.
+// HasCommands checks if a workspace has the .cursor/commands/ directory provisioned.
 func HasCommands(workspacePath string) bool {
-	commandsDir := filepath.Join(workspacePath, ".claude", "commands")
+	commandsDir := filepath.Join(workspacePath, ".cursor", "commands")
 	info, err := os.Stat(commandsDir)
 	return err == nil && info.IsDir()
 }
@@ -255,7 +255,7 @@ func MissingCommands(workspacePath string) ([]string, error) {
 		return nil, fmt.Errorf("reading commands directory: %w", err)
 	}
 
-	commandsDir := filepath.Join(workspacePath, ".claude", "commands")
+	commandsDir := filepath.Join(workspacePath, ".cursor", "commands")
 	var missing []string
 
 	for _, entry := range entries {

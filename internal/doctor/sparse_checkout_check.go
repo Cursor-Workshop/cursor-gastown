@@ -10,7 +10,7 @@ import (
 )
 
 // SparseCheckoutCheck verifies that git clones/worktrees have sparse checkout configured
-// to exclude Claude Code context files from source repos. This ensures source repo settings
+// to exclude Cursor context files from source repos. This ensures source repo settings
 // and instructions don't override Gas Town agent configuration.
 // Excluded files: .claude/, CLAUDE.md, CLAUDE.local.md, .mcp.json
 type SparseCheckoutCheck struct {

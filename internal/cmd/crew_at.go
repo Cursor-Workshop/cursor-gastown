@@ -67,7 +67,7 @@ func runCrewAt(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("finding town root: %w", err)
 	}
 	accountsPath := constants.MayorAccountsPath(townRoot)
-	claudeConfigDir, accountHandle, err := config.ResolveAccountConfigDir(accountsPath, crewAccount)
+	cursorConfigDir, accountHandle, err := config.ResolveAccountConfigDir(accountsPath, crewAccount)
 	if err != nil {
 		return fmt.Errorf("resolving account: %w", err)
 	}
@@ -125,9 +125,9 @@ func runCrewAt(cmd *cobra.Command, args []string) error {
 		_ = t.SetEnvironment(sessionID, "GT_RIG", r.Name)
 		_ = t.SetEnvironment(sessionID, "GT_CREW", name)
 
-		// Set CLAUDE_CONFIG_DIR for account selection (non-fatal)
-		if claudeConfigDir != "" {
-			_ = t.SetEnvironment(sessionID, "CLAUDE_CONFIG_DIR", claudeConfigDir)
+		// Set CURSOR_CONFIG_DIR for account selection (non-fatal)
+		if cursorConfigDir != "" {
+			_ = t.SetEnvironment(sessionID, "CURSOR_CONFIG_DIR", cursorConfigDir)
 		}
 
 		// Apply rig-based theming (non-fatal: theming failure doesn't affect operation)

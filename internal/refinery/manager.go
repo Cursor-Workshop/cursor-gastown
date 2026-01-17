@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/cursorworkshop/cursor-gastown/internal/beads"
-	"github.com/cursorworkshop/cursor-gastown/internal/claude"
 	"github.com/cursorworkshop/cursor-gastown/internal/config"
+	"github.com/cursorworkshop/cursor-gastown/internal/cursor"
 	"github.com/cursorworkshop/cursor-gastown/internal/constants"
 	"github.com/cursorworkshop/cursor-gastown/internal/events"
 	"github.com/cursorworkshop/cursor-gastown/internal/mail"
@@ -166,11 +166,11 @@ func (m *Manager) Start(foreground bool) error {
 		refineryRigDir = m.workDir
 	}
 
-	// Ensure Claude settings exist in refinery/ (not refinery/rig/) so we don't
-	// write into the source repo. Claude walks up the tree to find settings.
+	// Ensure Cursor settings exist in refinery/ (not refinery/rig/) so we don't
+	// write into the source repo. Cursor walks up the tree to find settings.
 	refineryParentDir := filepath.Join(m.rig.Path, "refinery")
-	if err := claude.EnsureSettingsForRole(refineryParentDir, "refinery"); err != nil {
-		return fmt.Errorf("ensuring Claude settings: %w", err)
+	if err := cursor.EnsureSettingsForRole(refineryParentDir, "refinery"); err != nil {
+		return fmt.Errorf("ensuring Cursor settings: %w", err)
 	}
 
 	if err := t.NewSession(sessionID, refineryRigDir); err != nil {

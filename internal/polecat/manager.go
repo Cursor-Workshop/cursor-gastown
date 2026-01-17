@@ -249,7 +249,7 @@ func (m *Manager) AddWithOptions(name string, opts AddOptions) (*Polecat, error)
 		fmt.Printf("Warning: could not set up shared beads: %v\n", err)
 	}
 
-	// NOTE: Slash commands (.claude/commands/) are provisioned at town level by gt install.
+	// NOTE: Slash commands (.cursor/commands/) are provisioned at town level by gt install.
 	// All agents inherit them via Claude's directory traversal - no per-workspace copies needed.
 
 	// Create agent bead for ZFC compliance (self-report state).

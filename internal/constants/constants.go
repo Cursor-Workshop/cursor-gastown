@@ -17,7 +17,7 @@ const (
 	ShellReadyTimeout = 5 * time.Second
 
 	// DefaultDebounceMs is the default debounce for SendKeys operations.
-	// 500ms is required for Claude Code to reliably process paste before Enter.
+	// 500ms is required for Cursor to reliably process paste before Enter.
 	// See NudgeSession comment: "Wait 500ms for paste to complete (tested, required)"
 	DefaultDebounceMs = 500
 

@@ -31,7 +31,7 @@ var broadcastCmd = &cobra.Command{
 By default, only workers (polecats and crew) receive the message.
 Use --all to include infrastructure agents (mayor, deacon, witness, refinery).
 
-The message is sent as a nudge to each worker's Claude Code session.
+The message is sent as a nudge to each worker's Cursor session.
 
 Examples:
   gt broadcast "Check your mail"

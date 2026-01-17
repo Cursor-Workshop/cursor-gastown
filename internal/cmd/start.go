@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/cursorworkshop/cursor-gastown/internal/claude"
 	"github.com/cursorworkshop/cursor-gastown/internal/config"
+	"github.com/cursorworkshop/cursor-gastown/internal/cursor"
 	"github.com/cursorworkshop/cursor-gastown/internal/constants"
 	"github.com/cursorworkshop/cursor-gastown/internal/crew"
 	"github.com/cursorworkshop/cursor-gastown/internal/deacon"
@@ -112,7 +112,7 @@ func init() {
 	startCmd.Flags().StringVar(&startAgentOverride, "agent", "", "Agent alias to run Mayor/Deacon with (overrides town default)")
 
 	startCrewCmd.Flags().StringVar(&startCrewRig, "rig", "", "Rig to use")
-	startCrewCmd.Flags().StringVar(&startCrewAccount, "account", "", "Claude Code account handle to use")
+	startCrewCmd.Flags().StringVar(&startCrewAccount, "account", "", "Cursor account handle to use")
 	startCrewCmd.Flags().StringVar(&startCrewAgentOverride, "agent", "", "Agent alias to run crew worker with (overrides rig/town default)")
 	startCmd.AddCommand(startCrewCmd)
 
@@ -343,11 +343,11 @@ func ensureRefinerySession(rigName string, r *rig.Rig) (bool, error) {
 		refineryRigDir = r.Path
 	}
 
-	// Ensure Claude settings exist in refinery/ (not refinery/rig/) so we don't
-	// write into the source repo. Claude walks up the tree to find settings.
+	// Ensure Cursor settings exist in refinery/ (not refinery/rig/) so we don't
+	// write into the source repo. Cursor walks up the tree to find settings.
 	refineryParentDir := filepath.Join(r.Path, "refinery")
-	if err := claude.EnsureSettingsForRole(refineryParentDir, "refinery"); err != nil {
-		return false, fmt.Errorf("ensuring Claude settings: %w", err)
+	if err := cursor.EnsureSettingsForRole(refineryParentDir, "refinery"); err != nil {
+		return false, fmt.Errorf("ensuring Cursor settings: %w", err)
 	}
 
 	// Create new tmux session
@@ -765,7 +765,7 @@ func runStartCrew(cmd *cobra.Command, args []string) error {
 
 	// Resolve account for Claude config
 	accountsPath := constants.MayorAccountsPath(townRoot)
-	claudeConfigDir, accountHandle, err := config.ResolveAccountConfigDir(accountsPath, startCrewAccount)
+	cursorConfigDir, accountHandle, err := config.ResolveAccountConfigDir(accountsPath, startCrewAccount)
 	if err != nil {
 		return fmt.Errorf("resolving account: %w", err)
 	}
@@ -776,7 +776,7 @@ func runStartCrew(cmd *cobra.Command, args []string) error {
 	// Use manager's Start() method - handles workspace creation, settings, and session
 	err = crewMgr.Start(name, crew.StartOptions{
 		Account:         startCrewAccount,
-		ClaudeConfigDir: claudeConfigDir,
+		CursorConfigDir: cursorConfigDir,
 	})
 	if err != nil {
 		if errors.Is(err, crew.ErrSessionRunning) {

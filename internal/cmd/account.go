@@ -23,9 +23,9 @@ var (
 var accountCmd = &cobra.Command{
 	Use:     "account",
 	GroupID: GroupConfig,
-	Short:   "Manage Claude Code accounts",
+	Short:   "Manage Cursor accounts",
 	RunE:    requireSubcommand,
-	Long: `Manage multiple Claude Code accounts for Gas Town.
+	Long: `Manage multiple Cursor accounts for Gas Town.
 
 This enables switching between accounts (e.g., personal vs work) with
 easy account selection per spawn or globally.
@@ -40,7 +40,7 @@ Commands:
 var accountListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List registered accounts",
-	Long: `List all registered Claude Code accounts.
+	Long: `List all registered Cursor accounts.
 
 Shows account handles, emails, and which is the default.
 
@@ -53,10 +53,10 @@ Examples:
 var accountAddCmd = &cobra.Command{
 	Use:   "add <handle>",
 	Short: "Add a new account",
-	Long: `Add a new Claude Code account.
+	Long: `Add a new Cursor account.
 
-Creates a config directory at ~/.claude-accounts/<handle> and registers
-the account. You'll need to run 'claude' with CLAUDE_CONFIG_DIR set to
+Creates a config directory at ~/.cursor-accounts/<handle> and registers
+the account. You'll need to run 'cursor-agent' with CURSOR_CONFIG_DIR set to
 that directory to complete the login.
 
 Examples:
@@ -70,7 +70,7 @@ Examples:
 var accountDefaultCmd = &cobra.Command{
 	Use:   "default <handle>",
 	Short: "Set the default account",
-	Long: `Set the default Claude Code account.
+	Long: `Set the default Cursor account.
 
 The default account is used when no --account flag or GT_ACCOUNT env var
 is specified during spawn or attach.
@@ -138,7 +138,7 @@ func runAccountList(cmd *cobra.Command, args []string) error {
 	}
 
 	// Text output
-	fmt.Printf("%s\n\n", style.Bold.Render("Claude Code Accounts"))
+	fmt.Printf("%s\n\n", style.Bold.Render("Cursor Accounts"))
 	for _, item := range items {
 		marker := "  "
 		if item.IsDefault {
@@ -212,7 +212,7 @@ func runAccountAdd(cmd *cobra.Command, args []string) error {
 	fmt.Printf("Config directory: %s\n", configDir)
 	fmt.Println()
 	fmt.Println("To complete login, run:")
-	fmt.Printf("  CLAUDE_CONFIG_DIR=%s claude\n", configDir)
+	fmt.Printf("  CURSOR_CONFIG_DIR=%s cursor-agent\n", configDir)
 	fmt.Println("Then use /login to authenticate.")
 
 	return nil
@@ -252,7 +252,7 @@ func runAccountDefault(cmd *cobra.Command, args []string) error {
 var accountStatusCmd = &cobra.Command{
 	Use:   "status",
 	Short: "Show current account info",
-	Long: `Show which Claude Code account would be used for new sessions.
+	Long: `Show which Cursor account would be used for new sessions.
 
 Displays the currently resolved account based on:
 1. GT_ACCOUNT environment variable (highest priority)

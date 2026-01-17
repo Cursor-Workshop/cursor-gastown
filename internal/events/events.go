@@ -275,7 +275,7 @@ func HaltPayload(services []string) map[string]interface{} {
 }
 
 // SessionPayload creates a payload for session start/end events.
-// sessionID: Claude Code session UUID
+// sessionID: Cursor session UUID
 // role: Gas Town role (e.g., "gastown/crew/joe", "deacon")
 // topic: What the session is working on
 // cwd: Working directory

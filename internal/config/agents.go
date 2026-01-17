@@ -15,7 +15,7 @@ type AgentPreset string
 
 // Supported agent presets (built-in, E2E tested).
 const (
-	// AgentClaude is Claude Code (default).
+	// AgentClaude is Claude Code CLI.
 	AgentClaude AgentPreset = "claude"
 	// AgentGemini is Gemini CLI.
 	AgentGemini AgentPreset = "gemini"
@@ -103,7 +103,7 @@ var builtinPresets = map[AgentPreset]*AgentPresetInfo{
 		Command:             "claude",
 		Args:                []string{"--dangerously-skip-permissions"},
 		ProcessNames:        []string{"node"}, // Claude runs as Node.js
-		SessionIDEnv:        "CLAUDE_SESSION_ID",
+		SessionIDEnv:        "", // Claude CLI uses its own session tracking
 		ResumeFlag:          "--resume",
 		ResumeStyle:         "flag",
 		SupportsHooks:       true,

@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/cursorworkshop/cursor-gastown/internal/beads"
-	"github.com/cursorworkshop/cursor-gastown/internal/claude"
 	"github.com/cursorworkshop/cursor-gastown/internal/config"
+	"github.com/cursorworkshop/cursor-gastown/internal/cursor"
 	"github.com/cursorworkshop/cursor-gastown/internal/git"
 	"github.com/cursorworkshop/cursor-gastown/internal/templates"
 	"github.com/cursorworkshop/cursor-gastown/internal/workspace"
@@ -455,7 +455,7 @@ Use crew for your own workspace. Polecats are for batch work dispatch.
 		{polecatsPath, "polecat"},
 	}
 	for _, sr := range settingsRoles {
-		if err := claude.EnsureSettingsForRole(sr.dir, sr.role); err != nil {
+		if err := cursor.EnsureSettingsForRole(sr.dir, sr.role); err != nil {
 			fmt.Fprintf(os.Stderr, "  Warning: Could not create %s settings: %v\n", sr.role, err)
 		}
 	}

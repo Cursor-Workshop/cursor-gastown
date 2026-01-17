@@ -33,7 +33,7 @@ var costsCmd = &cobra.Command{
 	Use:     "costs",
 	GroupID: GroupDiag,
 	Short:   "Show costs for running Claude sessions",
-	Long: `Display costs for Claude Code sessions in Gas Town.
+	Long: `Display costs for Cursor sessions in Gas Town.
 
 By default, shows live costs scraped from running tmux sessions.
 
@@ -52,7 +52,7 @@ var costsRecordCmd = &cobra.Command{
 	Short: "Record session cost as a bead event (called by Stop hook)",
 	Long: `Record the final cost of a session as a session.ended event in beads.
 
-This command is intended to be called from a Claude Code Stop hook.
+This command is intended to be called from a Cursor Stop hook.
 It captures the final cost from the tmux session and creates an event
 bead with the cost data.
 
@@ -410,7 +410,7 @@ func parseSessionName(session string) (role, rig, worker string) {
 }
 
 // extractCost finds the most recent cost value in pane content.
-// Claude Code displays cost in the format "$X.XX" in the status area.
+// Cursor displays cost in the format "$X.XX" in the status area.
 func extractCost(content string) float64 {
 	matches := costRegex.FindAllStringSubmatch(content, -1)
 	if len(matches) == 0 {
@@ -513,7 +513,7 @@ func outputLedgerHuman(output CostsOutput, entries []CostEntry) error {
 }
 
 // runCostsRecord captures the final cost from a session and records it as a bead event.
-// This is called by the Claude Code Stop hook.
+// This is called by the Cursor Stop hook.
 func runCostsRecord(cmd *cobra.Command, args []string) error {
 	// Get session from flag or try to detect from environment
 	session := recordSession

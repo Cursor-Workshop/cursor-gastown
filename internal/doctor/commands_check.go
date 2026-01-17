@@ -7,7 +7,7 @@ import (
 	"github.com/cursorworkshop/cursor-gastown/internal/templates"
 )
 
-// CommandsCheck validates that town-level .claude/commands/ is provisioned.
+// CommandsCheck validates that town-level .cursor/commands/ is provisioned.
 // All agents inherit these via Claude's directory traversal - no per-workspace copies needed.
 type CommandsCheck struct {
 	FixableCheck
@@ -21,7 +21,7 @@ func NewCommandsCheck() *CommandsCheck {
 		FixableCheck: FixableCheck{
 			BaseCheck: BaseCheck{
 				CheckName:        "commands-provisioned",
-				CheckDescription: "Check .claude/commands/ is provisioned at town level",
+				CheckDescription: "Check .cursor/commands/ is provisioned at town level",
 			},
 		},
 	}
@@ -58,7 +58,7 @@ func (c *CommandsCheck) Run(ctx *CheckContext) *CheckResult {
 		Status:  StatusWarning,
 		Message: fmt.Sprintf("Missing town-level slash commands: %s", strings.Join(missing, ", ")),
 		Details: []string{
-			fmt.Sprintf("Expected at: %s/.claude/commands/", ctx.TownRoot),
+			fmt.Sprintf("Expected at: %s/.cursor/commands/", ctx.TownRoot),
 			"All agents inherit town-level commands via directory traversal",
 		},
 		FixHint: "Run 'gt doctor --fix' to provision missing commands",

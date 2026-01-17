@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/cursorworkshop/cursor-gastown/internal/beads"
-	"github.com/cursorworkshop/cursor-gastown/internal/claude"
 	"github.com/cursorworkshop/cursor-gastown/internal/config"
+	"github.com/cursorworkshop/cursor-gastown/internal/cursor"
 	"github.com/cursorworkshop/cursor-gastown/internal/constants"
 	"github.com/cursorworkshop/cursor-gastown/internal/git"
 	"github.com/cursorworkshop/cursor-gastown/internal/rig"
@@ -36,9 +36,9 @@ type StartOptions struct {
 	// Account specifies the account handle to use (overrides default).
 	Account string
 
-	// ClaudeConfigDir is resolved CLAUDE_CONFIG_DIR for the account.
+	// CursorConfigDir is resolved CURSOR_CONFIG_DIR for the account.
 	// If set, this is injected as an environment variable.
-	ClaudeConfigDir string
+	CursorConfigDir string
 
 	// KillExisting kills any existing session before starting (for restart operations).
 	// If false and a session is running, Start() returns ErrSessionRunning.
@@ -465,11 +465,11 @@ func (m *Manager) Start(name string, opts StartOptions) error {
 	}
 
 	// Ensure Claude settings exist in crew/ (not crew/<name>/) so we don't
-	// write into the source repo. Claude walks up the tree to find settings.
+	// write into the source repo. Cursor walks up the tree to find settings.
 	// All crew members share the same settings file.
 	crewBaseDir := filepath.Join(m.rig.Path, "crew")
-	if err := claude.EnsureSettingsForRole(crewBaseDir, "crew"); err != nil {
-		return fmt.Errorf("ensuring Claude settings: %w", err)
+	if err := cursor.EnsureSettingsForRole(crewBaseDir, "crew"); err != nil {
+		return fmt.Errorf("ensuring Cursor settings: %w", err)
 	}
 
 	// Create tmux session
@@ -483,8 +483,8 @@ func (m *Manager) Start(name string, opts StartOptions) error {
 	_ = t.SetEnvironment(sessionID, "GT_ROLE", "crew")
 
 	// Set CLAUDE_CONFIG_DIR for account selection (non-fatal)
-	if opts.ClaudeConfigDir != "" {
-		_ = t.SetEnvironment(sessionID, "CLAUDE_CONFIG_DIR", opts.ClaudeConfigDir)
+	if opts.CursorConfigDir != "" {
+		_ = t.SetEnvironment(sessionID, "CURSOR_CONFIG_DIR", opts.CursorConfigDir)
 	}
 
 	// Apply rig-based theming (non-fatal: theming failure doesn't affect operation)

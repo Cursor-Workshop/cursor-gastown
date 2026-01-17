@@ -261,7 +261,7 @@ func (t *Tmux) SendKeysDelayedDebounced(session, keys string, preDelayMs, deboun
 	return t.SendKeysDebounced(session, keys, debounceMs)
 }
 
-// NudgeSession sends a message to a Claude Code session reliably.
+// NudgeSession sends a message to a Cursor session reliably.
 // This is the canonical way to send messages to Claude sessions.
 // Uses: literal mode + 500ms debounce + separate Enter.
 // Verification is the Witness's job (AI), not this function.
@@ -315,7 +315,7 @@ func (t *Tmux) NudgePane(pane, message string) error {
 	return fmt.Errorf("failed to send Enter after 3 attempts: %w", lastErr)
 }
 
-// AcceptBypassPermissionsWarning dismisses the Claude Code bypass permissions warning dialog.
+// AcceptBypassPermissionsWarning dismisses the Cursor bypass permissions warning dialog.
 // When Claude starts with --dangerously-skip-permissions, it shows a warning dialog that
 // requires pressing Down arrow to select "Yes, I accept" and then Enter to confirm.
 // This function checks if the warning is present before sending keys to avoid interfering

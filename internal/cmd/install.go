@@ -11,8 +11,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/cursorworkshop/cursor-gastown/internal/beads"
-	"github.com/cursorworkshop/cursor-gastown/internal/claude"
 	"github.com/cursorworkshop/cursor-gastown/internal/config"
+	"github.com/cursorworkshop/cursor-gastown/internal/cursor"
 	"github.com/cursorworkshop/cursor-gastown/internal/deps"
 	"github.com/cursorworkshop/cursor-gastown/internal/formula"
 	"github.com/cursorworkshop/cursor-gastown/internal/session"
@@ -183,26 +183,26 @@ func runInstall(cmd *cobra.Command, args []string) error {
 	}
 
 	// Create mayor settings (mayor runs from ~/gt/mayor/)
-	// IMPORTANT: Settings must be in ~/gt/mayor/.claude/, NOT ~/gt/.claude/
+	// IMPORTANT: Settings must be in ~/gt/mayor/.cursor/, NOT ~/gt/.cursor/
 	// Settings at town root would be found by ALL agents via directory traversal,
 	// causing crew/polecat/etc to cd to town root before running commands.
 	// mayorDir already defined above
 	if err := os.MkdirAll(mayorDir, 0755); err != nil {
 		fmt.Printf("   %s Could not create mayor directory: %v\n", style.Dim.Render("WARN"), err)
-	} else if err := claude.EnsureSettingsForRole(mayorDir, "mayor"); err != nil {
+	} else if err := cursor.EnsureSettingsForRole(mayorDir, "mayor"); err != nil {
 		fmt.Printf("   %s Could not create mayor settings: %v\n", style.Dim.Render("WARN"), err)
 	} else {
-		fmt.Printf("   OK Created mayor/.claude/settings.json\n")
+		fmt.Printf("   OK Created mayor/.cursor/ settings\n")
 	}
 
 	// Create deacon directory and settings (deacon runs from ~/gt/deacon/)
 	deaconDir := filepath.Join(absPath, "deacon")
 	if err := os.MkdirAll(deaconDir, 0755); err != nil {
 		fmt.Printf("   %s Could not create deacon directory: %v\n", style.Dim.Render("WARN"), err)
-	} else if err := claude.EnsureSettingsForRole(deaconDir, "deacon"); err != nil {
+	} else if err := cursor.EnsureSettingsForRole(deaconDir, "deacon"); err != nil {
 		fmt.Printf("   %s Could not create deacon settings: %v\n", style.Dim.Render("WARN"), err)
 	} else {
-		fmt.Printf("   OK Created deacon/.claude/settings.json\n")
+		fmt.Printf("   OK Created deacon/.cursor/ settings\n")
 	}
 
 	// Initialize git BEFORE beads so that bd can compute repository fingerprint.
@@ -252,12 +252,12 @@ func runInstall(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	// Provision town-level slash commands (.claude/commands/)
-	// All agents inherit these via Claude's directory traversal - no per-workspace copies needed.
+	// Provision town-level slash commands (.cursor/commands/)
+	// All agents inherit these via Cursor's directory traversal - no per-workspace copies needed.
 	if err := templates.ProvisionCommands(absPath); err != nil {
 		fmt.Printf("   %s Could not provision slash commands: %v\n", style.Dim.Render("WARN"), err)
 	} else {
-		fmt.Printf("   OK Created .claude/commands/ (slash commands for all agents)\n")
+		fmt.Printf("   OK Created .cursor/commands/ (slash commands for all agents)\n")
 	}
 
 	fmt.Printf("\n%s HQ created successfully!\n", style.Bold.Render("OK"))

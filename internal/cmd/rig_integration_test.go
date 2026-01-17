@@ -262,10 +262,10 @@ func TestRigAddCreatesCorrectStructure(t *testing.T) {
 		path string
 		desc string
 	}{
-		{filepath.Join(rigPath, "witness", ".claude", "settings.json"), "witness/.claude/settings.json"},
-		{filepath.Join(rigPath, "refinery", ".claude", "settings.json"), "refinery/.claude/settings.json"},
-		{filepath.Join(rigPath, "crew", ".claude", "settings.json"), "crew/.claude/settings.json"},
-		{filepath.Join(rigPath, "polecats", ".claude", "settings.json"), "polecats/.claude/settings.json"},
+		{filepath.Join(rigPath, "witness", ".cursor", "hooks.json"), "witness/.cursor/hooks.json"},
+		{filepath.Join(rigPath, "refinery", ".cursor", "hooks.json"), "refinery/.cursor/hooks.json"},
+		{filepath.Join(rigPath, "crew", ".cursor", "hooks.json"), "crew/.cursor/hooks.json"},
+		{filepath.Join(rigPath, "polecats", ".cursor", "hooks.json"), "polecats/.cursor/hooks.json"},
 	}
 
 	for _, s := range expectedSettings {

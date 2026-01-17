@@ -44,7 +44,7 @@ Sessions are tmux sessions running Claude for each polecat.
 Use the subcommands to start, stop, attach, and monitor sessions.
 
 TIP: To send messages to a running session, use 'gt nudge' (not 'session inject').
-The nudge command uses reliable delivery that works correctly with Claude Code.`,
+The nudge command uses reliable delivery that works correctly with Cursor.`,
 }
 
 var sessionStartCmd = &cobra.Command{
@@ -115,7 +115,7 @@ var sessionInjectCmd = &cobra.Command{
 
 NOTE: For sending messages to Claude sessions, use 'gt nudge' instead.
 It uses reliable delivery (literal mode + timing) that works correctly
-with Claude Code's input handling.
+with Cursor's input handling.
 
 This command is a low-level primitive for file-based injection or
 cases where you need raw tmux send-keys behavior.

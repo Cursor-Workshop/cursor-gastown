@@ -239,25 +239,25 @@ a git clone that holds the canonical `.beads/` database for that rig.
 
 ### Settings File Locations
 
-Claude Code searches for `.claude/settings.json` starting from the working
+Cursor searches for `.cursor/hooks.json` starting from the working
 directory and traversing upward. Settings are placed in **parent directories**
 (not inside git clones) so they're found via directory traversal without
 polluting source repositories:
 
 ```
 ~/gt/
-├── mayor/.claude/settings.json          # Mayor settings
-├── deacon/.claude/settings.json         # Deacon settings
+├── mayor/.cursor/hooks.json          # Mayor settings
+├── deacon/.cursor/hooks.json         # Deacon settings
 └── <rig>/
-    ├── witness/.claude/settings.json    # Witness settings (no rig/ subdir)
-    ├── refinery/.claude/settings.json   # Found by refinery/rig/ via traversal
-    ├── crew/.claude/settings.json       # Shared by all crew/<name>/rig/
-    └── polecats/.claude/settings.json   # Shared by all polecats/<name>/rig/
+    ├── witness/.cursor/hooks.json    # Witness settings (no rig/ subdir)
+    ├── refinery/.cursor/hooks.json   # Found by refinery/rig/ via traversal
+    ├── crew/.cursor/hooks.json       # Shared by all crew/<name>/rig/
+    └── polecats/.cursor/hooks.json   # Shared by all polecats/<name>/rig/
 ```
 
 **Why parent directories?** Agents working in git clones (like `refinery/rig/`)
 would pollute the source repo if settings were placed there. By putting settings
-one level up, Claude finds them via upward traversal, and all workers of the
+one level up, Cursor finds them via upward traversal, and all workers of the
 same type share the same settings.
 
 ### CLAUDE.md Locations
@@ -286,16 +286,17 @@ persisting it to disk.
 
 ### Sparse Checkout (Source Repo Isolation)
 
-When agents work on source repositories that have their own Claude Code configuration,
+When agents work on source repositories that have their own Cursor configuration,
 Gas Town uses git sparse checkout to exclude all context files:
 
 ```bash
 # Automatically configured for worktrees - excludes:
-# - .claude/       : settings, rules, agents, commands
+# - .cursor/       : settings, rules, hooks
+# - .claude/       : legacy settings (for backwards compatibility)
 # - CLAUDE.md      : primary context file
 # - CLAUDE.local.md: personal context file
 # - .mcp.json      : MCP server configuration
-git sparse-checkout set --no-cone '/*' '!/.claude/' '!/CLAUDE.md' '!/CLAUDE.local.md' '!/.mcp.json'
+git sparse-checkout set --no-cone '/*' '!/.cursor/' '!/.claude/' '!/CLAUDE.md' '!/CLAUDE.local.md' '!/.mcp.json'
 ```
 
 This ensures agents use Gas Town's context, not the source repo's instructions.
@@ -305,11 +306,11 @@ Run `gt doctor --fix` to update legacy configurations missing the newer patterns
 
 ### Settings Inheritance
 
-Claude Code's settings search order (first match wins):
+Cursor's settings search order (first match wins):
 
-1. `.claude/settings.json` in current working directory
-2. `.claude/settings.json` in parent directories (traversing up)
-3. `~/.claude/settings.json` (user global settings)
+1. `.cursor/hooks.json` in current working directory
+2. `.cursor/hooks.json` in parent directories (traversing up)
+3. `~/.cursor/hooks.json` (user global settings)
 
 Gas Town places settings at each agent's working directory root, so agents
 find their role-specific settings before reaching any parent or global config.
