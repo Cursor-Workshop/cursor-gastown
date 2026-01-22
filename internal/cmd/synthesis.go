@@ -399,7 +399,7 @@ func getConvoyMeta(convoyID string) (*ConvoyMeta, error) {
 	}
 
 	// Get tracked leg issues
-	tracked := getTrackedIssues(townBeads, convoyID)
+	tracked := getTrackedIssuesFromDir(townBeads, convoyID)
 	for _, t := range tracked {
 		meta.LegIssues = append(meta.LegIssues, t.ID)
 	}
