@@ -10,9 +10,7 @@ import (
 
 	"github.com/cursorworkshop/cursor-gastown/internal/cursor"
 	"github.com/cursorworkshop/cursor-gastown/internal/session"
-	"github.com/cursorworkshop/cursor-gastown/internal/templates"
 	"github.com/cursorworkshop/cursor-gastown/internal/tmux"
-	"github.com/cursorworkshop/cursor-gastown/internal/workspace"
 )
 
 // gitFileStatus represents the git status of a file.
@@ -135,22 +133,6 @@ func (c *CursorSettingsCheck) findSettingsFiles(townRoot string) []staleSettings
 			wrongLocation: true,
 			gitStatus:     c.getGitFileStatus(staleTownRootSettings),
 			missing:       []string{"should be at mayor/.cursor/, not town root"},
-		})
-	}
-
-	// Check for STALE CLAUDE.md at town root (~/gt/CLAUDE.md)
-	// This is WRONG - CLAUDE.md here is inherited by ALL agents via directory traversal,
-	// causing crew/polecat/etc to receive Mayor-specific instructions.
-	// Mayor's CLAUDE.md should be at ~/gt/mayor/CLAUDE.md instead.
-	staleTownRootCLAUDEmd := filepath.Join(townRoot, "CLAUDE.md")
-	if fileExists(staleTownRootCLAUDEmd) {
-		files = append(files, staleSettingsInfo{
-			path:          staleTownRootCLAUDEmd,
-			agentType:     "mayor",
-			sessionName:   "hq-mayor",
-			wrongLocation: true,
-			gitStatus:     c.getGitFileStatus(staleTownRootCLAUDEmd),
-			missing:       []string{"should be at mayor/CLAUDE.md, not town root"},
 		})
 	}
 
@@ -442,20 +424,6 @@ func (c *CursorSettingsCheck) Fix(ctx *CheckContext) error {
 			if sf.agentType == "mayor" && strings.HasSuffix(cursorDir, ".cursor") && !strings.Contains(sf.path, "/mayor/") {
 				if err := os.MkdirAll(mayorDir, 0755); err == nil {
 					_ = cursor.EnsureSettingsForRole(mayorDir, "mayor")
-				}
-			}
-
-			// For mayor CLAUDE.md at town root, create at mayor/
-			if sf.agentType == "mayor" && strings.HasSuffix(sf.path, "CLAUDE.md") && !strings.Contains(sf.path, "/mayor/") {
-				townName, _ := workspace.GetTownName(ctx.TownRoot)
-				if err := templates.CreateMayorCLAUDEmd(
-					mayorDir,
-					ctx.TownRoot,
-					townName,
-					session.MayorSessionName(),
-					session.DeaconSessionName(),
-				); err != nil {
-					errors = append(errors, fmt.Sprintf("failed to create mayor/CLAUDE.md: %v", err))
 				}
 			}
 

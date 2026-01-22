@@ -61,7 +61,7 @@ description = """
 Polecat is actively working. Monitor for stuck or completion.
 
 **Periodic checks:**
-- Use standard nudge protocol from Witness CLAUDE.md
+- Use standard nudge protocol from Witness role guidance
 - Watch for POLECAT_DONE mail or agent_state=done
 
 **Signs of progress:**

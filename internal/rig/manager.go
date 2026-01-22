@@ -15,8 +15,6 @@ import (
 	"github.com/cursorworkshop/cursor-gastown/internal/config"
 	"github.com/cursorworkshop/cursor-gastown/internal/cursor"
 	"github.com/cursorworkshop/cursor-gastown/internal/git"
-	"github.com/cursorworkshop/cursor-gastown/internal/templates"
-	"github.com/cursorworkshop/cursor-gastown/internal/workspace"
 )
 
 // Common errors
@@ -367,11 +365,6 @@ func (m *Manager) AddRig(opts AddRigOptions) (*Rig, error) {
 		}
 	}
 
-	// Create mayor CLAUDE.md (overrides any from cloned repo)
-	if err := m.createRoleCLAUDEmd(mayorRigPath, "mayor", opts.Name, ""); err != nil {
-		return nil, fmt.Errorf("creating mayor CLAUDE.md: %w", err)
-	}
-
 	// Initialize beads at rig level BEFORE creating worktrees.
 	// This ensures rig/.beads exists so worktree redirects can point to it.
 	fmt.Printf("  Initializing beads database...\n")
@@ -396,11 +389,6 @@ func (m *Manager) AddRig(opts AddRigOptions) (*Rig, error) {
 	if err := beads.SetupRedirect(m.townRoot, refineryRigPath); err != nil {
 		fmt.Printf("  Warning: Could not set up refinery beads redirect: %v\n", err)
 	}
-	// Create refinery CLAUDE.md (overrides any from cloned repo)
-	if err := m.createRoleCLAUDEmd(refineryRigPath, "refinery", opts.Name, ""); err != nil {
-		return nil, fmt.Errorf("creating refinery CLAUDE.md: %w", err)
-	}
-
 	// Create empty crew directory with README (crew members added via gt crew add)
 	crewPath := filepath.Join(rigPath, "crew")
 	if err := os.MkdirAll(crewPath, 0755); err != nil {
@@ -441,10 +429,10 @@ Use crew for your own workspace. Polecats are for batch work dispatch.
 		return nil, fmt.Errorf("creating polecats dir: %w", err)
 	}
 
-	// Install Claude settings for all agent directories.
-	// Settings are placed in parent directories (not inside git repos) so Claude
+	// Install Cursor settings for all agent directories.
+	// Settings are placed in parent directories (not inside git repos) so Cursor
 	// finds them via directory traversal without polluting source repos.
-	fmt.Printf("  Installing Claude settings...\n")
+	fmt.Printf("  Installing Cursor settings...\n")
 	settingsRoles := []struct {
 		dir  string
 		role string
@@ -459,7 +447,7 @@ Use crew for your own workspace. Polecats are for batch work dispatch.
 			fmt.Fprintf(os.Stderr, "  Warning: Could not create %s settings: %v\n", sr.role, err)
 		}
 	}
-	fmt.Printf("   [OK] Installed Claude settings\n")
+	fmt.Printf("   [OK] Installed Cursor settings\n")
 
 	// Initialize beads at rig level
 	fmt.Printf("  Initializing beads database...\n")
@@ -842,48 +830,6 @@ func (m *Manager) ListRigNames() []string {
 		names = append(names, name)
 	}
 	return names
-}
-
-// createRoleCLAUDEmd creates a CLAUDE.md file with role-specific context.
-// This ensures each workspace (crew, refinery, mayor) gets the correct prompting,
-// overriding any CLAUDE.md that may exist in the cloned repository.
-func (m *Manager) createRoleCLAUDEmd(workspacePath string, role string, rigName string, workerName string) error {
-	tmpl, err := templates.New()
-	if err != nil {
-		return err
-	}
-
-	// Get town name for session names
-	townName, _ := workspace.GetTownName(m.townRoot)
-
-	// Get default branch from rig config (default to "main" if not set)
-	defaultBranch := "main"
-	if rigName != "" {
-		rigPath := filepath.Join(m.townRoot, rigName)
-		if rigCfg, err := LoadRigConfig(rigPath); err == nil && rigCfg.DefaultBranch != "" {
-			defaultBranch = rigCfg.DefaultBranch
-		}
-	}
-
-	data := templates.RoleData{
-		Role:          role,
-		RigName:       rigName,
-		TownRoot:      m.townRoot,
-		TownName:      townName,
-		WorkDir:       workspacePath,
-		DefaultBranch: defaultBranch,
-		Polecat:       workerName, // Used for crew member name as well
-		MayorSession:  fmt.Sprintf("gt-%s-mayor", townName),
-		DeaconSession: fmt.Sprintf("gt-%s-deacon", townName),
-	}
-
-	content, err := tmpl.RenderRole(role, data)
-	if err != nil {
-		return err
-	}
-
-	claudePath := filepath.Join(workspacePath, "CLAUDE.md")
-	return os.WriteFile(claudePath, []byte(content), 0644)
 }
 
 // seedPatrolMolecules creates patrol molecule prototypes in the rig's beads database.

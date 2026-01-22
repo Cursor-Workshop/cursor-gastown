@@ -69,7 +69,7 @@ between invocations.`,
 var bootTriageCmd = &cobra.Command{
 	Use:   "triage",
 	Short: "Run triage directly (degraded mode)",
-	Long: `Run Boot's triage logic directly without Claude.
+	Long: `Run Boot's triage logic directly without the agent.
 
 This is for degraded mode operation when tmux is unavailable.
 It performs basic observation and takes conservative action:
@@ -242,7 +242,7 @@ func runBootTriage(cmd *cobra.Command, args []string) error {
 	}
 
 	// In degraded mode, we do basic mechanical triage
-	// without full Claude reasoning capability
+	// without full agent reasoning capability
 	action, target, triageErr := runDegradedTriage(b)
 
 	status.LastAction = action
@@ -272,7 +272,7 @@ func runBootTriage(cmd *cobra.Command, args []string) error {
 }
 
 // runDegradedTriage performs basic Deacon health check without AI reasoning.
-// This is a mechanical fallback when full Claude sessions aren't available.
+// This is a mechanical fallback when full agent sessions aren't available.
 func runDegradedTriage(b *boot.Boot) (action, target string, err error) {
 	tm := b.Tmux()
 

@@ -81,7 +81,7 @@ func runUp(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	// 2. Deacon (Claude agent)
+	// 2. Deacon (agent)
 	deaconMgr := deacon.NewManager(townRoot)
 	if err := deaconMgr.Start(); err != nil {
 		if err == deacon.ErrAlreadyRunning {
@@ -94,7 +94,7 @@ func runUp(cmd *cobra.Command, args []string) error {
 		printStatus("Deacon", true, deaconMgr.SessionName())
 	}
 
-	// 3. Mayor (Claude agent)
+	// 3. Mayor (agent)
 	mayorMgr := mayor.NewManager(townRoot)
 	if err := mayorMgr.Start(""); err != nil {
 		if err == mayor.ErrAlreadyRunning {

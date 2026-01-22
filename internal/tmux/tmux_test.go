@@ -349,7 +349,7 @@ func TestIsAgentRunning(t *testing.T) {
 			wantRunning:  true,
 		},
 		{
-			name:         "claude agent (node) - not running",
+			name:         "cursor-agent (node) - not running",
 			processNames: []string{"node"},
 			wantRunning:  cmd == "node", // Only true if shell happens to be node
 		},
@@ -406,7 +406,7 @@ func TestIsCursorRunning(t *testing.T) {
 	}
 
 	tm := NewTmux()
-	sessionName := "gt-test-claude-" + t.Name()
+	sessionName := "gt-test-agent-" + t.Name()
 
 	// Clean up any existing session
 	_ = tm.KillSession(sessionName)

@@ -57,23 +57,6 @@ func TestEnsureSettingsForRole_UnknownAgent(t *testing.T) {
 	}
 }
 
-func TestEnsureSettingsForRole_Claude(t *testing.T) {
-	tmpDir := t.TempDir()
-
-	// Claude agent should be a no-op (we migrated to Cursor)
-	err := EnsureSettingsForRole(tmpDir, "polecat", "claude")
-	if err != nil {
-		t.Fatalf("EnsureSettingsForRole failed: %v", err)
-	}
-
-	// Claude doesn't have settings anymore - this should be a no-op
-	// (Claude is listed as an agent but doesn't create settings files)
-	cursorRules := filepath.Join(tmpDir, ".cursor", "rules", "gastown.mdc")
-	if _, err := os.Stat(cursorRules); !os.IsNotExist(err) {
-		t.Error("Cursor rules should not be created for Claude agent")
-	}
-}
-
 func TestEnsureSettingsForRole_Gemini(t *testing.T) {
 	tmpDir := t.TempDir()
 

@@ -24,7 +24,7 @@ Rig operational state management, unified agent startup, and extensive stability
 #### Agent Configuration & Startup
 - **`--agent` overrides** - Override agent for start/attach/sling commands
 - **Unified agent startup** - Manager pattern for consistent agent initialization
-- **Claude settings installation** - Auto-install during rig and HQ creation
+- **Cursor settings installation** - Auto-install during rig and HQ creation
 - **Runtime-aware tmux checks** - Detect actual agent state from tmux sessions
 
 #### Status & Monitoring
@@ -47,7 +47,7 @@ Rig operational state management, unified agent startup, and extensive stability
 - **Debug logging for suppressed errors** - Better visibility into startup issues (gt-6d7eh)
 - **hq- prefix in tmux cycle bindings** - Navigate to Mayor/Deacon sessions
 - **Wisp config storage layer** - Transient/local settings for ephemeral workflows
-- **Sparse checkout** - Exclude Claude context files from source repos
+- **Sparse checkout** - Exclude Cursor context files from source repos
 
 ### Changed
 
@@ -75,7 +75,7 @@ Rig operational state management, unified agent startup, and extensive stability
 - **Sling uses bd native routing** - No BEADS_DIR override needed
 - **Sling parses wisp JSON correctly** - Handle `new_epic_id` field
 - **Sling resolves rig path** - Cross-rig bead hooking works
-- **Sling waits for Claude ready** - Don't nudge until session responsive (#146)
+- **Sling waits for agent ready** - Don't nudge until session responsive (#146)
 - **Correct beads database for sling** - Rig-level beads used (gt-n5gga)
 - **Close hooked beads before clearing** - Proper cleanup order (gt-vwjz6)
 - **Removed dead sling flags** - `--molecule` and `--quality` cleaned up
@@ -86,7 +86,7 @@ Rig operational state management, unified agent startup, and extensive stability
 - **Honor rig agent for witness/refinery** - Respect per-rig settings
 - **Canonical hq role bead IDs** - Consistent naming
 - **hq- prefix in status display** - Global agents shown correctly (gt-vcvyd)
-- **Restart Claude when dead** - Recover sessions where tmux exists but Claude died
+- **Restart agent when dead** - Recover sessions where tmux exists but agent died
 - **Town session cycling** - Works from any directory
 
 #### Polecat & Crew
@@ -98,7 +98,7 @@ Rig operational state management, unified agent startup, and extensive stability
 #### Daemon & Configuration
 - **Create mayor/daemon.json** - `gt start` and `gt doctor --fix` initialize daemon state (#225)
 - **Initialize git before beads** - Enable repo fingerprint (#180)
-- **Handoff preserves env vars** - Claude Code environment not lost (#216)
+- **Handoff preserves env vars** - Agent environment not lost (#216)
 - **Agent settings passed correctly** - Witness and daemon respawn use rigPath
 - **Log rig discovery errors** - Don't silently swallow (gt-rsnj9)
 
@@ -132,7 +132,7 @@ Rig operational state management, unified agent startup, and extensive stability
 ### Contributors
 
 Thanks to all contributors for this release:
-- @julianknutsen - Claude settings inheritance (#239)
+- @julianknutsen - Cursor settings inheritance (#239)
 - @joshuavial - Sling wisp JSON parse (#238)
 - @michaellady - Unified beads redirect (#222), daemon.json fix (#225)
 - @greghughespdx - PATH in hooks fix (#139)
@@ -312,7 +312,7 @@ Thanks to all contributors for this release:
 
 ### Added
 
-Initial public release of Gas Town - a multi-agent workspace manager for Claude Code.
+Initial public release of Gas Town - a multi-agent workspace manager for Cursor.
 
 #### Core Architecture
 - **Town structure** - Hierarchical workspace with rigs, crews, and polecats

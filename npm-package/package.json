@@ -15,7 +15,6 @@
     "workspace-manager",
     "ai-agent",
     "coding-agent",
-    "claude",
     "git",
     "orchestration"
   ],

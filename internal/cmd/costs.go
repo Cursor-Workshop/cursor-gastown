@@ -32,7 +32,7 @@ var (
 var costsCmd = &cobra.Command{
 	Use:     "costs",
 	GroupID: GroupDiag,
-	Short:   "Show costs for running Claude sessions",
+	Short:   "Show costs for running agent sessions",
 	Long: `Display costs for Cursor sessions in Gas Town.
 
 By default, shows live costs scraped from running tmux sessions.

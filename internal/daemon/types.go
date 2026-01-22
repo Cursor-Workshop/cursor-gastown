@@ -1,6 +1,6 @@
 // Package daemon provides the town-level background service for Gas Town.
 //
-// The daemon is a simple Go process (not a Claude agent) that:
+// The daemon is a simple Go process (not an agent) that:
 // 1. Pokes agents periodically (heartbeat)
 // 2. Processes lifecycle requests (cycle, restart, shutdown)
 // 3. Restarts sessions when agents request cycling

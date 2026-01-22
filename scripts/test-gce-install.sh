@@ -119,7 +119,7 @@ log "Creating test workspace at $TEST_DIR..."
 
 gt install "$TEST_DIR" --name test-town
 
-if [[ -d "$TEST_DIR" && -f "$TEST_DIR/CLAUDE.md" ]]; then
+if [[ -d "$TEST_DIR" && -f "$TEST_DIR/mayor/town.json" ]]; then
     check "Workspace created successfully"
 else
     fail "Workspace creation failed"

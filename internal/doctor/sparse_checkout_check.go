@@ -12,7 +12,7 @@ import (
 // SparseCheckoutCheck verifies that git clones/worktrees have sparse checkout configured
 // to exclude Cursor context files from source repos. This ensures source repo settings
 // and instructions don't override Gas Town agent configuration.
-// Excluded files: .cursor/, CLAUDE.md, CLAUDE.local.md, .mcp.json
+// Excluded files: .cursor/, .mcp.json
 type SparseCheckoutCheck struct {
 	FixableCheck
 	rigPath       string
@@ -25,7 +25,7 @@ func NewSparseCheckoutCheck() *SparseCheckoutCheck {
 		FixableCheck: FixableCheck{
 			BaseCheck: BaseCheck{
 				CheckName:        "sparse-checkout",
-				CheckDescription: "Verify sparse checkout excludes Cursor context files (.cursor/, CLAUDE.md, etc.)",
+			CheckDescription: "Verify sparse checkout excludes Cursor context files (.cursor/, .mcp.json)",
 			},
 		},
 	}

@@ -796,9 +796,9 @@ func SaveTownSettings(path string, settings *TownSettings) error {
 //  1. If rig has Runtime set directly, use it (backwards compatibility)
 //  2. If rig has Agent set, look it up in:
 //     a. Town's custom agents (from TownSettings.Agents)
-//     b. Built-in presets (claude, gemini, codex)
+//     b. Built-in presets (cursor, gemini, codex)
 //  3. If rig has no Agent set, use town's default_agent
-//  4. Fall back to claude defaults
+//  4. Fall back to cursor defaults
 //
 // townRoot is the path to the town directory (e.g., ~/gt).
 // rigPath is the path to the rig directory (e.g., ~/gt/gastown).
@@ -908,7 +908,7 @@ func lookupAgentConfig(name string, townSettings *TownSettings) *RuntimeConfig {
 		return RuntimeConfigFromPreset(AgentPreset(name))
 	}
 
-	// Fallback to claude defaults
+	// Fallback to cursor defaults
 	return DefaultRuntimeConfig()
 }
 
@@ -1205,12 +1205,12 @@ func BuildCrewStartupCommandWithAgentOverride(rigName, crewName, rigPath, prompt
 }
 
 // ExpectedPaneCommands returns tmux pane command names that indicate the runtime is running.
-// For example, Claude runs as "node", while most other runtimes report their executable name.
+// For example, cursor-agent runs as "node", while most other runtimes report their executable name.
 func ExpectedPaneCommands(rc *RuntimeConfig) []string {
 	if rc == nil || rc.Command == "" {
 		return nil
 	}
-	if filepath.Base(rc.Command) == "claude" {
+	if filepath.Base(rc.Command) == "cursor-agent" {
 		return []string{"node"}
 	}
 	return []string{filepath.Base(rc.Command)}

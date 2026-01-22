@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -21,8 +20,6 @@ var (
 	seanceRole   string
 	seanceRig    string
 	seanceRecent int
-	seanceTalk   string
-	seancePrompt string
 	seanceJSON   bool
 )
 
@@ -30,28 +27,15 @@ var seanceCmd = &cobra.Command{
 	Use:     "seance",
 	GroupID: GroupDiag,
 	Short:   "Talk to your predecessor sessions",
-	Long: `Seance lets you literally talk to predecessor sessions.
+Long: `Seance lets you list predecessor sessions.
 
 "Where did you put the stuff you left for me?" - The #1 handoff question.
-
-Instead of parsing logs, seance spawns a Claude subprocess that resumes
-a predecessor session with full context. You can ask questions directly:
-  - "Why did you make this decision?"
-  - "Where were you stuck?"
-  - "What did you try that didn't work?"
 
 DISCOVERY:
   gt seance                     # List recent sessions from events
   gt seance --role crew         # Filter by role type
   gt seance --rig gastown       # Filter by rig
   gt seance --recent 10         # Last N sessions
-
-THE SEANCE (talk to predecessor):
-  gt seance --talk <session-id>              # Interactive conversation
-  gt seance --talk <id> -p "Where is X?"     # One-shot question
-
-The --talk flag spawns: claude --fork-session --resume <id>
-This loads the predecessor's full context without modifying their session.
 
 Sessions are discovered from:
   1. Events emitted by SessionStart hooks (~/gt/.events.jsonl)
@@ -63,8 +47,6 @@ func init() {
 	seanceCmd.Flags().StringVar(&seanceRole, "role", "", "Filter by role (crew, polecat, witness, etc.)")
 	seanceCmd.Flags().StringVar(&seanceRig, "rig", "", "Filter by rig name")
 	seanceCmd.Flags().IntVarP(&seanceRecent, "recent", "n", 20, "Number of recent sessions to show")
-	seanceCmd.Flags().StringVarP(&seanceTalk, "talk", "t", "", "Session ID to commune with")
-	seanceCmd.Flags().StringVarP(&seancePrompt, "prompt", "p", "", "One-shot prompt (with --talk)")
 	seanceCmd.Flags().BoolVar(&seanceJSON, "json", false, "Output as JSON")
 
 	rootCmd.AddCommand(seanceCmd)
@@ -79,11 +61,6 @@ type sessionEvent struct {
 }
 
 func runSeance(cmd *cobra.Command, args []string) error {
-	// If --talk is provided, spawn a seance
-	if seanceTalk != "" {
-		return runSeanceTalk(seanceTalk, seancePrompt)
-	}
-
 	// Otherwise, list discoverable sessions
 	return runSeanceList()
 }
@@ -178,55 +155,6 @@ func runSeanceList() error {
 			roleWidth, role,
 			timeWidth, timeStr,
 			topicWidth, topic)
-	}
-
-	fmt.Printf("\n%s\n", style.Bold.Render("Talk to a predecessor:"))
-	fmt.Printf("  gt seance --talk <session-id>\n")
-	fmt.Printf("  gt seance --talk <session-id> -p \"Where did you put X?\"\n")
-
-	return nil
-}
-
-func runSeanceTalk(sessionID, prompt string) error {
-	// Expand short IDs if needed (user might provide partial)
-	// For now, require full ID or let claude --resume handle it
-
-	fmt.Printf("%s Summoning session %s...\n\n", style.Bold.Render("🔮"), sessionID)
-
-	// Build the command
-	args := []string{"--fork-session", "--resume", sessionID}
-
-	if prompt != "" {
-		// One-shot mode with --print
-		args = append(args, "--print", prompt)
-
-		cmd := exec.Command("claude", args...)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-
-		if err := cmd.Run(); err != nil {
-			return fmt.Errorf("seance failed: %w", err)
-		}
-		return nil
-	}
-
-	// Interactive mode - just launch claude
-	cmd := exec.Command("claude", args...)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	fmt.Printf("%s\n", style.Dim.Render("You are now talking to your predecessor. Ask them anything."))
-	fmt.Printf("%s\n\n", style.Dim.Render("Exit with /exit or Ctrl+C"))
-
-	if err := cmd.Run(); err != nil {
-		// Exit errors are normal when user exits
-		if exitErr, ok := err.(*exec.ExitError); ok {
-			if exitErr.ExitCode() == 0 || exitErr.ExitCode() == 130 {
-				return nil // Normal exit or Ctrl+C
-			}
-		}
-		return fmt.Errorf("seance ended: %w", err)
 	}
 
 	return nil

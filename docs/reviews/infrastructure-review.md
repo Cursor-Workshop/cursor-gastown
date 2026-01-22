@@ -184,7 +184,7 @@ func loadConfigFile[T Validator](path string) (*T, error)
 
 | Package | Issue | Impact |
 |---------|-------|--------|
-| `claude` | `RoleTypeFor()` missing `deacon`, `crew` | Wrong settings applied |
+| `cursor` | `RoleTypeFor()` missing `deacon`, `crew` | Wrong settings applied |
 
 ---
 
@@ -195,7 +195,7 @@ func loadConfigFile[T Validator](path string) (*T, error)
 | `checkpoint` | No unit tests | HIGH (crash recovery) |
 | `dog` | 4 tests, major paths untested | HIGH |
 | `deps` | Minimal failure path testing | MEDIUM |
-| `claude` | No tests | LOW |
+| `cursor` | No tests | LOW |
 
 ---
 
@@ -206,13 +206,13 @@ func loadConfigFile[T Validator](path string) (*T, error)
 | **Dead Code Items** | 25+ | config, constants, doctor, lock, events, boot, dog, keepalive |
 | **Duplicate Patterns** | 6 | util, doctor, config, lock |
 | **Performance Issues** | 12 | events, townlog, doctor, dog, lock, checkpoint |
-| **Error Handling Issues** | 15 | events, townlog, lock, checkpoint, deps, claude |
-| **Testing Gaps** | 4 packages | checkpoint, dog, deps, claude |
+| **Error Handling Issues** | 15 | events, townlog, lock, checkpoint, deps, cursor |
+| **Testing Gaps** | 4 packages | checkpoint, dog, deps, cursor |
 
 ## Recommended Priority
 
 1. **Delete keepalive package** (entire package unused)
-2. **Fix claude/RoleTypeFor()** (incorrect behavior)
+2. **Fix cursor/RoleTypeFor()** (incorrect behavior)
 3. **Fix config/GetAccount()** (pointer to stack bug)
 4. **Fix polecat/pending.go** (non-atomic writes)
 5. **Delete 21 unused constants** (maintenance burden)

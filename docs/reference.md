@@ -9,7 +9,6 @@ Technical reference for Gas Town internals. Read the README first.
 ├── .beads/                     Town-level beads (hq-* prefix)
 ├── mayor/                      Mayor agent home (town coordinator)
 │   ├── town.json               Town configuration
-│   ├── CLAUDE.md               Mayor context (on disk)
 │   └── .cursor/hooks.json      Mayor Cursor hooks
 ├── deacon/                     Deacon agent home (background supervisor)
 │   └── .cursor/hooks.json      Deacon hooks (context via gt prime)
@@ -18,13 +17,11 @@ Technical reference for Gas Town internals. Read the README first.
     ├── .beads/ → mayor/rig/.beads
     ├── .repo.git/              Bare repo (shared by worktrees)
     ├── mayor/rig/              Mayor's clone (canonical beads)
-    │   └── CLAUDE.md           Per-rig mayor context (on disk)
     ├── witness/                Witness agent home (monitors only)
     │   └── .cursor/hooks.json  (context via gt prime)
     ├── refinery/               Refinery settings parent
     │   ├── .cursor/hooks.json
     │   └── rig/                Worktree on main
-    │       └── CLAUDE.md       Refinery context (on disk)
     ├── crew/                   Crew settings parent (shared)
     │   ├── .cursor/hooks.json  (context via gt prime)
     │   └── <name>/rig/         Human workspaces
@@ -260,30 +257,6 @@ would pollute the source repo if settings were placed there. By putting settings
 one level up, Cursor finds them via upward traversal, and all workers of the
 same type share the same settings.
 
-### CLAUDE.md Locations
-
-Role context is delivered via CLAUDE.md files or ephemeral injection:
-
-| Role | CLAUDE.md Location | Method |
-|------|-------------------|--------|
-| **Mayor** | `~/gt/mayor/CLAUDE.md` | On disk |
-| **Deacon** | (none) | Injected via `gt prime` at SessionStart |
-| **Witness** | (none) | Injected via `gt prime` at SessionStart |
-| **Refinery** | `<rig>/refinery/rig/CLAUDE.md` | On disk (inside worktree) |
-| **Crew** | (none) | Injected via `gt prime` at SessionStart |
-| **Polecat** | (none) | Injected via `gt prime` at SessionStart |
-
-Additionally, each rig has `<rig>/mayor/rig/CLAUDE.md` for the per-rig mayor clone
-(used for beads operations, not a running agent).
-
-**Why ephemeral injection?** Writing CLAUDE.md into git clones would:
-1. Pollute source repos when agents commit/push
-2. Leak Gas Town internals into project history
-3. Conflict with project-specific CLAUDE.md files
-
-The `gt prime` command runs at SessionStart hook and injects context without
-persisting it to disk.
-
 ### Sparse Checkout (Source Repo Isolation)
 
 When agents work on source repositories that have their own Cursor configuration,
@@ -291,11 +264,9 @@ Gas Town uses git sparse checkout to exclude all context files:
 
 ```bash
 # Automatically configured for worktrees - excludes:
-# - .cursor/       : settings, rules, hooks
-# - CLAUDE.md      : primary context file
-# - CLAUDE.local.md: personal context file
-# - .mcp.json      : MCP server configuration
-git sparse-checkout set --no-cone '/*' '!/.cursor/' '!/CLAUDE.md' '!/CLAUDE.local.md' '!/.mcp.json'
+# - .cursor/  : settings, rules, hooks
+# - .mcp.json : MCP server configuration
+git sparse-checkout set --no-cone '/*' '!/.cursor/' '!/.mcp.json'
 ```
 
 This ensures agents use Gas Town's context, not the source repo's instructions.
@@ -363,15 +334,14 @@ gt config agent remove <name>     # Remove custom agent (built-ins protected)
 gt config default-agent [name]    # Get or set town default agent
 ```
 
-**Built-in agents**: `claude`, `cursor-agent`, `gemini`, `codex`
+**Built-in agents**: `cursor`, `gemini`, `codex`
 
 **Cursor CLI**: See [cursor-integration-issues.md](cursor-integration-issues.md) for Cursor-specific hooks and CLI usage.
 
 **Custom agents**: Define per-town in `mayor/town.json`:
 ```bash
-gt config agent set claude-glm "claude-glm --model glm-4"
-gt config agent set claude "claude-opus"  # Override built-in
-gt config default-agent claude-glm       # Set default
+gt config agent set cursor-custom "cursor-agent -f"
+gt config default-agent cursor-custom   # Set default
 ```
 
 ### Rig Management
@@ -443,8 +413,6 @@ gt session stop <rig>/<agent>
 gt peek <agent>              # Check health
 gt nudge <agent> "message"   # Send message to agent
 gt seance                    # List discoverable predecessor sessions
-gt seance --talk <id>        # Talk to predecessor (full context)
-gt seance --talk <id> -p "Where is X?"  # One-shot question
 ```
 
 **Session Discovery**: Each session has a startup nudge that becomes searchable

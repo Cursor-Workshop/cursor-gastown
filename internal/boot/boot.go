@@ -180,12 +180,12 @@ func (b *Boot) spawnTmux() error {
 		_ = b.tmux.KillSession(SessionName)
 	}
 
-	// Ensure boot directory exists (it should have CLAUDE.md with Boot context)
+	// Ensure boot directory exists (it should have boot context available)
 	if err := b.EnsureDir(); err != nil {
 		return fmt.Errorf("ensuring boot dir: %w", err)
 	}
 
-	// Create new session in boot directory (not deacon dir) so Claude reads Boot's CLAUDE.md
+	// Create new session in boot directory (not deacon dir) so the agent gets boot context
 	if err := b.tmux.NewSession(SessionName, b.bootDir); err != nil {
 		return fmt.Errorf("creating boot session: %w", err)
 	}
@@ -194,7 +194,7 @@ func (b *Boot) spawnTmux() error {
 	_ = b.tmux.SetEnvironment(SessionName, "GT_ROLE", "boot")
 	_ = b.tmux.SetEnvironment(SessionName, "BD_ACTOR", "deacon-boot")
 
-	// Launch Claude with environment exported inline and initial triage prompt
+	// Launch agent with environment exported inline and initial triage prompt
 	// The "gt boot triage" prompt tells Boot to immediately start triage (GUPP principle)
 	startCmd := config.BuildAgentStartupCommand("boot", "deacon-boot", "", "gt boot triage")
 	if err := b.tmux.SendKeys(SessionName, startCmd); err != nil {
@@ -208,7 +208,7 @@ func (b *Boot) spawnTmux() error {
 // Boot runs to completion and exits without handoff.
 func (b *Boot) spawnDegraded() error {
 	// In degraded mode, we run gt boot triage directly
-	// This performs the triage logic without a full Claude session
+	// This performs the triage logic without a full agent session
 	cmd := exec.Command("gt", "boot", "triage", "--degraded")
 	cmd.Dir = b.deaconDir
 	cmd.Env = append(os.Environ(),

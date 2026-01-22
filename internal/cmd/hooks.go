@@ -26,12 +26,12 @@ var hooksCmd = &cobra.Command{
 Scans for .cursor/hooks.json files and displays hooks by type.
 
 Hook types:
-  SessionStart     - Runs when Claude session starts
+  SessionStart     - Runs when agent session starts
   PreCompact       - Runs before context compaction
   UserPromptSubmit - Runs before user prompt is submitted
   PreToolUse       - Runs before tool execution
   PostToolUse      - Runs after tool execution
-  Stop             - Runs when Claude session stops
+  Stop             - Runs when agent session stops
 
 Examples:
   gt hooks              # List all hooks in workspace
@@ -49,17 +49,17 @@ func init() {
 // CursorSettings represents the Cursor hooks.json structure.
 type CursorSettings struct {
 	EnabledPlugins map[string]bool                  `json:"enabledPlugins,omitempty"`
-	Hooks          map[string][]ClaudeHookMatcher   `json:"hooks,omitempty"`
+	Hooks          map[string][]AgentHookMatcher    `json:"hooks,omitempty"`
 }
 
-// ClaudeHookMatcher represents a hook matcher entry.
-type ClaudeHookMatcher struct {
+// AgentHookMatcher represents a hook matcher entry.
+type AgentHookMatcher struct {
 	Matcher string       `json:"matcher"`
-	Hooks   []ClaudeHook `json:"hooks"`
+	Hooks   []AgentHook  `json:"hooks"`
 }
 
-// ClaudeHook represents an individual hook.
-type ClaudeHook struct {
+// AgentHook represents an individual hook.
+type AgentHook struct {
 	Type    string `json:"type"`
 	Command string `json:"command,omitempty"`
 }

@@ -166,7 +166,7 @@ var polecatNukeCmd = &cobra.Command{
 	Long: `Completely destroy a polecat and all its artifacts.
 
 This is the nuclear option for post-merge cleanup. It:
-  1. Kills the Claude session (if running)
+  1. Kills the agent session (if running)
   2. Deletes the git worktree (bypassing all safety checks)
   3. Deletes the polecat branch
   4. Closes the agent bead (if exists)

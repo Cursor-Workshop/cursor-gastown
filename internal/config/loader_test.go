@@ -809,8 +809,8 @@ func TestRuntimeConfigBuildCommand(t *testing.T) {
 		},
 		{
 			name: "multiple args",
-			rc:   &RuntimeConfig{Command: "claude", Args: []string{"--model", "opus", "--no-confirm"}},
-			want: "claude --model opus --no-confirm",
+		rc:   &RuntimeConfig{Command: "cursor-agent", Args: []string{"-f", "-p", "hello"}},
+		want: "cursor-agent -f -p hello",
 		},
 		{
 			name: "empty command uses default",
@@ -938,9 +938,9 @@ func TestResolveAgentConfigWithOverride(t *testing.T) {
 	// Town settings: default agent is gemini, plus a custom alias.
 	townSettings := NewTownSettings()
 	townSettings.DefaultAgent = "gemini"
-	townSettings.Agents["claude-haiku"] = &RuntimeConfig{
-		Command: "claude",
-		Args:    []string{"--model", "haiku", "--dangerously-skip-permissions"},
+	townSettings.Agents["cursor-haiku"] = &RuntimeConfig{
+		Command: "cursor-agent",
+		Args:    []string{"-f", "--model", "haiku"},
 	}
 	if err := SaveTownSettings(TownSettingsPath(townRoot), townSettings); err != nil {
 		t.Fatalf("SaveTownSettings: %v", err)
@@ -980,18 +980,18 @@ func TestResolveAgentConfigWithOverride(t *testing.T) {
 	})
 
 	t.Run("override uses custom agent alias", func(t *testing.T) {
-		rc, name, err := ResolveAgentConfigWithOverride(townRoot, rigPath, "claude-haiku")
+		rc, name, err := ResolveAgentConfigWithOverride(townRoot, rigPath, "cursor-haiku")
 		if err != nil {
 			t.Fatalf("ResolveAgentConfigWithOverride: %v", err)
 		}
-		if name != "claude-haiku" {
-			t.Fatalf("name = %q, want %q", name, "claude-haiku")
+		if name != "cursor-haiku" {
+			t.Fatalf("name = %q, want %q", name, "cursor-haiku")
 		}
-		if rc.Command != "claude" {
-			t.Fatalf("rc.Command = %q, want %q", rc.Command, "claude")
+		if rc.Command != "cursor-agent" {
+			t.Fatalf("rc.Command = %q, want %q", rc.Command, "cursor-agent")
 		}
-		if got := rc.BuildCommand(); got != "claude --model haiku --dangerously-skip-permissions" {
-			t.Fatalf("BuildCommand() = %q, want %q", got, "claude --model haiku --dangerously-skip-permissions")
+		if got := rc.BuildCommand(); got != "cursor-agent -f --model haiku" {
+			t.Fatalf("BuildCommand() = %q, want %q", got, "cursor-agent -f --model haiku")
 		}
 	})
 
@@ -1166,10 +1166,10 @@ func TestGetRuntimeCommand_UsesRigAgentWhenRigPathProvided(t *testing.T) {
 }
 
 func TestExpectedPaneCommands(t *testing.T) {
-	t.Run("claude maps to node", func(t *testing.T) {
-		got := ExpectedPaneCommands(&RuntimeConfig{Command: "claude"})
+	t.Run("cursor-agent maps to node", func(t *testing.T) {
+		got := ExpectedPaneCommands(&RuntimeConfig{Command: "cursor-agent"})
 		if len(got) != 1 || got[0] != "node" {
-			t.Fatalf("ExpectedPaneCommands(claude) = %v, want %v", got, []string{"node"})
+			t.Fatalf("ExpectedPaneCommands(cursor-agent) = %v, want %v", got, []string{"node"})
 		}
 	})
 
@@ -1192,7 +1192,7 @@ func TestLoadRuntimeConfigFromSettings(t *testing.T) {
 	settings := NewRigSettings()
 	settings.Runtime = &RuntimeConfig{
 		Command: "aider",
-		Args:    []string{"--no-git", "--model", "claude-3"},
+		Args:    []string{"--no-git", "--model", "gpt-4"},
 	}
 	if err := SaveRigSettings(filepath.Join(settingsDir, "config.json"), settings); err != nil {
 		t.Fatalf("saving settings: %v", err)
@@ -1208,8 +1208,8 @@ func TestLoadRuntimeConfigFromSettings(t *testing.T) {
 	}
 
 	cmd := rc.BuildCommand()
-	if cmd != "aider --no-git --model claude-3" {
-		t.Errorf("BuildCommand() = %q, want %q", cmd, "aider --no-git --model claude-3")
+	if cmd != "aider --no-git --model gpt-4" {
+		t.Errorf("BuildCommand() = %q, want %q", cmd, "aider --no-git --model gpt-4")
 	}
 }
 

@@ -56,7 +56,6 @@ var crewAddCmd = &cobra.Command{
 Each workspace is created at <rig>/crew/<name>/ with:
 - A full git clone of the project repository
 - Mail directory for message delivery
-- CLAUDE.md with crew worker prompting
 - Optional feature branch (crew/<name>)
 
 Examples:
@@ -173,14 +172,14 @@ var crewRestartCmd = &cobra.Command{
 	Use:     "restart [name...]",
 	Aliases: []string{"rs"},
 	Short:   "Kill and restart crew workspace session(s)",
-	Long: `Kill the tmux session and restart fresh with Claude.
+Long: `Kill the tmux session and restart fresh with the agent.
 
 Useful when a crew member gets confused or needs a clean slate.
 Unlike 'refresh', this does NOT send handoff mail - it's a clean start.
 
 The command will:
 1. Kill existing tmux session if running
-2. Start fresh session with Claude
+2. Start fresh session with the agent
 3. Run gt prime to reinitialize context
 
 Use --all to restart all running crew sessions across all rigs.
@@ -261,7 +260,7 @@ var crewStartCmd = &cobra.Command{
 The rig name can be provided as the first argument, or inferred from the
 current directory. If no crew names are specified, starts all crew in the rig.
 
-The crew session starts in the background with Claude running and ready.
+The crew session starts in the background with the agent running and ready.
 
 Examples:
   gt crew start beads             # Start all crew in beads rig

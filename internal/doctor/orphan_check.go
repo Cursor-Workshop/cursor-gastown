@@ -225,7 +225,7 @@ func (c *OrphanSessionCheck) isValidSession(sess string, validRigs []string, may
 	return true
 }
 
-// OrphanProcessCheck detects orphaned Claude/claude-code processes
+// OrphanProcessCheck detects orphaned agent processes
 // that are not associated with a Gas Town tmux session.
 type OrphanProcessCheck struct {
 	FixableCheck
@@ -238,13 +238,13 @@ func NewOrphanProcessCheck() *OrphanProcessCheck {
 		FixableCheck: FixableCheck{
 			BaseCheck: BaseCheck{
 				CheckName:        "orphan-processes",
-				CheckDescription: "Detect orphaned Claude processes",
+				CheckDescription: "Detect orphaned agent processes",
 			},
 		},
 	}
 }
 
-// Run checks for orphaned Claude processes.
+// Run checks for orphaned agent processes.
 func (c *OrphanProcessCheck) Run(ctx *CheckContext) *CheckResult {
 	// Get list of tmux session PIDs
 	tmuxPIDs, err := c.getTmuxSessionPIDs()
@@ -257,30 +257,30 @@ func (c *OrphanProcessCheck) Run(ctx *CheckContext) *CheckResult {
 		}
 	}
 
-	// Find Claude processes
-	claudeProcs, err := c.findClaudeProcesses()
+	// Find agent processes
+	agentProcs, err := c.findAgentProcesses()
 	if err != nil {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusWarning,
-			Message: "Could not list Claude processes",
+			Message: "Could not list agent processes",
 			Details: []string{err.Error()},
 		}
 	}
 
-	if len(claudeProcs) == 0 {
+	if len(agentProcs) == 0 {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusOK,
-			Message: "No Claude processes found",
+			Message: "No agent processes found",
 		}
 	}
 
-	// Check which Claude processes are orphaned
+	// Check which agent processes are orphaned
 	var orphans []processInfo
 	var validCount int
 
-	for _, proc := range claudeProcs {
+	for _, proc := range agentProcs {
 		if c.isOrphanProcess(proc, tmuxPIDs) {
 			orphans = append(orphans, proc)
 		} else {
@@ -298,7 +298,7 @@ func (c *OrphanProcessCheck) Run(ctx *CheckContext) *CheckResult {
 		return &CheckResult{
 			Name:    c.Name(),
 			Status:  StatusOK,
-			Message: fmt.Sprintf("All %d Claude processes have valid parents", validCount),
+			Message: fmt.Sprintf("All %d agent processes have valid parents", validCount),
 		}
 	}
 
@@ -310,7 +310,7 @@ func (c *OrphanProcessCheck) Run(ctx *CheckContext) *CheckResult {
 	return &CheckResult{
 		Name:    c.Name(),
 		Status:  StatusWarning,
-		Message: fmt.Sprintf("Found %d orphaned Claude process(es)", len(orphans)),
+		Message: fmt.Sprintf("Found %d orphaned agent process(es)", len(orphans)),
 		Details: details,
 		FixHint: "Run 'gt doctor --fix' to kill orphaned processes",
 	}
@@ -462,24 +462,18 @@ func (c *OrphanProcessCheck) getTmuxSessionPIDs() (map[int]bool, error) { //noli
 	return pids, nil
 }
 
-// findClaudeProcesses finds all running claude/claude-code CLI processes.
-// Excludes Claude.app desktop application and its helpers.
-func (c *OrphanProcessCheck) findClaudeProcesses() ([]processInfo, error) {
+// findAgentProcesses finds all running cursor-agent processes.
+func (c *OrphanProcessCheck) findAgentProcesses() ([]processInfo, error) {
 	var procs []processInfo
 
-	// Use ps to find claude processes
-	// Look for both "claude" and "claude-code" in command
-	out, err := exec.Command("ps", "-eo", "pid,ppid,comm").Output()
+	// Use ps to find agent processes (command includes args)
+	out, err := exec.Command("ps", "-eo", "pid,ppid,command").Output()
 	if err != nil {
 		return nil, err
 	}
 
-	// Regex to match claude CLI processes (not Claude.app)
-	// Match: "claude" or paths ending in "/claude"
-	claudePattern := regexp.MustCompile(`(?i)(^claude$|/claude$)`)
-
-	// Pattern to exclude Claude.app and related desktop processes
-	excludePattern := regexp.MustCompile(`(?i)(Claude\.app|claude-native|chrome-native)`)
+	// Regex to match cursor-agent CLI processes
+	agentPattern := regexp.MustCompile(`(?i)(^cursor-agent$|/cursor-agent(\s|$))`)
 
 	for _, line := range strings.Split(string(out), "\n") {
 		fields := strings.Fields(line)
@@ -487,16 +481,9 @@ func (c *OrphanProcessCheck) findClaudeProcesses() ([]processInfo, error) {
 			continue
 		}
 
-		// Check if command matches claude CLI
+		// Check if command matches cursor-agent CLI
 		cmd := strings.Join(fields[2:], " ")
-
-		// Skip desktop app processes
-		if excludePattern.MatchString(cmd) {
-			continue
-		}
-
-		// Only match CLI claude processes
-		if !claudePattern.MatchString(cmd) {
+		if !agentPattern.MatchString(cmd) {
 			continue
 		}
 
@@ -518,7 +505,7 @@ func (c *OrphanProcessCheck) findClaudeProcesses() ([]processInfo, error) {
 	return procs, nil
 }
 
-// isOrphanProcess checks if a Claude process is orphaned.
+// isOrphanProcess checks if an agent process is orphaned.
 // A process is orphaned if its parent (or ancestor) is not a tmux session.
 func (c *OrphanProcessCheck) isOrphanProcess(proc processInfo, tmuxPIDs map[int]bool) bool {
 	// Walk up the process tree looking for a tmux parent

@@ -15,7 +15,6 @@ import (
 	"github.com/cursorworkshop/cursor-gastown/internal/cursor"
 	"github.com/cursorworkshop/cursor-gastown/internal/deps"
 	"github.com/cursorworkshop/cursor-gastown/internal/formula"
-	"github.com/cursorworkshop/cursor-gastown/internal/session"
 	"github.com/cursorworkshop/cursor-gastown/internal/style"
 	"github.com/cursorworkshop/cursor-gastown/internal/templates"
 	"github.com/cursorworkshop/cursor-gastown/internal/workspace"
@@ -40,7 +39,6 @@ var installCmd = &cobra.Command{
 
 The HQ (headquarters) is the top-level directory where Gas Town is installed -
 the root of your workspace where all rigs and agents live. It contains:
-  - CLAUDE.md            Mayor role context (Mayor runs from HQ root)
   - mayor/               Mayor config, state, and rig registry
   - .beads/              Town-level beads DB (hq-* prefix for mayor mail)
 
@@ -172,16 +170,6 @@ func runInstall(cmd *cobra.Command, args []string) error {
 	}
 	fmt.Printf("   OK Created mayor/rigs.json\n")
 
-	// Create Mayor CLAUDE.md at mayor/ (Mayor's canonical home)
-	// IMPORTANT: CLAUDE.md must be in ~/gt/mayor/, NOT ~/gt/
-	// CLAUDE.md at town root would be inherited by ALL agents via directory traversal,
-	// causing crew/polecat/etc to receive Mayor-specific instructions.
-	if err := createMayorCLAUDEmd(mayorDir, absPath); err != nil {
-		fmt.Printf("   %s Could not create CLAUDE.md: %v\n", style.Dim.Render("WARN"), err)
-	} else {
-		fmt.Printf("   OK Created mayor/CLAUDE.md\n")
-	}
-
 	// Create mayor settings (mayor runs from ~/gt/mayor/)
 	// IMPORTANT: Settings must be in ~/gt/mayor/.cursor/, NOT ~/gt/.cursor/
 	// Settings at town root would be found by ALL agents via directory traversal,
@@ -275,17 +263,6 @@ func runInstall(cmd *cobra.Command, args []string) error {
 	fmt.Printf("  %d. Enter the Mayor's office: %s\n", step, style.Dim.Render("gt mayor attach"))
 
 	return nil
-}
-
-func createMayorCLAUDEmd(mayorDir, townRoot string) error {
-	townName, _ := workspace.GetTownName(townRoot)
-	return templates.CreateMayorCLAUDEmd(
-		mayorDir,
-		townRoot,
-		townName,
-		session.MayorSessionName(),
-		session.DeaconSessionName(),
-	)
 }
 
 func writeJSON(path string, data interface{}) error {

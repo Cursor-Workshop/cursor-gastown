@@ -101,7 +101,6 @@ gt install ~/gt
 
 # This creates:
 #   ~/gt/
-#   ├── CLAUDE.md          # Mayor role context
 #   ├── mayor/             # Mayor config and state
 #   ├── rigs/              # Project containers (initially empty)
 #   └── .beads/            # Town-level issue tracking
@@ -132,7 +131,7 @@ gt status              # Show workspace status
 
 ### Step 5: Configure Agents (Optional)
 
-Gas Town supports built-in runtimes (`claude`, `gemini`, `codex`) plus custom agent aliases.
+Gas Town supports built-in runtimes (`cursor`, `gemini`, `codex`) plus custom agent aliases.
 
 ```bash
 # List available agents
@@ -140,7 +139,7 @@ gt config agent list
 
 # Create an alias (aliases can encode model/thinking flags)
 gt config agent set codex-low "codex --thinking low"
-gt config agent set claude-haiku "claude --model haiku --dangerously-skip-permissions"
+gt config agent set cursor-haiku "cursor-agent -f --model haiku"
 
 # Set the town default agent (used when a rig doesn't specify one)
 gt config default-agent codex-low
@@ -150,7 +149,7 @@ You can also override the agent per command without changing defaults:
 
 ```bash
 gt start --agent codex-low
-gt sling issue-123 myproject --agent claude-haiku
+gt sling issue-123 myproject --agent cursor-haiku
 ```
 
 ## Minimal Mode vs Full Stack Mode
@@ -168,7 +167,7 @@ gt sling issue-123 myproject
 
 # Run Cursor manually
 cd ~/gt/myproject/polecats/<worker>
-claude --resume
+cursor-agent --resume <session-id>
 
 # Check progress
 gt convoy list

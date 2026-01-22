@@ -195,7 +195,7 @@ func TriggerPendingSpawns(townRoot string, timeout time.Duration) ([]TriggerResu
 			continue
 		}
 
-		// Check if Claude is ready (non-blocking poll)
+		// Check if agent is ready (non-blocking poll)
 		err = t.WaitForCursorReady(ps.Session, timeout)
 		if err != nil {
 			// Not ready yet - keep in pending
@@ -203,7 +203,7 @@ func TriggerPendingSpawns(townRoot string, timeout time.Duration) ([]TriggerResu
 			continue
 		}
 
-		// Claude is ready - send trigger
+		// Agent is ready - send trigger
 		triggerMsg := "Begin."
 		if err := t.NudgeSession(ps.Session, triggerMsg); err != nil {
 			result.Error = fmt.Errorf("nudging session: %w", err)

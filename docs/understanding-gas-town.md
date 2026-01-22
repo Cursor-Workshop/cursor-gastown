@@ -206,7 +206,7 @@ Gas Town's attribution and work history features enable objective model comparis
 
 ```bash
 # Deploy different models on similar tasks
-gt sling gt-abc gastown --model=claude-sonnet
+gt sling gt-abc gastown --model=gpt-4o
 gt sling gt-def gastown --model=gpt-4
 
 # Compare outcomes
@@ -218,7 +218,7 @@ you can make data-driven decisions about which models to deploy where.
 
 This is particularly valuable for:
 - **Model selection:** Which model handles your codebase best?
-- **Capability mapping:** Claude for architecture, GPT for tests?
+- **Capability mapping:** architecture model for design, GPT for tests?
 - **Cost optimization:** When is a smaller model sufficient?
 
 ## Common Mistakes

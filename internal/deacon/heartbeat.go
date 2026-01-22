@@ -1,5 +1,5 @@
 // Package deacon provides the Deacon agent infrastructure.
-// The Deacon is a Claude agent that monitors Mayor and Witnesses,
+// The Deacon is an agent that monitors Mayor and Witnesses,
 // handles lifecycle requests, and keeps Gas Town running.
 package deacon
 

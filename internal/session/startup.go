@@ -38,7 +38,7 @@ type StartupNudgeConfig struct {
 //   - [GAS TOWN] deacon <- mayor • 2025-12-30T08:00 • cold-start
 //   - [GAS TOWN] gastown/witness <- self • 2025-12-30T14:00 • handoff
 //
-// The message content doesn't trigger GUPP - CLAUDE.md and hooks handle that.
+// The message content doesn't trigger GUPP - settings and hooks handle that.
 // The metadata makes sessions identifiable in /resume.
 func StartupNudge(t *tmux.Tmux, session string, cfg StartupNudgeConfig) error {
 	message := FormatStartupNudge(cfg)

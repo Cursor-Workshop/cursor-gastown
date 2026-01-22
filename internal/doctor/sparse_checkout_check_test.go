@@ -371,10 +371,8 @@ func TestSparseCheckoutCheck_VerifiesAllPatterns(t *testing.T) {
 
 	// Verify all required patterns are present
 	requiredPatterns := []string{
-		"!/.cursor/",        // Settings, rules, hooks
-		"!/CLAUDE.md",       // Primary context file
-		"!/CLAUDE.local.md", // Personal context file
-		"!/.mcp.json",       // MCP server configuration
+		"!/.cursor/",  // Settings, rules, hooks
+		"!/.mcp.json", // MCP server configuration
 	}
 
 	for _, pattern := range requiredPatterns {
@@ -393,7 +391,7 @@ func TestSparseCheckoutCheck_LegacyPatternNotSufficient(t *testing.T) {
 	mayorRig := filepath.Join(rigDir, "mayor", "rig")
 	initGitRepo(t, mayorRig)
 
-	// Manually configure sparse checkout with only .cursor/ pattern (missing CLAUDE.md)
+	// Manually configure sparse checkout with only .cursor/ pattern (missing .mcp.json)
 	cmd := exec.Command("git", "config", "core.sparseCheckout", "true")
 	cmd.Dir = mayorRig
 	if out, err := cmd.CombinedOutput(); err != nil {
@@ -404,7 +402,7 @@ func TestSparseCheckoutCheck_LegacyPatternNotSufficient(t *testing.T) {
 	if err := os.MkdirAll(filepath.Dir(sparseFile), 0755); err != nil {
 		t.Fatal(err)
 	}
-	// Only include .cursor/ pattern, missing CLAUDE.md
+	// Only include .cursor/ pattern, missing .mcp.json
 	if err := os.WriteFile(sparseFile, []byte("/*\n!.cursor/\n"), 0644); err != nil {
 		t.Fatal(err)
 	}
@@ -414,7 +412,7 @@ func TestSparseCheckoutCheck_LegacyPatternNotSufficient(t *testing.T) {
 
 	result := check.Run(ctx)
 
-	// Should fail because CLAUDE.md pattern is missing
+	// Should fail because .mcp.json pattern is missing
 	if result.Status != StatusError {
 		t.Errorf("expected StatusError for legacy-only pattern, got %v", result.Status)
 	}
@@ -464,7 +462,7 @@ func TestSparseCheckoutCheck_FixUpgradesLegacyPatterns(t *testing.T) {
 	}
 
 	contentStr := string(content)
-	requiredPatterns := []string{"!/.cursor/", "!/CLAUDE.md", "!/CLAUDE.local.md", "!/.mcp.json"}
+	requiredPatterns := []string{"!/.cursor/", "!/.mcp.json"}
 	for _, pattern := range requiredPatterns {
 		if !strings.Contains(contentStr, pattern) {
 			t.Errorf("after fix, sparse-checkout file missing pattern %q", pattern)
@@ -478,7 +476,7 @@ func TestSparseCheckoutCheck_FixUpgradesLegacyPatterns(t *testing.T) {
 	}
 }
 
-func TestSparseCheckoutCheck_FixFailsWithUntrackedCLAUDEMD(t *testing.T) {
+func TestSparseCheckoutCheck_FixFailsWithUntrackedMCPJSON(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 	rigDir := filepath.Join(tmpDir, rigName)
@@ -487,9 +485,9 @@ func TestSparseCheckoutCheck_FixFailsWithUntrackedCLAUDEMD(t *testing.T) {
 	mayorRig := filepath.Join(rigDir, "mayor", "rig")
 	initGitRepo(t, mayorRig)
 
-	// Create untracked CLAUDE.md (not added to git)
-	claudeFile := filepath.Join(mayorRig, "CLAUDE.md")
-	if err := os.WriteFile(claudeFile, []byte("# Untracked context\n"), 0644); err != nil {
+	// Create untracked .mcp.json (not added to git)
+	mcpFile := filepath.Join(mayorRig, ".mcp.json")
+	if err := os.WriteFile(mcpFile, []byte("{}"), 0644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -502,15 +500,15 @@ func TestSparseCheckoutCheck_FixFailsWithUntrackedCLAUDEMD(t *testing.T) {
 		t.Fatalf("expected StatusError before fix, got %v", result.Status)
 	}
 
-	// Fix should fail because CLAUDE.md is untracked and won't be removed
+	// Fix should fail because .mcp.json is untracked and won't be removed
 	err := check.Fix(ctx)
 	if err == nil {
-		t.Fatal("expected Fix to return error for untracked CLAUDE.md, but it succeeded")
+		t.Fatal("expected Fix to return error for untracked .mcp.json, but it succeeded")
 	}
 
 	// Verify error message is helpful
-	if !strings.Contains(err.Error(), "CLAUDE.md") {
-		t.Errorf("expected error to mention CLAUDE.md, got: %v", err)
+	if !strings.Contains(err.Error(), ".mcp.json") {
+		t.Errorf("expected error to mention .mcp.json, got: %v", err)
 	}
 	if !strings.Contains(err.Error(), "untracked or modified") {
 		t.Errorf("expected error to explain files are untracked/modified, got: %v", err)
@@ -559,7 +557,7 @@ func TestSparseCheckoutCheck_FixFailsWithUntrackedCursorDir(t *testing.T) {
 	}
 }
 
-func TestSparseCheckoutCheck_FixFailsWithModifiedCLAUDEMD(t *testing.T) {
+func TestSparseCheckoutCheck_FixFailsWithModifiedMCPJSON(t *testing.T) {
 	tmpDir := t.TempDir()
 	rigName := "testrig"
 	rigDir := filepath.Join(tmpDir, rigName)
@@ -568,24 +566,24 @@ func TestSparseCheckoutCheck_FixFailsWithModifiedCLAUDEMD(t *testing.T) {
 	mayorRig := filepath.Join(rigDir, "mayor", "rig")
 	initGitRepo(t, mayorRig)
 
-	// Add and commit CLAUDE.md to the repo
-	claudeFile := filepath.Join(mayorRig, "CLAUDE.md")
-	if err := os.WriteFile(claudeFile, []byte("# Original context\n"), 0644); err != nil {
+	// Add and commit .mcp.json to the repo
+	mcpFile := filepath.Join(mayorRig, ".mcp.json")
+	if err := os.WriteFile(mcpFile, []byte("{}"), 0644); err != nil {
 		t.Fatal(err)
 	}
-	cmd := exec.Command("git", "add", "CLAUDE.md")
+	cmd := exec.Command("git", "add", ".mcp.json")
 	cmd.Dir = mayorRig
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("git add failed: %v\n%s", err, out)
 	}
-	cmd = exec.Command("git", "commit", "-m", "Add CLAUDE.md")
+	cmd = exec.Command("git", "commit", "-m", "Add .mcp.json")
 	cmd.Dir = mayorRig
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("git commit failed: %v\n%s", err, out)
 	}
 
-	// Now modify CLAUDE.md without committing (making it "dirty")
-	if err := os.WriteFile(claudeFile, []byte("# Modified context - local changes\n"), 0644); err != nil {
+	// Now modify .mcp.json without committing (making it "dirty")
+	if err := os.WriteFile(mcpFile, []byte("{\"modified\":true}"), 0644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -598,15 +596,15 @@ func TestSparseCheckoutCheck_FixFailsWithModifiedCLAUDEMD(t *testing.T) {
 		t.Fatalf("expected StatusError before fix, got %v", result.Status)
 	}
 
-	// Fix should fail because CLAUDE.md is modified and git won't remove it
+	// Fix should fail because .mcp.json is modified and git won't remove it
 	err := check.Fix(ctx)
 	if err == nil {
-		t.Fatal("expected Fix to return error for modified CLAUDE.md, but it succeeded")
+		t.Fatal("expected Fix to return error for modified .mcp.json, but it succeeded")
 	}
 
 	// Verify error message is helpful
-	if !strings.Contains(err.Error(), "CLAUDE.md") {
-		t.Errorf("expected error to mention CLAUDE.md, got: %v", err)
+	if !strings.Contains(err.Error(), ".mcp.json") {
+		t.Errorf("expected error to mention .mcp.json, got: %v", err)
 	}
 }
 
@@ -620,7 +618,11 @@ func TestSparseCheckoutCheck_FixFailsWithMultipleProblems(t *testing.T) {
 	initGitRepo(t, mayorRig)
 
 	// Create multiple untracked context files
-	if err := os.WriteFile(filepath.Join(mayorRig, "CLAUDE.md"), []byte("# Context\n"), 0644); err != nil {
+	cursorDir := filepath.Join(mayorRig, ".cursor")
+	if err := os.MkdirAll(cursorDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(cursorDir, "hooks.json"), []byte("{}"), 0644); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(filepath.Join(mayorRig, ".mcp.json"), []byte("{}"), 0644); err != nil {
@@ -644,8 +646,8 @@ func TestSparseCheckoutCheck_FixFailsWithMultipleProblems(t *testing.T) {
 
 	// Verify error mentions both files
 	errStr := err.Error()
-	if !strings.Contains(errStr, "CLAUDE.md") {
-		t.Errorf("expected error to mention CLAUDE.md, got: %v", err)
+	if !strings.Contains(errStr, ".cursor") {
+		t.Errorf("expected error to mention .cursor, got: %v", err)
 	}
 	if !strings.Contains(errStr, ".mcp.json") {
 		t.Errorf("expected error to mention .mcp.json, got: %v", err)

@@ -243,7 +243,7 @@ func FindAllLocks(root string) (map[string]*LockInfo, error) {
 // Returns the number of stale locks cleaned.
 // A lock is only truly stale if BOTH the PID is dead AND the tmux session
 // doesn't exist. This prevents killing active workers whose spawning process
-// has exited (which is normal - Claude runs as a child in tmux).
+// has exited (which is normal - the agent runs as a child in tmux).
 func CleanStaleLocks(root string) (int, error) {
 	locks, err := FindAllLocks(root)
 	if err != nil {

@@ -83,7 +83,7 @@ func TestConfigAgentList(t *testing.T) {
 		settings := &config.TownSettings{
 			Type:         "town-settings",
 			Version:      config.CurrentTownSettingsVersion,
-			DefaultAgent: "claude",
+			DefaultAgent: "cursor",
 			Agents: map[string]*config.RuntimeConfig{
 				"my-custom": {
 					Command: "my-agent",
@@ -168,7 +168,7 @@ func TestConfigAgentGet(t *testing.T) {
 
 		// Run the command
 		cmd := &cobra.Command{}
-		args := []string{"claude"}
+		args := []string{"cursor"}
 		err := runConfigAgentGet(cmd, args)
 		if err != nil {
 			t.Fatalf("runConfigAgentGet failed: %v", err)
@@ -183,7 +183,7 @@ func TestConfigAgentGet(t *testing.T) {
 		settings := &config.TownSettings{
 			Type:         "town-settings",
 			Version:      config.CurrentTownSettingsVersion,
-			DefaultAgent: "claude",
+			DefaultAgent: "cursor",
 			Agents: map[string]*config.RuntimeConfig{
 				"my-custom": {
 					Command: "my-agent",
@@ -329,7 +329,7 @@ func TestConfigAgentSet(t *testing.T) {
 		settings := &config.TownSettings{
 			Type:         "town-settings",
 			Version:      config.CurrentTownSettingsVersion,
-			DefaultAgent: "claude",
+			DefaultAgent: "cursor",
 			Agents: map[string]*config.RuntimeConfig{
 				"my-agent": {
 					Command: "old-command",
@@ -378,7 +378,7 @@ func TestConfigAgentRemove(t *testing.T) {
 		settings := &config.TownSettings{
 			Type:         "town-settings",
 			Version:      config.CurrentTownSettingsVersion,
-			DefaultAgent: "claude",
+			DefaultAgent: "cursor",
 			Agents: map[string]*config.RuntimeConfig{
 				"my-agent": {
 					Command: "my-agent",
@@ -430,7 +430,7 @@ func TestConfigAgentRemove(t *testing.T) {
 
 		// Try to remove a built-in agent
 		cmd := &cobra.Command{}
-		args := []string{"claude"}
+		args := []string{"cursor"}
 		err := runConfigAgentRemove(cmd, args)
 		if err == nil {
 			t.Fatal("expected error when removing built-in agent")
@@ -521,7 +521,7 @@ func TestConfigDefaultAgent(t *testing.T) {
 		settings := &config.TownSettings{
 			Type:         "town-settings",
 			Version:      config.CurrentTownSettingsVersion,
-			DefaultAgent: "claude",
+			DefaultAgent: "cursor",
 			Agents: map[string]*config.RuntimeConfig{
 				"my-custom": {
 					Command: "my-agent",

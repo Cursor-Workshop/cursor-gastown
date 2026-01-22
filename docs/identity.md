@@ -243,11 +243,11 @@ When agents use different underlying models, attribution enables A/B comparison:
 
 ```bash
 # Tag agents by model
-# gastown/polecats/claude-1 uses Claude
+# gastown/polecats/model-1 uses a dedicated model
 # gastown/polecats/gpt-1 uses GPT-4
 
 # Compare quality signals
-bd stats --actor=gastown/polecats/claude-* --metric=revision-count
+bd stats --actor=gastown/polecats/model-* --metric=revision-count
 bd stats --actor=gastown/polecats/gpt-* --metric=revision-count
 ```
 

@@ -635,18 +635,16 @@ func ConfigureSparseCheckout(repoPath string) error {
 
 	// Write patterns directly to sparse-checkout file
 	// (git sparse-checkout set --stdin escapes the ! character incorrectly)
-	// Exclude all Cursor context files to prevent source repo instructions
-	// from interfering with Gas Town agent context:
-	// - .cursor/      : settings, rules, hooks
-	// - CLAUDE.md     : primary context file
-	// - CLAUDE.local.md : personal context file
-	// - .mcp.json     : MCP server configuration
+	// Exclude all Cursor context files to prevent source repo settings
+	// from interfering with Gas Town agent configuration:
+	// - .cursor/  : settings, rules, hooks
+	// - .mcp.json : MCP server configuration
 	infoDir := filepath.Join(gitDir, "info")
 	if err := os.MkdirAll(infoDir, 0755); err != nil {
 		return fmt.Errorf("creating info dir: %w", err)
 	}
 	sparseFile := filepath.Join(infoDir, "sparse-checkout")
-	sparsePatterns := "/*\n!/.cursor/\n!/CLAUDE.md\n!/CLAUDE.local.md\n!/.mcp.json\n"
+	sparsePatterns := "/*\n!/.cursor/\n!/.mcp.json\n"
 	if err := os.WriteFile(sparseFile, []byte(sparsePatterns), 0644); err != nil {
 		return fmt.Errorf("writing sparse-checkout: %w", err)
 	}
@@ -672,8 +670,6 @@ func ConfigureSparseCheckout(repoPath string) error {
 // ExcludedContextFiles lists all context files that should be excluded by sparse checkout.
 var ExcludedContextFiles = []string{
 	".cursor",
-	"CLAUDE.md",
-	"CLAUDE.local.md",
 	".mcp.json",
 }
 
@@ -725,8 +721,8 @@ func IsSparseCheckoutConfigured(repoPath string) bool {
 	// Check for all required exclusion patterns
 	contentStr := string(content)
 	requiredPatterns := []string{
-		"!/.cursor/", // or legacy "!.cursor/"
-		"!/CLAUDE.md", // or legacy without leading slash
+		"!/.cursor/",  // or legacy "!.cursor/"
+		"!/.mcp.json", // or legacy without leading slash
 	}
 	for _, pattern := range requiredPatterns {
 		// Accept both with and without leading slash for backwards compatibility

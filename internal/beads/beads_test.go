@@ -1123,14 +1123,14 @@ func TestParseRoleConfig(t *testing.T) {
 			description: `session_pattern: gt-{rig}-{name}
 work_dir_pattern: {town}/{rig}/polecats/{name}
 needs_pre_sync: true
-start_command: exec claude --dangerously-skip-permissions
+start_command: exec cursor-agent -f
 env_var: GT_ROLE=polecat
 env_var: GT_RIG={rig}`,
 			wantConfig: &RoleConfig{
 				SessionPattern: "gt-{rig}-{name}",
 				WorkDirPattern: "{town}/{rig}/polecats/{name}",
 				NeedsPreSync:   true,
-				StartCommand:   "exec claude --dangerously-skip-permissions",
+				StartCommand:   "exec cursor-agent -f",
 				EnvVars:        map[string]string{"GT_ROLE": "polecat", "GT_RIG": "{rig}"},
 			},
 		},
@@ -1318,13 +1318,13 @@ func TestFormatRoleConfig(t *testing.T) {
 				SessionPattern: "gt-{rig}-{name}",
 				WorkDirPattern: "{town}/{rig}/polecats/{name}",
 				NeedsPreSync:   true,
-				StartCommand:   "exec claude",
+				StartCommand:   "exec cursor-agent -f",
 				EnvVars:        map[string]string{},
 			},
 			want: `session_pattern: gt-{rig}-{name}
 work_dir_pattern: {town}/{rig}/polecats/{name}
 needs_pre_sync: true
-start_command: exec claude`,
+start_command: exec cursor-agent -f`,
 		},
 		{
 			name: "only session pattern",
@@ -1352,7 +1352,7 @@ func TestRoleConfigRoundTrip(t *testing.T) {
 		SessionPattern: "gt-{rig}-{name}",
 		WorkDirPattern: "{town}/{rig}/polecats/{name}",
 		NeedsPreSync:   true,
-		StartCommand:   "exec claude --dangerously-skip-permissions",
+		StartCommand:   "exec cursor-agent -f",
 		EnvVars:        map[string]string{}, // Can't round-trip env vars due to order
 	}
 

@@ -564,7 +564,7 @@ func spawnSwarmWorkersFromBeads(r *rig.Rig, townRoot string, swarmID string, wor
 				style.PrintWarning("  couldn't start %s: %v", worker, err)
 				continue
 			}
-			// Wait for Claude to initialize
+			// Wait for agent to initialize
 			time.Sleep(5 * time.Second)
 		}
 

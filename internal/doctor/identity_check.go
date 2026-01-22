@@ -81,14 +81,14 @@ func (c *IdentityCollisionCheck) Run(ctx *CheckContext) *CheckResult {
 	for workerDir, info := range locks {
 		// First check if the session exists in tmux - that's the real indicator
 		// of whether the worker is alive. The PID in the lock is the spawning
-		// process, which may have exited even though Claude is still running.
+		// process, which may have exited even though the agent is still running.
 		sessionExists := info.SessionID != "" && sessionSet[info.SessionID]
 
 		if info.IsStale() {
 			// PID is dead - but is the session still alive?
 			if sessionExists {
 				// Session exists, so the worker is alive despite dead PID.
-				// This is normal - the spawner exits after launching Claude.
+				// This is normal - the spawner exits after launching the agent.
 				healthyLocks++
 				continue
 			}

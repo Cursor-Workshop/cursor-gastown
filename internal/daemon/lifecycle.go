@@ -381,10 +381,10 @@ func (d *Daemon) restartSession(sessionName, identity string) error {
 		return fmt.Errorf("sending startup command: %w", err)
 	}
 
-	// Wait for Claude to start, then accept bypass permissions warning if it appears.
+	// Wait for agent to start, then accept bypass permissions warning if it appears.
 	// This ensures automated role starts aren't blocked by the warning dialog.
 	if err := d.tmux.WaitForCommand(sessionName, constants.SupportedShells, constants.CursorStartTimeout); err != nil {
-		// Non-fatal - Claude might still start
+		// Non-fatal - agent might still start
 	}
 	_ = d.tmux.AcceptBypassPermissionsWarning(sessionName)
 	time.Sleep(constants.ShutdownNotifyDelay)
@@ -764,7 +764,7 @@ func (d *Daemon) checkRigGUPPViolations(rigName string) {
 		polecatName := strings.TrimPrefix(agent.ID, prefix)
 		sessionName := fmt.Sprintf("gt-%s-%s", rigName, polecatName)
 
-		// Check if tmux session exists and Claude is running
+		// Check if tmux session exists and agent is running
 		if d.tmux.IsCursorRunning(sessionName) {
 			// Session is alive - check if it's been stuck too long
 			updatedAt, err := time.Parse(time.RFC3339, agent.UpdatedAt)

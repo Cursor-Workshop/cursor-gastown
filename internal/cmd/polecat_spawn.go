@@ -38,7 +38,7 @@ type SlingSpawnOptions struct {
 	Account  string // Cursor account handle to use
 	Create   bool   // Create polecat if it doesn't exist (currently always true for sling)
 	HookBead string // Bead ID to set as hook_bead at spawn time (atomic assignment)
-	Agent    string // Agent override for this spawn (e.g., "gemini", "codex", "claude-haiku")
+	Agent    string // Agent override for this spawn (e.g., "gemini", "codex", "cursor-haiku")
 }
 
 // SpawnPolecatForSling creates a fresh polecat and optionally starts its session.
@@ -139,7 +139,7 @@ func SpawnPolecatForSling(rigName string, opts SlingSpawnOptions) (*SpawnedPolec
 		}, nil
 	}
 
-	// Resolve account for Claude config
+	// Resolve account for Cursor config
 	accountsPath := constants.MayorAccountsPath(townRoot)
 	cursorConfigDir, accountHandle, err := config.ResolveAccountConfigDir(accountsPath, opts.Account)
 	if err != nil {

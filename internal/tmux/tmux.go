@@ -356,7 +356,7 @@ func (t *Tmux) AcceptBypassPermissionsWarning(session string) error {
 }
 
 // GetPaneCommand returns the current command running in a pane.
-// Returns "bash", "zsh", "claude", "node", etc.
+// Returns "bash", "zsh", "cursor-agent", "node", etc.
 func (t *Tmux) GetPaneCommand(session string) (string, error) {
 	out, err := t.run("list-panes", "-t", session, "-F", "#{pane_current_command}")
 	if err != nil {
@@ -562,7 +562,7 @@ func (t *Tmux) IsCursorRunning(session string) bool {
 }
 
 // WaitForCommand polls until the pane is NOT running one of the excluded commands.
-// Useful for waiting until a shell has started a new process (e.g., claude).
+// Useful for waiting until a shell has started a new process (e.g., cursor-agent).
 // Returns nil when a non-excluded command is detected, or error on timeout.
 func (t *Tmux) WaitForCommand(session string, excludeCommands []string, timeout time.Duration) error {
 	deadline := time.Now().Add(timeout)

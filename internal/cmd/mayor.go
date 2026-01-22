@@ -28,7 +28,7 @@ var mayorStartCmd = &cobra.Command{
 	Short: "Start the Mayor session",
 	Long: `Start the Mayor tmux session.
 
-Creates a new detached tmux session for the Mayor and launches Claude.
+Creates a new detached tmux session for the Mayor and launches the agent.
 The session runs in the workspace root directory.`,
 	RunE: runMayorStart,
 }

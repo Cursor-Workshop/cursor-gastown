@@ -264,7 +264,7 @@ func TestClearIssueWithoutAssignment(t *testing.T) {
 	}
 }
 
-// NOTE: TestInstallCLAUDETemplate tests were removed.
-// We no longer write CLAUDE.md to worktrees - Gas Town context is injected
+// NOTE: Context template tests were removed.
+// We no longer write role context files to worktrees - Gas Town context is injected
 // ephemerally via SessionStart hook (gt prime) to prevent leaking internal
 // architecture into project repos.

@@ -8,7 +8,7 @@ import (
 )
 
 // CommandsCheck validates that town-level .cursor/commands/ is provisioned.
-// All agents inherit these via Claude's directory traversal - no per-workspace copies needed.
+// All agents inherit these via Cursor's directory traversal - no per-workspace copies needed.
 type CommandsCheck struct {
 	FixableCheck
 	townRoot       string   // Cached for Fix

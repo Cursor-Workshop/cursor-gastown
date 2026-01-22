@@ -15,8 +15,6 @@ type AgentPreset string
 
 // Supported agent presets (built-in, E2E tested).
 const (
-	// AgentClaude is Claude CLI (legacy support).
-	AgentClaude AgentPreset = "claude"
 	// AgentGemini is Gemini CLI.
 	AgentGemini AgentPreset = "gemini"
 	// AgentCodex is OpenAI Codex.
@@ -32,7 +30,7 @@ const (
 // AgentPresetInfo contains the configuration details for an agent preset.
 // This extends the basic RuntimeConfig with agent-specific metadata.
 type AgentPresetInfo struct {
-	// Name is the preset identifier (e.g., "claude", "gemini", "codex", "cursor", "auggie", "amp").
+	// Name is the preset identifier (e.g., "gemini", "codex", "cursor", "auggie", "amp").
 	Name AgentPreset `json:"name"`
 
 	// Command is the CLI binary to invoke.
@@ -43,7 +41,7 @@ type AgentPresetInfo struct {
 
 	// ProcessNames are the process names to look for when detecting if the agent is running.
 	// Used by tmux.IsAgentRunning to check pane_current_command.
-	// E.g., ["cursor-agent"] for Cursor, ["node"] for Claude CLI.
+	// E.g., ["cursor-agent"] for Cursor, ["codex"] for Codex.
 	ProcessNames []string `json:"process_names,omitempty"`
 
 	// SessionIDEnv is the environment variable for session ID.
@@ -51,7 +49,7 @@ type AgentPresetInfo struct {
 	SessionIDEnv string `json:"session_id_env,omitempty"`
 
 	// ResumeFlag is the flag/subcommand for resuming sessions.
-	// For claude/gemini: "--resume"
+	// For gemini: "--resume"
 	// For codex: "resume" (subcommand)
 	ResumeFlag string `json:"resume_flag,omitempty"`
 
@@ -64,7 +62,6 @@ type AgentPresetInfo struct {
 	SupportsHooks bool `json:"supports_hooks,omitempty"`
 
 	// SupportsForkSession indicates if --fork-session is available.
-	// Feature for seance command (supported by Claude CLI).
 	SupportsForkSession bool `json:"supports_fork_session,omitempty"`
 
 	// NonInteractive contains settings for non-interactive mode.
@@ -98,18 +95,6 @@ const CurrentAgentRegistryVersion = 1
 
 // builtinPresets contains the default presets for supported agents.
 var builtinPresets = map[AgentPreset]*AgentPresetInfo{
-	AgentClaude: {
-		Name:                AgentClaude,
-		Command:             "claude",
-		Args:                []string{"--dangerously-skip-permissions"},
-		ProcessNames:        []string{"node"}, // Claude CLI runs as Node.js
-		SessionIDEnv:        "", // Claude CLI uses its own session tracking
-		ResumeFlag:          "--resume",
-		ResumeStyle:         "flag",
-		SupportsHooks:       true,
-		SupportsForkSession: true,
-		NonInteractive:      nil, // Claude CLI is native non-interactive
-	},
 	AgentGemini: {
 		Name:                AgentGemini,
 		Command:             "gemini",
@@ -334,7 +319,7 @@ func BuildResumeCommand(agentName, sessionID string) string {
 	case "flag":
 		fallthrough
 	default:
-		// e.g., "claude --dangerously-skip-permissions --resume <session_id>"
+		// e.g., "cursor-agent --resume <session_id>"
 		args = append(args, info.ResumeFlag, sessionID)
 		return info.Command + " " + strings.Join(args, " ")
 	}

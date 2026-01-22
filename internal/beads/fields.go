@@ -522,7 +522,7 @@ type RoleConfig struct {
 	NeedsPreSync bool
 
 	// StartCommand is the command to run after creating the session.
-	// Default: "exec claude --dangerously-skip-permissions"
+	// Default: "exec cursor-agent -f"
 	StartCommand string
 
 	// EnvVars are additional environment variables to set in the session.

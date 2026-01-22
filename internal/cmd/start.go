@@ -280,8 +280,8 @@ func startConfiguredCrew(t *tmux.Tmux, townRoot string) {
 				if !t.IsAgentRunning(sessionID, config.ExpectedPaneCommands(agentCfg)...) {
 					// Agent has exited, restart it
 					fmt.Printf("  %s %s/%s session exists, restarting agent...\n", style.Dim.Render("○"), r.Name, crewName)
-					claudeCmd := config.BuildCrewStartupCommand(r.Name, crewName, r.Path, "gt prime")
-					if err := t.SendKeys(sessionID, claudeCmd); err != nil {
+					agentCmd := config.BuildCrewStartupCommand(r.Name, crewName, r.Path, "gt prime")
+					if err := t.SendKeys(sessionID, agentCmd); err != nil {
 						fmt.Printf("  %s %s/%s restart failed: %v\n", style.Dim.Render("○"), r.Name, crewName, err)
 					} else {
 						fmt.Printf("  %s %s/%s agent restarted\n", style.Bold.Render("OK"), r.Name, crewName)

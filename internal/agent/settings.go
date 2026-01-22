@@ -26,7 +26,7 @@ func EnsureSettingsForRole(workDir, role string, agentName string) error {
 	switch preset.Name {
 	case config.AgentCursor:
 		return cursor.EnsureSettingsForRole(workDir, role)
-	case config.AgentGemini, config.AgentCodex, config.AgentAuggie, config.AgentAmp, config.AgentClaude:
+	case config.AgentGemini, config.AgentCodex, config.AgentAuggie, config.AgentAmp:
 		// These agents don't have a similar settings/rules mechanism yet
 		// They may read AGENTS.md or have their own config
 		return nil

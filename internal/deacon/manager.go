@@ -116,7 +116,7 @@ func (m *Manager) Start() error {
 	time.Sleep(constants.ShutdownNotifyDelay)
 
 	// Note: Deacon doesn't get startup nudge due to respawn loop complexity
-	// The deacon uses its own patrol pattern defined in its CLAUDE.md/prime
+	// The deacon uses its own patrol pattern defined in its role config/prime
 
 	return nil
 }

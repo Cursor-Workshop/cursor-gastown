@@ -137,7 +137,7 @@ func detectCrewFromCwd() (*crewDetection, error) {
 	}, nil
 }
 
-// isShellCommand checks if the command is a shell (meaning Claude has exited).
+// isShellCommand checks if the command is a shell (meaning the agent has exited).
 func isShellCommand(cmd string) bool {
 	shells := constants.SupportedShells
 	for _, shell := range shells {

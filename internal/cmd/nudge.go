@@ -35,7 +35,7 @@ Uses a reliable delivery pattern:
 2. Waits 500ms for paste to complete
 3. Sends Enter as a separate command
 
-This is the ONLY way to send messages to Claude sessions.
+This is the ONLY way to send messages to agent sessions.
 Do not use raw tmux send-keys elsewhere.
 
 Role shortcuts (expand to session names):

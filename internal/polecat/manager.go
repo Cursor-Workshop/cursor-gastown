@@ -236,9 +236,9 @@ func (m *Manager) AddWithOptions(name string, opts AddOptions) (*Polecat, error)
 		return nil, fmt.Errorf("creating worktree: %w", err)
 	}
 
-	// NOTE: We intentionally do NOT write to CLAUDE.md here.
+	// NOTE: We intentionally do NOT write role context files here.
 	// Gas Town context is injected ephemerally via SessionStart hook (gt prime).
-	// Writing to CLAUDE.md would overwrite project instructions and could leak
+	// Writing context into the repo would overwrite project instructions and could leak
 	// Gas Town internals into the project repo if merged.
 
 	// Set up shared beads: polecat uses rig's .beads via redirect file.
@@ -250,10 +250,10 @@ func (m *Manager) AddWithOptions(name string, opts AddOptions) (*Polecat, error)
 	}
 
 	// NOTE: Slash commands (.cursor/commands/) are provisioned at town level by gt install.
-	// All agents inherit them via Claude's directory traversal - no per-workspace copies needed.
+	// All agents inherit them via Cursor's directory traversal - no per-workspace copies needed.
 
 	// Create agent bead for ZFC compliance (self-report state).
-	// State starts as "spawning" - will be updated to "working" when Claude starts.
+	// State starts as "spawning" - will be updated to "working" when the agent starts.
 	// HookBead is set atomically at creation time if provided (avoids cross-beads routing issues).
 	agentID := m.agentBeadID(name)
 	_, err = m.beads.CreateAgentBead(agentID, agentID, &beads.AgentFields{
@@ -472,7 +472,7 @@ func (m *Manager) RepairWorktreeWithOptions(name string, force bool, opts AddOpt
 		return nil, fmt.Errorf("creating fresh worktree from %s: %w", startPoint, err)
 	}
 
-	// NOTE: We intentionally do NOT write to CLAUDE.md here.
+	// NOTE: We intentionally do NOT write role context files here.
 	// Gas Town context is injected ephemerally via SessionStart hook (gt prime).
 
 	// Set up shared beads

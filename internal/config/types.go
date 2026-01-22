@@ -38,7 +38,7 @@ type TownSettings struct {
 	Version int    `json:"version"` // schema version
 
 	// DefaultAgent is the name of the agent preset to use by default.
-	// Can be a built-in preset ("claude", "gemini", "codex", "cursor", "auggie", "amp")
+	// Can be a built-in preset ("cursor", "gemini", "codex", "auggie", "amp")
 	// or a custom agent name defined in settings/agents.json.
 	// Default: "cursor"
 	DefaultAgent string `json:"default_agent,omitempty"`
@@ -191,7 +191,7 @@ type RigSettings struct {
 	Runtime    *RuntimeConfig    `json:"runtime,omitempty"`     // LLM runtime settings (deprecated: use Agent)
 
 	// Agent selects which agent preset to use for this rig.
-	// Can be a built-in preset ("cursor", "claude", "gemini", "codex", "auggie", "amp")
+	// Can be a built-in preset ("cursor", "gemini", "codex", "auggie", "amp")
 	// or a custom agent defined in settings/agents.json.
 	// If empty, uses the town's default_agent setting (cursor).
 	// Takes precedence over Runtime if both are set.
@@ -213,10 +213,10 @@ type CrewConfig struct {
 }
 
 // RuntimeConfig represents LLM runtime configuration for agent sessions.
-// This allows switching between different LLM backends (cursor, claude, aider, etc.)
+// This allows switching between different LLM backends (cursor, gemini, codex, etc.)
 // without modifying startup code.
 type RuntimeConfig struct {
-	// Command is the CLI command to invoke (e.g., "cursor-agent", "claude", "aider").
+	// Command is the CLI command to invoke (e.g., "cursor-agent", "gemini", "aider").
 	// Default: "cursor-agent"
 	Command string `json:"command,omitempty"`
 

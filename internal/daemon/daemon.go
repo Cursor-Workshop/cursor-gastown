@@ -313,7 +313,7 @@ func (d *Daemon) ensureDeaconRunning() {
 	// Deacon not running - start it
 	d.logger.Println("Deacon not running, starting...")
 
-	// Create session in deacon directory (ensures correct CLAUDE.md is loaded)
+	// Create session in deacon directory (ensures correct Cursor settings are loaded)
 	// Use EnsureSessionFresh to handle zombie sessions that exist but have dead agent
 	deaconDir := filepath.Join(d.config.TownRoot, "deacon")
 	sessionName := d.getDeaconSessionName()

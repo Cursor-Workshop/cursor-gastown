@@ -70,7 +70,7 @@ bd stats --actor=gastown/polecats/toast --tag=go
 - **Capability matching:** Route work to proven agents
 - **Continuous improvement:** Identify underperforming agents for tuning
 
-This is particularly valuable when **A/B testing models**. Deploy Claude vs GPT
+This is particularly valuable when **A/B testing models** (e.g., model A vs GPT).
 on similar tasks, track their completion rates and quality, make informed decisions.
 
 ---

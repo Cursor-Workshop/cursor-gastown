@@ -53,7 +53,7 @@ type SessionStartOptions struct {
 	// Issue is an optional issue ID to work on.
 	Issue string
 
-	// Command overrides the default "claude" command.
+	// Command overrides the default "cursor-agent" command.
 	Command string
 
 	// Account specifies the account handle to use (overrides default).
@@ -63,7 +63,7 @@ type SessionStartOptions struct {
 	// If set, this is injected as an environment variable.
 	CursorConfigDir string
 
-	// Agent is the agent preset name (e.g., "claude", "cursor", "gemini").
+	// Agent is the agent preset name (e.g., "cursor", "gemini", "codex").
 	// If empty, defaults to the town/rig default agent.
 	Agent string
 }
@@ -156,10 +156,10 @@ func (m *SessionManager) Start(polecat string, opts SessionStartOptions) error {
 			case strings.Contains(rc.Command, "codex"):
 				agentName = "codex"
 			default:
-				agentName = "claude"
+				agentName = "cursor"
 			}
 		} else {
-			agentName = "claude" // default
+			agentName = "cursor" // default
 		}
 	}
 	if err := agent.EnsureSettingsForRole(polecatsDir, "polecat", agentName); err != nil {

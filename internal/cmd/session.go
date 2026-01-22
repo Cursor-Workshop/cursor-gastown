@@ -40,7 +40,7 @@ var sessionCmd = &cobra.Command{
 	RunE:    requireSubcommand,
 	Long: `Manage tmux sessions for polecats.
 
-Sessions are tmux sessions running Claude for each polecat.
+Sessions are tmux sessions running the agent for each polecat.
 Use the subcommands to start, stop, attach, and monitor sessions.
 
 TIP: To send messages to a running session, use 'gt nudge' (not 'session inject').
@@ -53,7 +53,7 @@ var sessionStartCmd = &cobra.Command{
 	Long: `Start a new tmux session for a polecat.
 
 Creates a tmux session, navigates to the polecat's working directory,
-and launches claude. Optionally inject an initial issue to work on.
+and launches the agent. Optionally inject an initial issue to work on.
 
 Examples:
   gt session start wyvern/Toast
@@ -113,7 +113,7 @@ var sessionInjectCmd = &cobra.Command{
 	Short: "Send message to session (prefer 'gt nudge')",
 	Long: `Send a message to a polecat session.
 
-NOTE: For sending messages to Claude sessions, use 'gt nudge' instead.
+NOTE: For sending messages to agent sessions, use 'gt nudge' instead.
 It uses reliable delivery (literal mode + timing) that works correctly
 with Cursor's input handling.
 

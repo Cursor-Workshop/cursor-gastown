@@ -16,11 +16,11 @@ func TestParseHooksFile(t *testing.T) {
 	}
 
 	settings := CursorSettings{
-		Hooks: map[string][]ClaudeHookMatcher{
+		Hooks: map[string][]AgentHookMatcher{
 			"SessionStart": {
 				{
 					Matcher: "",
-					Hooks: []ClaudeHook{
+					Hooks: []AgentHook{
 						{Type: "command", Command: "gt prime"},
 					},
 				},
@@ -28,7 +28,7 @@ func TestParseHooksFile(t *testing.T) {
 			"UserPromptSubmit": {
 				{
 					Matcher: "*.go",
-					Hooks: []ClaudeHook{
+					Hooks: []AgentHook{
 						{Type: "command", Command: "go fmt"},
 						{Type: "command", Command: "go vet"},
 					},
@@ -116,7 +116,7 @@ func TestParseHooksFileEmptyHooks(t *testing.T) {
 	settingsPath := filepath.Join(tmpDir, "settings.json")
 
 	settings := CursorSettings{
-		Hooks: map[string][]ClaudeHookMatcher{},
+		Hooks: map[string][]AgentHookMatcher{},
 	}
 
 	data, _ := json.Marshal(settings)

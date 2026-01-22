@@ -39,7 +39,7 @@ Infrastructure checks:
 
 Cleanup checks (fixable):
   - orphan-sessions          Detect orphaned tmux sessions
-  - orphan-processes         Detect orphaned Claude processes
+  - orphan-processes         Detect orphaned agent processes
   - wisp-gc                  Detect and clean abandoned wisps (>1h)
 
 Clone divergence checks:
@@ -65,7 +65,7 @@ Routing checks (fixable):
 
 Session hook checks:
   - session-hooks            Check settings.json use session-start.sh
-  - claude-settings          Check Claude settings.json match templates (fixable)
+  - cursor-settings          Check Cursor settings.json match templates (fixable)
 
 Patrol checks:
   - patrol-molecules-exist   Verify patrol molecules exist

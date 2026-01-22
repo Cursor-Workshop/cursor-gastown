@@ -10,7 +10,7 @@ import (
 
 func TestBuiltinPresets(t *testing.T) {
 	// Ensure all built-in presets are accessible
-	presets := []AgentPreset{AgentClaude, AgentGemini, AgentCodex, AgentCursor, AgentAuggie, AgentAmp}
+	presets := []AgentPreset{AgentGemini, AgentCodex, AgentCursor, AgentAuggie, AgentAmp}
 
 	for _, preset := range presets {
 		info := GetAgentPreset(preset)
@@ -36,7 +36,6 @@ func TestGetAgentPresetByName(t *testing.T) {
 		want    AgentPreset
 		wantNil bool
 	}{
-		{"claude", AgentClaude, false},
 		{"gemini", AgentGemini, false},
 		{"codex", AgentCodex, false},
 		{"cursor", AgentCursor, false},
@@ -68,7 +67,6 @@ func TestRuntimeConfigFromPreset(t *testing.T) {
 		preset      AgentPreset
 		wantCommand string
 	}{
-		{AgentClaude, "claude"},
 		{AgentGemini, "gemini"},
 		{AgentCodex, "codex"},
 		{AgentCursor, "cursor-agent"},
@@ -92,7 +90,6 @@ func TestIsKnownPreset(t *testing.T) {
 		name string
 		want bool
 	}{
-		{"claude", true},
 		{"gemini", true},
 		{"codex", true},
 		{"cursor", true},
@@ -156,12 +153,6 @@ func TestLoadAgentRegistry(t *testing.T) {
 		t.Errorf("my-agent.Command = %v, want my-agent-bin", myAgent.Command)
 	}
 
-	// Check built-ins still accessible
-	claude := GetAgentPresetByName("claude")
-	if claude == nil {
-		t.Fatal("built-in 'claude' not found after loading registry")
-	}
-
 	// Reset for other tests
 	ResetRegistryForTesting()
 }
@@ -172,7 +163,6 @@ func TestAgentPresetYOLOFlags(t *testing.T) {
 		preset  AgentPreset
 		wantArg string // At least this arg should be present
 	}{
-		{AgentClaude, "--dangerously-skip-permissions"},
 		{AgentGemini, "yolo"}, // Part of "--approval-mode yolo"
 		{AgentCodex, "--yolo"},
 	}
@@ -201,13 +191,13 @@ func TestAgentPresetYOLOFlags(t *testing.T) {
 func TestMergeWithPreset(t *testing.T) {
 	// Test that user config overrides preset defaults
 	userConfig := &RuntimeConfig{
-		Command: "/custom/claude",
+		Command: "/custom/cursor-agent",
 		Args:    []string{"--custom-arg"},
 	}
 
-	merged := userConfig.MergeWithPreset(AgentClaude)
+	merged := userConfig.MergeWithPreset(AgentCursor)
 
-	if merged.Command != "/custom/claude" {
+	if merged.Command != "/custom/cursor-agent" {
 		t.Errorf("merged command should be user value, got %s", merged.Command)
 	}
 	if len(merged.Args) != 1 || merged.Args[0] != "--custom-arg" {
@@ -216,9 +206,9 @@ func TestMergeWithPreset(t *testing.T) {
 
 	// Test nil config gets preset defaults
 	var nilConfig *RuntimeConfig
-	merged = nilConfig.MergeWithPreset(AgentClaude)
+	merged = nilConfig.MergeWithPreset(AgentCursor)
 
-	if merged.Command != "claude" {
+	if merged.Command != "cursor-agent" {
 		t.Errorf("nil config merge should get preset command, got %s", merged.Command)
 	}
 
@@ -239,13 +229,6 @@ func TestBuildResumeCommand(t *testing.T) {
 		wantEmpty bool
 		contains  []string // strings that should appear in result
 	}{
-		{
-			name:      "claude with session",
-			agentName: "claude",
-			sessionID: "session-123",
-			wantEmpty: false,
-			contains:  []string{"claude", "--dangerously-skip-permissions", "--resume", "session-123"},
-		},
 		{
 			name:      "gemini with session",
 			agentName: "gemini",
@@ -269,7 +252,7 @@ func TestBuildResumeCommand(t *testing.T) {
 		},
 		{
 			name:      "empty session ID",
-			agentName: "claude",
+			agentName: "cursor",
 			sessionID: "",
 			wantEmpty: true,
 		},
@@ -304,7 +287,6 @@ func TestSupportsSessionResume(t *testing.T) {
 		agentName string
 		want      bool
 	}{
-		{"claude", true},
 		{"gemini", true},
 		{"codex", true},
 		{"cursor", true},
@@ -327,7 +309,6 @@ func TestGetSessionIDEnvVar(t *testing.T) {
 		agentName string
 		want      string
 	}{
-		{"claude", ""}, // Claude CLI uses its own session tracking
 		{"gemini", "GEMINI_SESSION_ID"},
 		{"codex", ""},    // Codex uses JSONL output instead
 		{"cursor", ""},   // Cursor uses --resume with chatId directly
@@ -350,7 +331,6 @@ func TestGetProcessNames(t *testing.T) {
 		agentName string
 		want      []string
 	}{
-		{"claude", []string{"node"}},
 		{"gemini", []string{"gemini"}},
 		{"codex", []string{"codex"}},
 		{"cursor", []string{"node"}}, // cursor-agent runs as Node.js
@@ -377,7 +357,7 @@ func TestGetProcessNames(t *testing.T) {
 
 func TestListAgentPresetsMatchesConstants(t *testing.T) {
 	// Ensure all AgentPreset constants are returned by ListAgentPresets
-	allConstants := []AgentPreset{AgentClaude, AgentGemini, AgentCodex, AgentCursor, AgentAuggie, AgentAmp}
+	allConstants := []AgentPreset{AgentGemini, AgentCodex, AgentCursor, AgentAuggie, AgentAmp}
 	presets := ListAgentPresets()
 
 	// Convert to map for quick lookup
@@ -408,11 +388,6 @@ func TestAgentCommandGeneration(t *testing.T) {
 		wantCommand  string
 		wantContains []string // Args that should be present
 	}{
-		{
-			preset:       AgentClaude,
-			wantCommand:  "claude",
-			wantContains: []string{"--dangerously-skip-permissions"},
-		},
 		{
 			preset:       AgentGemini,
 			wantCommand:  "gemini",

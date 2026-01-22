@@ -88,7 +88,7 @@ If rig is not specified, infers it from the current directory.`,
 var refineryAttachCmd = &cobra.Command{
 	Use:   "attach [rig]",
 	Short: "Attach to refinery session",
-	Long: `Attach to a running Refinery's Claude session.
+Long: `Attach to a running Refinery's agent session.
 
 Allows interactive access to the Refinery agent for debugging
 or manual intervention.

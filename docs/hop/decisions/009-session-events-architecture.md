@@ -12,8 +12,8 @@ on beads mutations (issue close, MR merge).
 
 ## Context
 
-The seance feature needs to discover and resume Cursor sessions. This requires:
-1. **Pointer** to session (session_id) - for `cursor-agent --resume`
+The seance feature needs to discover Cursor sessions. This requires:
+1. **Pointer** to session (session_id) - for attribution and linking
 2. **Attribution** (which work happened in this session) - for entity CV
 
 Cursor already stores full session transcripts indefinitely. Gas Town doesn't
@@ -67,7 +67,7 @@ need to duplicate them - just point at them.
 
 ## Related
 
-- `gt seance` - Session discovery and resume
+- `gt seance` - Session discovery
 - `gt-3zsml` - SessionStart hook passes session_id to gt prime
 - PRIMING.md - "The Feed Is the Signal" section
 - CONTEXT.md - Entity chains and CV model

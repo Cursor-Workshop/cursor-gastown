@@ -150,7 +150,7 @@ func TestInjectNotFound(t *testing.T) {
 }
 
 // TestPolecatCommandFormat verifies the polecat session command exports
-// GT_ROLE, GT_RIG, GT_POLECAT, and BD_ACTOR inline before starting Claude.
+// GT_ROLE, GT_RIG, GT_POLECAT, and BD_ACTOR inline before starting the agent.
 // This is a regression test for gt-y41ep - env vars must be exported inline
 // because tmux SetEnvironment only affects new panes, not the current shell.
 func TestPolecatCommandFormat(t *testing.T) {
@@ -164,7 +164,7 @@ func TestPolecatCommandFormat(t *testing.T) {
 
 	// Build the expected command format (mirrors Start() logic)
 	expectedPrefix := "export GT_ROLE=polecat GT_RIG=" + rigName + " GT_POLECAT=" + polecatName + " BD_ACTOR=" + expectedBdActor + " GIT_AUTHOR_NAME=" + expectedBdActor
-	expectedSuffix := "&& claude --dangerously-skip-permissions"
+	expectedSuffix := "&& cursor-agent -f"
 
 	// The command must contain all required env exports
 	requiredParts := []string{
@@ -174,7 +174,7 @@ func TestPolecatCommandFormat(t *testing.T) {
 		"GT_POLECAT=" + polecatName,
 		"BD_ACTOR=" + expectedBdActor,
 		"GIT_AUTHOR_NAME=" + expectedBdActor,
-		"claude --dangerously-skip-permissions",
+		"cursor-agent -f",
 	}
 
 	// Verify expected format contains all required parts

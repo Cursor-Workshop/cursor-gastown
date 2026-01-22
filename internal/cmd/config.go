@@ -39,7 +39,7 @@ var configAgentListCmd = &cobra.Command{
 	Short: "List all agents",
 	Long: `List all available agents (built-in and custom).
 
-Shows all built-in agent presets (claude, gemini, codex) and any
+Shows all built-in agent presets (cursor, gemini, codex) and any
 custom agents defined in your town settings.
 
 Examples:
@@ -57,7 +57,7 @@ Displays the full configuration for an agent, including command,
 arguments, and other settings. Works for both built-in and custom agents.
 
 Examples:
-  gt config agent get claude
+  gt config agent get cursor
   gt config agent get my-custom-agent`,
 	Args: cobra.ExactArgs(1),
 	RunE: runConfigAgentGet,
@@ -76,9 +76,9 @@ The command can include arguments. Use quotes if the command or
 arguments contain spaces.
 
 Examples:
-  gt config agent set claude-glm \"claude-glm --model glm-4\"
+  gt config agent set cursor-custom \"cursor-agent -f\"
   gt config agent set gemini-custom gemini --approval-mode yolo
-  gt config agent set claude \"claude-glm\"  # Override built-in claude`,
+  gt config agent set cursor \"cursor-agent -f\"  # Override built-in cursor`,
 	Args: cobra.ExactArgs(2),
 	RunE: runConfigAgentSet,
 }
@@ -89,10 +89,10 @@ var configAgentRemoveCmd = &cobra.Command{
 	Long: `Remove a custom agent definition from town settings.
 
 This removes a custom agent from your town settings. Built-in agents
-(claude, gemini, codex) cannot be removed.
+(cursor, gemini, codex) cannot be removed.
 
 Examples:
-  gt config agent remove claude-glm`,
+  gt config agent remove cursor-custom`,
 	Args: cobra.ExactArgs(1),
 	RunE: runConfigAgentRemove,
 }
@@ -108,14 +108,14 @@ With no arguments, shows the current default agent.
 With an argument, sets the default agent to the specified name.
 
 The default agent is used when a rig doesn't specify its own agent
-setting. Can be a built-in preset (claude, gemini, codex) or a
+setting. Can be a built-in preset (cursor, gemini, codex) or a
 custom agent name.
 
 Examples:
-  gt config default-agent           # Show current default
-  gt config default-agent claude    # Set to claude
-  gt config default-agent gemini    # Set to gemini
-  gt config default-agent my-custom # Set to custom agent`,
+  gt config default-agent            # Show current default
+  gt config default-agent cursor     # Set to cursor
+  gt config default-agent gemini     # Set to gemini
+  gt config default-agent my-custom  # Set to custom agent`,
 	RunE: runConfigDefaultAgent,
 }
 
@@ -214,7 +214,7 @@ func runConfigAgentList(cmd *cobra.Command, args []string) error {
 	// Show default
 	defaultAgent := townSettings.DefaultAgent
 	if defaultAgent == "" {
-		defaultAgent = "claude"
+		defaultAgent = "cursor"
 	}
 	fmt.Printf("\nDefault: %s\n", style.Bold.Render(defaultAgent))
 
@@ -404,7 +404,7 @@ func runConfigDefaultAgent(cmd *cobra.Command, args []string) error {
 		// Show current default
 		defaultAgent := townSettings.DefaultAgent
 		if defaultAgent == "" {
-			defaultAgent = "claude"
+			defaultAgent = "cursor"
 		}
 		fmt.Printf("Default agent: %s\n", style.Bold.Render(defaultAgent))
 		return nil

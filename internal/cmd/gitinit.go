@@ -34,7 +34,6 @@ The .gitignore excludes:
   - OS and editor files
 
 And tracks:
-  - CLAUDE.md and role contexts
   - .beads/ configuration and issues
   - Rig configs and hop/ directory
 
@@ -53,7 +52,7 @@ func init() {
 
 // HQGitignore is the standard .gitignore for Gas Town HQs
 const HQGitignore = `# Gas Town HQ .gitignore
-# Track: Role context, handoff docs, beads config/data, rig configs
+# Track: handoff docs, beads config/data, rig configs
 # Ignore: Git worktrees (polecats) and clones (mayor/refinery rigs), runtime state
 
 # =============================================================================

@@ -31,7 +31,7 @@ jobs:
               'git push origin --delete ' + branch,
               '```',
               '',
-              'See CLAUDE.md: "Crew workers push directly to main. No feature branches. NEVER create PRs."'
+              'See docs/reference.md: "Crew workers push directly to main. No feature branches. NEVER create PRs."'
             ].join('\n');
 
             await github.rest.issues.createComment({

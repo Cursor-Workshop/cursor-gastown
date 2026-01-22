@@ -27,7 +27,7 @@ This is a convenience command for polecats that:
 1. Submits the current branch to the merge queue
 2. Auto-detects issue ID from branch name
 3. Notifies the Witness with the exit outcome
-4. Optionally exits the Claude session (--exit flag)
+4. Optionally exits the agent session (--exit flag)
 
 Exit statuses:
   COMPLETED      - Work done, MR submitted (default)
@@ -43,7 +43,7 @@ Phase handoff workflow:
 
 Examples:
   gt done                              # Submit branch, notify COMPLETED
-  gt done --exit                       # Submit and exit Claude session
+  gt done --exit                       # Submit and exit agent session
   gt done --issue gt-abc               # Explicit issue ID
   gt done --status ESCALATED           # Signal blocker, skip MR
   gt done --status DEFERRED            # Pause work, skip MR
@@ -72,7 +72,7 @@ func init() {
 	doneCmd.Flags().StringVar(&doneIssue, "issue", "", "Source issue ID (default: parse from branch name)")
 	doneCmd.Flags().IntVarP(&donePriority, "priority", "p", -1, "Override priority (0-4, default: inherit from issue)")
 	doneCmd.Flags().StringVar(&doneStatus, "status", ExitCompleted, "Exit status: COMPLETED, ESCALATED, or DEFERRED")
-	doneCmd.Flags().BoolVar(&doneExit, "exit", false, "Exit Claude session after MR submission (self-terminate)")
+doneCmd.Flags().BoolVar(&doneExit, "exit", false, "Exit agent session after MR submission (self-terminate)")
 	doneCmd.Flags().BoolVar(&donePhaseComplete, "phase-complete", false, "Signal phase complete - await gate before continuing")
 	doneCmd.Flags().StringVar(&doneGate, "gate", "", "Gate bead ID to wait on (with --phase-complete)")
 
