@@ -175,7 +175,10 @@ func (m *SessionManager) Start(polecat string, opts SessionStartOptions) error {
 	debugSession("SetEnvironment GT_RIG", m.tmux.SetEnvironment(sessionID, "GT_RIG", m.rig.Name))
 	debugSession("SetEnvironment GT_POLECAT", m.tmux.SetEnvironment(sessionID, "GT_POLECAT", polecat))
 
-	// Set CURSOR_CONFIG_DIR for account selection (non-fatal)
+	// Set CURSOR_CONFIG_DIR for account selection and hooks resolution (non-fatal)
+	if opts.CursorConfigDir == "" {
+		opts.CursorConfigDir = filepath.Join(m.rig.Path, "polecats", ".cursor")
+	}
 	if opts.CursorConfigDir != "" {
 		debugSession("SetEnvironment CURSOR_CONFIG_DIR", m.tmux.SetEnvironment(sessionID, "CURSOR_CONFIG_DIR", opts.CursorConfigDir))
 	}

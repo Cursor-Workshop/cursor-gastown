@@ -3,6 +3,7 @@ package tmux
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -30,13 +31,18 @@ func NewTmux() *Tmux {
 
 // run executes a tmux command and returns stdout.
 func (t *Tmux) run(args ...string) (string, error) {
-	cmd := exec.Command("tmux", args...)
+	ctx, cancel := context.WithTimeout(context.Background(), constants.TmuxCommandTimeout)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "tmux", args...)
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 
 	err := cmd.Run()
 	if err != nil {
+		if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+			return "", fmt.Errorf("tmux %s: timeout", strings.Join(args, " "))
+		}
 		return "", t.wrapError(err, stderr.String(), args)
 	}
 

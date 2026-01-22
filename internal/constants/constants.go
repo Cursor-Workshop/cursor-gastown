@@ -26,6 +26,9 @@ const (
 
 	// PollInterval is the default polling interval for wait loops.
 	PollInterval = 100 * time.Millisecond
+
+	// TmuxCommandTimeout bounds tmux subprocess execution time.
+	TmuxCommandTimeout = 5 * time.Second
 )
 
 // Directory names within a Gas Town workspace.
