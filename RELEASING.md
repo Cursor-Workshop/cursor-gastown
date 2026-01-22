@@ -32,7 +32,7 @@ A Gas Town release involves multiple distribution channels:
 ### Required Access
 
 - GitHub: Write access to repository and ability to create releases
-- npm: Publish access to `@gastown` organization
+- npm: Publish access to `@cursorworkshop` organization
 
 ### Verify Setup
 
@@ -149,17 +149,17 @@ The npm package wraps the native binary for Node.js environments.
 ```bash
 cd npm-package
 
-# Run tests
+# Run tests (requires a local binary in npm-package/bin)
 npm test
 
 # Pack and test install
 npm pack
-npm install -g ./gastown-gt-0.2.0.tgz
+npm install -g ./cursorworkshop-cursor-gastown-0.2.0.tgz
 gt version  # Should show 0.2.0
 
 # Cleanup
 npm uninstall -g @cursorworkshop/cursor-gastown
-rm gastown-gt-0.2.0.tgz
+rm cursorworkshop-cursor-gastown-0.2.0.tgz
 ```
 
 ### Publish to npm
@@ -167,13 +167,18 @@ rm gastown-gt-0.2.0.tgz
 ```bash
 # IMPORTANT: Ensure GitHub release with binaries is live first!
 cd npm-package
-npm publish --access public
+npm publish --access public --otp=<code>
 ```
 
 ### Verify npm Release
 
 ```bash
 npm install -g @cursorworkshop/cursor-gastown
+
+# If you are in CI, the postinstall step skips binary download.
+# For a local verification, ensure CI is not set.
+CI= npm install -g @cursorworkshop/cursor-gastown
+
 gt version  # Should show 0.2.0
 ```
 
@@ -185,8 +190,8 @@ After all channels are updated:
 
 ```bash
 # Download and test binary
-curl -LO https://github.com/cursorworkshop/cursor-gastown/releases/download/v0.2.0/gastown_0.2.0_darwin_arm64.tar.gz
-tar -xzf gastown_0.2.0_darwin_arm64.tar.gz
+curl -LO https://github.com/cursorworkshop/cursor-gastown/releases/download/v0.2.0/cursor-gastown_0.2.0_darwin_arm64.tar.gz
+tar -xzf cursor-gastown_0.2.0_darwin_arm64.tar.gz
 ./gt version
 ```
 
