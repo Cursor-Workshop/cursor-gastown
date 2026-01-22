@@ -2498,3 +2498,122 @@
 2026/01/17 15:53:21 Daemon shutting down
 2026/01/17 15:53:21 Feed curator stopped
 2026/01/17 15:53:21 Daemon stopped
+2026/01/21 21:20:10 Daemon starting (PID 84561)
+2026/01/21 21:20:10 Daemon running, recovery heartbeat interval 3m0s
+2026/01/21 21:20:10 Feed curator started
+2026/01/21 21:20:10 Heartbeat starting (recovery-focused)
+2026/01/21 21:20:10 Spawning Boot for triage...
+2026/01/21 21:20:11 Boot spawned successfully
+2026/01/21 21:20:12 Heartbeat complete (#1)
+2026/01/21 21:23:10 Heartbeat starting (recovery-focused)
+2026/01/21 21:23:10 Spawning Boot for triage...
+2026/01/21 21:23:11 Boot spawned successfully
+2026/01/21 21:23:12 Heartbeat complete (#2)
+2026/01/21 21:26:12 Heartbeat starting (recovery-focused)
+2026/01/21 21:26:12 Spawning Boot for triage...
+2026/01/21 21:26:12 Boot spawned successfully
+2026/01/21 21:26:13 Heartbeat complete (#3)
+2026/01/21 21:29:13 Heartbeat starting (recovery-focused)
+2026/01/21 21:29:13 Spawning Boot for triage...
+2026/01/21 21:29:14 Boot spawned successfully
+2026/01/21 21:29:15 Heartbeat complete (#4)
+2026/01/21 21:32:15 Heartbeat starting (recovery-focused)
+2026/01/21 21:32:15 Spawning Boot for triage...
+2026/01/21 21:32:15 Boot spawned successfully
+2026/01/21 21:32:16 Heartbeat complete (#5)
+2026/01/21 21:35:16 Heartbeat starting (recovery-focused)
+2026/01/21 21:35:16 Spawning Boot for triage...
+2026/01/21 21:35:17 Boot spawned successfully
+2026/01/21 21:35:18 Heartbeat complete (#6)
+2026/01/21 21:38:18 Heartbeat starting (recovery-focused)
+2026/01/21 21:38:18 Spawning Boot for triage...
+2026/01/21 21:38:18 Boot spawned successfully
+2026/01/21 21:38:19 Heartbeat complete (#7)
+2026/01/21 21:41:19 Heartbeat starting (recovery-focused)
+2026/01/21 21:41:19 Spawning Boot for triage...
+2026/01/21 21:41:20 Boot spawned successfully
+2026/01/21 21:41:21 Heartbeat complete (#8)
+2026/01/21 21:44:21 Heartbeat starting (recovery-focused)
+2026/01/21 21:44:21 Spawning Boot for triage...
+2026/01/21 21:44:21 Boot spawned successfully
+2026/01/21 21:44:22 Heartbeat complete (#9)
+2026/01/21 21:47:22 Heartbeat starting (recovery-focused)
+2026/01/21 21:47:22 Spawning Boot for triage...
+2026/01/21 21:47:23 Boot spawned successfully
+2026/01/21 21:47:24 Heartbeat complete (#10)
+2026/01/21 21:50:24 Heartbeat starting (recovery-focused)
+2026/01/21 21:50:24 Spawning Boot for triage...
+2026/01/21 21:50:24 Boot spawned successfully
+2026/01/21 21:50:25 Heartbeat complete (#11)
+2026/01/21 21:53:25 Heartbeat starting (recovery-focused)
+2026/01/21 21:53:25 Spawning Boot for triage...
+2026/01/21 21:53:26 Boot spawned successfully
+2026/01/21 21:53:27 Heartbeat complete (#12)
+2026/01/21 21:56:27 Heartbeat starting (recovery-focused)
+2026/01/21 21:56:27 Spawning Boot for triage...
+2026/01/21 21:56:27 Boot spawned successfully
+2026/01/21 21:56:28 Heartbeat complete (#13)
+2026/01/21 21:59:28 Heartbeat starting (recovery-focused)
+2026/01/21 21:59:28 Spawning Boot for triage...
+2026/01/21 21:59:29 Boot spawned successfully
+2026/01/21 21:59:30 Heartbeat complete (#14)
+2026/01/21 22:02:30 Heartbeat starting (recovery-focused)
+2026/01/21 22:02:30 Spawning Boot for triage...
+2026/01/21 22:02:30 Boot spawned successfully
+2026/01/21 22:02:31 Heartbeat complete (#15)
+2026/01/21 22:05:31 Heartbeat starting (recovery-focused)
+2026/01/21 22:05:31 Spawning Boot for triage...
+2026/01/21 22:05:32 Boot spawned successfully
+2026/01/21 22:05:33 Heartbeat complete (#16)
+2026/01/21 22:08:33 Heartbeat starting (recovery-focused)
+2026/01/21 22:08:33 Spawning Boot for triage...
+2026/01/21 22:08:33 Boot spawned successfully
+2026/01/21 22:08:34 Heartbeat complete (#17)
+2026/01/21 22:11:34 Heartbeat starting (recovery-focused)
+2026/01/21 22:11:34 Spawning Boot for triage...
+2026/01/21 22:11:35 Boot spawned successfully
+2026/01/21 22:11:36 Heartbeat complete (#18)
+2026/01/21 22:14:36 Heartbeat starting (recovery-focused)
+2026/01/21 22:14:36 Spawning Boot for triage...
+2026/01/21 22:14:36 Boot spawned successfully
+2026/01/21 22:14:37 Heartbeat complete (#19)
+2026/01/21 22:17:37 Heartbeat starting (recovery-focused)
+2026/01/21 22:17:37 Spawning Boot for triage...
+2026/01/21 22:17:38 Boot spawned successfully
+2026/01/21 22:17:38 Heartbeat complete (#20)
+2026/01/21 22:20:38 Heartbeat starting (recovery-focused)
+2026/01/21 22:20:38 Spawning Boot for triage...
+2026/01/21 22:20:39 Boot spawned successfully
+2026/01/21 22:20:40 Heartbeat complete (#21)
+2026/01/21 22:23:40 Heartbeat starting (recovery-focused)
+2026/01/21 22:23:40 Spawning Boot for triage...
+2026/01/21 22:23:40 Boot spawned successfully
+2026/01/21 22:23:41 Heartbeat complete (#22)
+2026/01/21 22:26:41 Heartbeat starting (recovery-focused)
+2026/01/21 22:26:41 Spawning Boot for triage...
+2026/01/21 22:26:42 Boot spawned successfully
+2026/01/21 22:26:43 Heartbeat complete (#23)
+2026/01/21 22:29:43 Heartbeat starting (recovery-focused)
+2026/01/21 22:29:43 Spawning Boot for triage...
+2026/01/21 22:29:43 Boot spawned successfully
+2026/01/21 22:29:44 Heartbeat complete (#24)
+2026/01/21 22:32:44 Heartbeat starting (recovery-focused)
+2026/01/21 22:32:44 Spawning Boot for triage...
+2026/01/21 22:32:45 Boot spawned successfully
+2026/01/21 22:32:46 Heartbeat complete (#25)
+2026/01/21 22:35:46 Heartbeat starting (recovery-focused)
+2026/01/21 22:35:46 Spawning Boot for triage...
+2026/01/21 22:35:46 Boot spawned successfully
+2026/01/21 22:35:47 Heartbeat complete (#26)
+2026/01/21 22:38:47 Heartbeat starting (recovery-focused)
+2026/01/21 22:38:47 Spawning Boot for triage...
+2026/01/21 22:38:48 Boot spawned successfully
+2026/01/21 22:38:48 Heartbeat complete (#27)
+2026/01/21 22:41:48 Heartbeat starting (recovery-focused)
+2026/01/21 22:41:48 Spawning Boot for triage...
+2026/01/21 22:41:49 Boot spawned successfully
+2026/01/21 22:41:50 Heartbeat complete (#28)
+2026/01/21 22:44:50 Heartbeat starting (recovery-focused)
+2026/01/21 22:44:50 Spawning Boot for triage...
+2026/01/21 22:44:50 Boot spawned successfully
+2026/01/21 22:44:51 Heartbeat complete (#29)
