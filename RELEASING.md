@@ -18,7 +18,7 @@ This document describes the release process for Gas Town, including GitHub relea
 A Gas Town release involves multiple distribution channels:
 
 1. **GitHub Release** - Binary downloads for all platforms
-2. **npm** - Node.js package for cross-platform installation (`@cursorworkshop/gt`)
+2. **npm** - Node.js package for cross-platform installation (`@cursorworkshop/cursor-gastown`)
 
 ## Prerequisites
 
@@ -158,7 +158,7 @@ npm install -g ./gastown-gt-0.2.0.tgz
 gt version  # Should show 0.2.0
 
 # Cleanup
-npm uninstall -g @cursorworkshop/gt
+npm uninstall -g @cursorworkshop/cursor-gastown
 rm gastown-gt-0.2.0.tgz
 ```
 
@@ -173,7 +173,7 @@ npm publish --access public
 ### Verify npm Release
 
 ```bash
-npm install -g @cursorworkshop/gt
+npm install -g @cursorworkshop/cursor-gastown
 gt version  # Should show 0.2.0
 ```
 
@@ -193,7 +193,7 @@ tar -xzf gastown_0.2.0_darwin_arm64.tar.gz
 ### npm
 
 ```bash
-npm install -g @cursorworkshop/gt
+npm install -g @cursorworkshop/cursor-gastown
 gt version
 ```
 

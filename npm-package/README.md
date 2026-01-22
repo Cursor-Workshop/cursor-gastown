@@ -1,11 +1,11 @@
-# @cursorworkshop/gt
+# @cursorworkshop/cursor-gastown
 
 Gas Town CLI - multi-agent workspace manager for coordinating AI coding agents.
 
 ## Installation
 
 ```bash
-npm install -g @cursorworkshop/gt
+npm install -g @cursorworkshop/cursor-gastown
 ```
 
 This will download the appropriate native binary for your platform during installation.
