@@ -29,7 +29,7 @@ type StartupNudgeConfig struct {
 
 // StartupNudge sends a formatted startup message to a Cursor session.
 // The message becomes the session title in Cursor's /resume picker,
-// enabling workers to find predecessor sessions.
+// enabling workers to discover sessions.
 //
 // Format: [GAS TOWN] <recipient> <- <sender> • <timestamp> • <topic[:mol-id]>
 //

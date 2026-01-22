@@ -63,26 +63,17 @@ Cursor CLI hook support is expected to expand. When `beforeSubmitPrompt` and `st
 
 ---
 
-## Open Issue: Session Resume
+## Open Issue: Session IDs
 
 ### Description
 
-Gas Town supports session resume for continuity across restarts. We need to understand how to capture and use Cursor's chat ID programmatically.
-
-### Available Commands
-
-```bash
-cursor-agent ls              # List sessions (requires TTY)
-cursor-agent resume          # Resume latest session
-cursor-agent --resume [id]   # Resume specific chat
-cursor-agent create-chat     # Create new chat, return ID
-```
+Gas Town needs a reliable session ID for attribution across restarts. We need to understand how to capture and use Cursor's chat ID programmatically.
 
 ### Open Questions
 
 1. Where does cursor-agent output the chat ID during a session?
 2. How to use `cursor-agent ls` in non-TTY environments?
-3. Does `cursor-agent create-chat` return a usable chat ID for `--resume`?
+3. Does cursor-agent expose a stable session ID in headless mode?
 
 ---
 
@@ -110,7 +101,6 @@ cursor-agent create-chat     # Create new chat, return ID
 | `--approve-mcps`   | Auto-approve MCP servers       |
 | `--workspace`      | Specify workspace directory    |
 | `--output-format`  | JSON output (with `--print`)   |
-| `--resume [id]`    | Resume specific session        |
 
 ### Available Models
 

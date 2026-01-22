@@ -26,7 +26,7 @@ var (
 var seanceCmd = &cobra.Command{
 	Use:     "seance",
 	GroupID: GroupDiag,
-	Short:   "Talk to your predecessor sessions",
+	Short:   "List predecessor sessions",
 Long: `Seance lets you list predecessor sessions.
 
 "Where did you put the stuff you left for me?" - The #1 handoff question.

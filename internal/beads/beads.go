@@ -14,7 +14,7 @@ import (
 
 // Common errors
 var (
-	ErrNotInstalled = errors.New("bd not installed: run 'pip install beads-cli' or see https://github.com/anthropics/beads")
+	ErrNotInstalled = errors.New("bd not installed: run 'pip install beads-cli' or see https://github.com/steveyegge/beads")
 	ErrNotARepo     = errors.New("not a beads repository (no .beads directory found)")
 	ErrSyncConflict = errors.New("beads sync conflict")
 	ErrNotFound     = errors.New("issue not found")

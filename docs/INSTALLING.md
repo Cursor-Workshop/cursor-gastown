@@ -167,7 +167,7 @@ gt sling issue-123 myproject
 
 # Run Cursor manually
 cd ~/gt/myproject/polecats/<worker>
-cursor-agent --resume <session-id>
+cursor-agent
 
 # Check progress
 gt convoy list
